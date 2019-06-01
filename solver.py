@@ -141,7 +141,7 @@ groups = [
     ["grilled cheese", "pizza", "spaghetti", "stew", "stir fry"],
 ]
 
-values: List[Element] = [el for group in groups for el in group]
+literals: List[Element] = [el for group in groups for el in group]
 
 # set up the puzzle with constraints and clues
 cnf: CNF = []
@@ -152,7 +152,7 @@ for house in houses:
         cnf += sat_utils.one_of(comb(value, house) for value in group)  
 
 # each value gets assigned to exactly one house
-for value in values:
+for value in literals:
     cnf += sat_utils.one_of(comb(value, house) for house in houses)
 
 
