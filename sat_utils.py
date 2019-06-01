@@ -5,10 +5,10 @@ __author__ = "Raymond Hettinger"
 import pycosat
 from itertools import combinations
 from functools import lru_cache
-from typing import Any, Dict, FrozenSet, Iterable, List, Set, Tuple
+from typing import Any, Dict, FrozenSet, Iterable, List, Set, Tuple, TypeVar
 
 
-Element = str  # literals
+Element = TypeVar("Element")  # literal
 CNF = List[Tuple[Element, ...]]
 
 
