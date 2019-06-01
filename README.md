@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Zebra Puzzles
 This is a project to create and solve zebra puzzles / Einstein puzzles.
 
