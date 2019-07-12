@@ -36,8 +36,14 @@ def make_translate(cnf: CNF) -> Tuple[Dict[Element, int], Dict[int, Element]]:
     return lit2num, num2var
 
 
-def translate(cnf: CNF, uniquify=False) -> Tuple[List[Tuple[int, ...]], Dict[int, Element]]:
-    """Translate a symbolic CNF to a numbered CNF and return reverse mapping."""
+def translate(
+    cnf: CNF, uniquify=False
+) -> Tuple[List[Tuple[int, ...]], Dict[int, Element]]:
+    """Translate a symbolic CNF to a numbered CNF and return reverse mapping.
+
+    >>> translate([['~P', 'Q'],['~P', 'R']])
+    [(-1, 2), (-1, 3)], {-3: '~R', -2: '~Q', -1: '~P', 1: 'P', 2: 'Q', 3: 'R'}
+    """
 
     # DIMACS CNF file format:
     # http://people.sc.fsu.edu/~jburkardt/data/cnf/cnf.html
@@ -75,7 +81,11 @@ def neg(element: str) -> str:
 
 
 def from_dnf(groups: Iterable[Tuple[str, ...]]) -> CNF:
-    """Convert from or-of-ands to and-of-ors"""
+    """Convert from or-of-ands to and-of-ors
+
+    >>> from_dnf([['~P'], ['Q', 'R']])
+    [('~P', 'Q'), ('~P', 'R')]
+    """
 
     cnf: Set[FrozenSet[str]] = {frozenset()}
     for group in groups:
@@ -98,7 +108,13 @@ def from_dnf(groups: Iterable[Tuple[str, ...]]) -> CNF:
 
 
 class Q:
-    """Quantifier for the number of elements that are true"""
+    """Quantifier for the number of elements that are true
+
+    >>> Q(['A', 'B', 'C']) <= 1
+    [('~A', '~B'),
+    ('~A', '~C'),
+    ('~B', '~C')]
+    """
 
     def __init__(self, elements: Iterable[Element]):
         self.elements = tuple(elements)
@@ -131,12 +147,23 @@ def all_of(elements: List[Element]) -> CNF:
 
 
 def some_of(elements: Iterable[Element]) -> CNF:
-    """At least one of the elements must be true"""
+    """At least one of the elements must be true
+
+    >>> some_of(['A', 'B', 'C'])
+    [['A', 'B', 'C']]
+    """
     return Q(elements) >= 1
 
 
 def one_of(elements: Iterable[Element]) -> CNF:
-    "Exactly one of the elements is true"
+    """Exactly one of the elements is true
+
+    >>> one_of(['A', 'B', 'C'])
+    [('A', 'B', 'C'),
+    ('~A', '~B'),
+    ('~A', '~C'),
+    ('~B', '~C')]
+    """
     return Q(elements) == 1
 
 

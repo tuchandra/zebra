@@ -4,46 +4,28 @@ Solve the Einstein puzzle using Raymond Hettinger's approach.
 """
 
 
-import sat_utils
 from itertools import product
 from typing import List, Tuple, Union
-from sat_utils import Element, CNF
 
-
-### Original version
-
-# houses = ["1", "2", "3", "4", "5"]
-
-# groups = [
-#     ["yellow", "red", "white", "green", "blue"],
-#     ["dane", "brit", "swede", "norwegian", "german"],
-#     ["horse", "cat", "bird", "fish", "dog"],
-#     ["water", "tea", "milk", "coffee", "root beer"],
-#     ["pall mall", "prince", "blue master", "dunhill", "blends"],
-# ]
-
-# values: List[Element] = [el for group in groups for el in group]
-
-# # set up the puzzle with constraints and clues
-# cnf: CNF = []
-
+import sat_utils
+from sat_utils import CNF, Element
 
 
 def comb(value: str, house: Union[str, int]) -> Element:
     """Format how a value is shown at a given house"""
-    
+
     return f"{value} {house}"
 
 
 def found_at(value: str, house: Union[str, int]) -> List[Tuple[Element]]:
     """Value known to be at a specific house"""
-    
+
     return [(comb(value, house),)]
 
 
 def same_house(value1: Element, value2: Element):
     """The two values occur in the same house: brit1 & red1 | brit2 & red2 ..."""
-    
+
     return sat_utils.from_dnf((comb(value1, i), comb(value2, i)) for i in houses)
 
 
@@ -57,7 +39,7 @@ def consecutive(value1: Element, value2: Element):
 
 def beside(value1: Element, value2: Element):
     """The values occur side-by-side: blends1 & cat2 | blends2 & cat1 ..."""
-    
+
     return sat_utils.from_dnf(
         [(comb(value1, i), comb(value2, j)) for i, j in zip(houses, houses[1:])]
         + [(comb(value2, i), comb(value1, j)) for i, j in zip(houses, houses[1:])]
@@ -98,10 +80,31 @@ def two_between(value1: Element, value2: Element):
     )
 
 
+"""
+Original version
+
+Taken straight from rhettinger.github.io and the associated talk.
+"""
+
+# houses = ["1", "2", "3", "4", "5"]
+
+# groups = [
+#     ["yellow", "red", "white", "green", "blue"],
+#     ["dane", "brit", "swede", "norwegian", "german"],
+#     ["horse", "cat", "bird", "fish", "dog"],
+#     ["water", "tea", "milk", "coffee", "root beer"],
+#     ["pall mall", "prince", "blue master", "dunhill", "blends"],
+# ]
+
+# values: List[Element] = [el for group in groups for el in group]
+
+# # set up the puzzle with constraints and clues
+# cnf: CNF = []
+
 # # each house gets exactly one value from each attribute group
 # for house in houses:
 #     for group in groups:
-#         cnf += sat_utils.one_of(comb(value, house) for value in group)  
+#         cnf += sat_utils.one_of(comb(value, house) for value in group)
 
 # # each value gets assigned to exactly one house
 # for value in values:
@@ -129,12 +132,12 @@ def two_between(value1: Element, value2: Element):
 """
 Quag's version
 
-In honor of Mother's Day, a feast is being held to celebrate five Moms: Aniya, Holly, Janelle, Kailyn, and Penny. Each Mom will be served by their son or daughter (Bella, Fred, Meredith, Samantha, and Timothy), who will also place a bouquet of flowers (Carnations, Daffodils, Lilies, Roses, or Tulips) at their Mom's place setting and prepare a meal for them (Grilled Cheese, Pizza, Spaghetti, Stew, or Stir Fry). The seats are arranged in a straight line at the head table, with the first being the furthest to the left (from our perspective, not the Mom's perspectives). Also, when it says there is "one chair" between two people, it means one person might be in the second chair while the other person is in the fourth (i.e. there is one chair inbetween them that neither is sitting in). To help you figure out what happened, you have these twelve clues: 
+In honor of Mother's Day, a feast is being held to celebrate five Moms: Aniya, Holly, Janelle, Kailyn, and Penny. Each Mom will be served by their son or daughter (Bella, Fred, Meredith, Samantha, and Timothy), who will also place a bouquet of flowers (Carnations, Daffodils, Lilies, Roses, or Tulips) at their Mom's place setting and prepare a meal for them (Grilled Cheese, Pizza, Spaghetti, Stew, or Stir Fry). The seats are arranged in a straight line at the head table, with the first being the furthest to the left (from our perspective, not the Mom's perspectives). Also, when it says there is "one chair" between two people, it means one person might be in the second chair while the other person is in the fourth (i.e. there is one chair inbetween them that neither is sitting in). To help you figure out what happened, you have these twelve clues:
 """
 
 houses = ["1", "2", "3", "4", "5"]
 
-groups = [
+groups: List[List[Element]] = [
     ["aniya", "holly", "janelle", "kailyn", "penny"],
     ["bella", "fred", "meredith", "samantha", "timothy"],
     ["carnations", "daffodils", "lilies", "roses", "tulips"],
@@ -149,55 +152,54 @@ cnf: CNF = []
 # each house gets exactly one value from each attribute group
 for house in houses:
     for group in groups:
-        cnf += sat_utils.one_of(comb(value, house) for value in group)  
+        cnf += sat_utils.one_of(comb(value, house) for value in group)
 
 # each value gets assigned to exactly one house
 for value in literals:
     cnf += sat_utils.one_of(comb(value, house) for house in houses)
 
 
-# 1.  There is one chair between the place setting with Lilies and the one eating Grilled Cheese.
+# 1. There is one chair between the place setting with Lilies and the one eating Grilled Cheese.
 cnf += one_between("lilies", "grilled cheese")
 
-# 2.	There is one chair between Timothy's Mom and the one eating Stew.
+# 2. There is one chair between Timothy's Mom and the one eating Stew.
 cnf += one_between("timothy", "stew")
 
-# 3.	There are two chairs between the Bella's Mom and Penny's seat on the right.
+# 3. There are two chairs between the Bella's Mom and Penny's seat on the right.
 cnf += two_between("bella", "penny")
 cnf += right_of("penny", "bella")
 
-# 4.	There is one chair between the place setting with Roses and the one eating Spaghetti on the left.
+# 4. There is one chair between the place setting with Roses and the one eating Spaghetti on the left.
 cnf += one_between("roses", "spaghetti")
 cnf += left_of("spaghetti", "roses")
 
-# 5.	There are two chairs between the place setting with Carnations and Samantha's Mom.
+# 5. There are two chairs between the place setting with Carnations and Samantha's Mom.
 cnf += two_between("carnations", "samantha")
 
-# 6.	There is one chair between Meredith's Mom and Timothy's Mom on the left.
+# 6. There is one chair between Meredith's Mom and Timothy's Mom on the left.
 cnf += one_between("meredith", "timothy")
 cnf += left_of("timothy", "meredith")
 
-# 7.	Aniya's place setting has a lovely Carnation bouquet.
+# 7. Aniya's place setting has a lovely Carnation bouquet.
 cnf += same_house("aniya", "carnations")
 
-# 8.	There are two chairs between the one eating Grilled Cheese and the one eating Spaghetti.
+# 8. There are two chairs between the one eating Grilled Cheese and the one eating Spaghetti.
 cnf += two_between("grilled cheese", "spaghetti")
 
-# 9.	The person in the first chair (left-most) is eating Pizza.
+# 9. The person in the first chair (left-most) is eating Pizza.
 cnf += found_at("pizza", "1")
 
-# 10.	The Tulips were placed at one of the place settings somewhere to the left of Penny's chair.
+# 10. The Tulips were placed at one of the place settings somewhere to the left of Penny's chair.
 cnf += left_of("tulips", "penny")
 
-# 11.	There are two chairs between the one eating Spaghetti and Kailyn's seat.
+# 11. There are two chairs between the one eating Spaghetti and Kailyn's seat.
 cnf += two_between("spaghetti", "kailyn")
 
-# 12.	There is one chair between the one eating Pizza and Holly's chair on the right.
+# 12. There is one chair between the one eating Pizza and Holly's chair on the right.
 cnf += one_between("pizza", "holly")
 cnf += right_of("holly", "pizza")
 
 
-# pprint(sat_utils.solve_all(cnf))
 all_solutions = sat_utils.solve_all(cnf)
 print(f"{len(all_solutions)} solutions found")
 print(all_solutions)
