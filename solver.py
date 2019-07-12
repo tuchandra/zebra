@@ -29,7 +29,7 @@ from sat_utils import Element, CNF
 
 
 
-def comb(value: str, house: Union[str, int]) -> str:
+def comb(value: str, house: Union[str, int]) -> Element:
     """Format how a value is shown at a given house"""
     
     return f"{value} {house}"

@@ -8,7 +8,7 @@ from functools import lru_cache
 from typing import Any, Dict, FrozenSet, Iterable, List, Set, Tuple, TypeVar
 
 
-Element = TypeVar("Element")  # literal
+Element = str  # literal, just a string for now
 CNF = List[Tuple[Element, ...]]
 
 
