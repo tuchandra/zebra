@@ -1,0 +1,35 @@
+# This is the puzzle specification
+
+[meta]
+author = "Tushar"
+n_houses = 5
+
+[elements]
+mothers = ["aniya", "holly", "janelle", "kailyn", "penny"]
+children = ["bella", "fred", "meredith", "samantha", "timothy"]
+flowers = ["carnations", "daffodils", "lilies", "roses", "tulips"]
+foods = ["grilled cheese", "pizza", "spaghetti", "stew", "stir fry"]
+
+[clues]
+# Clues must be specified as:
+# [ "type of clue", "class1 / element1", "class2 / element2" ]
+# type of clue: "one between", "two between", "right of", etc.
+# class / element: e.g., flowers / daisies, foods / soup.
+clues = [
+    ["one between", "flowers / lilies", "foods / grilled cheese"],
+    ["one between", "children / timothy", "foods / stew"],
+    ["two between", "children / bella", "mothers / penny"],
+    ["right of", "mothers / penny", "children / bella"],
+    ["one between", "flowers / roses", "foods / spaghetti"],
+    ["left of", "foods / spaghetti", "flowers / roses"],
+    ["two between", "flowers / carnations", "children / samantha"],
+    ["one between", "children / meredith", "mothers / timothy"],
+    ["left of", "mothers / timothy", "children / meredith"],
+    ["same house", "mothers / aniya", "children / carnations"],
+    ["two between", "food / grilled cheese", "food / spaghetti"],
+    ["found at", "food / pizza", "1"],
+    ["left of", "flowers / tulips", "mothers / penny"],
+    ["two between", "food /spaghetti", "mothers / kailyn"],
+    ["one between", "food / pizza", "mothers / holly"],
+    ["right of", "mothers / holly", "food / pizza"]
+]
