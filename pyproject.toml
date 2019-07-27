@@ -10,6 +10,7 @@ python = "^3.7"
 pycosat = "^0.6.3"
 mypy = "^0.701.0"
 black = {version = "^18.3-alpha.0",allows-prereleases = true}
+toml = "^0.10.0"
 
 [tool.poetry.dev-dependencies]
 
