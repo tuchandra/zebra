@@ -175,21 +175,58 @@ in between them that neither is sitting in).
 
 houses = [1, 2, 3, 4, 5]
 
-groups: List[List[Element]] = [
-    ["aniya", "holly", "janelle", "kailyn", "penny"],
-    ["bella", "fred", "meredith", "samantha", "timothy"],
-    ["carnations", "daffodils", "lilies", "roses", "tulips"],
-    ["grilled cheese", "pizza", "spaghetti", "stew", "stir fry"],
-]
+from enum import Enum, auto
+from typing import Type
 
-literals: List[Element] = [el for group in groups for el in group]
+
+class AutoName(Enum):
+    """Enum subclass to have the member's value be equal to its name."""
+
+    def _generate_next_value_(name: str, start, count, last_values):
+        return name
+
+
+class Mothers(AutoName):
+    aniya = auto()
+    holly = auto()
+    janelle = auto()
+    kailyn = auto()
+    penny = auto()
+
+
+class Children(AutoName):
+    bella = auto()
+    fred = auto()
+    meredith = auto()
+    samantha = auto()
+    timothy = auto()
+
+
+class Flowers(AutoName):
+    carnations = auto()
+    daffodils = auto()
+    lilies = auto()
+    roses = auto()
+    tulips = auto()
+
+
+class Foods(AutoName):
+    grilled_cheese = auto()
+    pizza = auto()
+    spaghetti = auto()
+    stew = auto()
+    stir_fry = auto()
+
+
+enum_classes: List[Type[Enum]] = [Mothers, Children, Flowers, Foods]
+literals = [el for group in enum_classes for el in group]
 
 # set up the puzzle with constraints and clues
 cnf: CNF = []
 
 # each house gets exactly one value from each attribute group
 for house in houses:
-    for group in groups:
+    for group in enum_classes:
         cnf += sat_utils.one_of(comb(value, house) for value in group)
 
 # each value gets assigned to exactly one house
@@ -198,45 +235,44 @@ for value in literals:
 
 
 # 1. There is one chair between the place setting with Lilies and the one eating Grilled Cheese.
-cnf += one_between("lilies", "grilled cheese")
+cnf += one_between(Flowers.lilies, Foods.grilled_cheese)
 
 # 2. There is one chair between Timothy's Mom and the one eating Stew.
-cnf += one_between("timothy", "stew")
+cnf += one_between(Children.timothy, Foods.stew)
 
 # 3. There are two chairs between the Bella's Mom and Penny's seat on the right.
-cnf += two_between("bella", "penny")
-cnf += right_of("penny", "bella")
+cnf += two_between(Children.bella, Mothers.penny)
+cnf += right_of(Mothers.penny, Children.bella)
 
 # 4. There is one chair between the place setting with Roses and the one eating Spaghetti on the left.
-cnf += one_between("roses", "spaghetti")
-cnf += left_of("spaghetti", "roses")
+cnf += one_between(Flowers.roses, Foods.spaghetti)
+cnf += left_of(Foods.spaghetti, Flowers.roses)
 
 # 5. There are two chairs between the place setting with Carnations and Samantha's Mom.
-cnf += two_between("carnations", "samantha")
+cnf += two_between(Flowers.carnations, Children.samantha)
 
 # 6. There is one chair between Meredith's Mom and Timothy's Mom on the left.
-cnf += one_between("meredith", "timothy")
-cnf += left_of("timothy", "meredith")
+cnf += one_between(Children.meredith, Children.timothy)
+cnf += left_of(Children.timothy, Children.meredith)
 
 # 7. Aniya's place setting has a lovely Carnation bouquet.
-cnf += same_house("aniya", "carnations")
+cnf += same_house(Mothers.aniya, Flowers.carnations)
 
 # 8. There are two chairs between the one eating Grilled Cheese and the one eating Spaghetti.
-cnf += two_between("grilled cheese", "spaghetti")
+cnf += two_between(Foods.grilled_cheese, Foods.spaghetti)
 
 # 9. The person in the first chair (left-most) is eating Pizza.
-cnf += found_at("pizza", 1)
+cnf += found_at(Foods.pizza, 1)
 
 # 10. The Tulips were placed at one of the place settings somewhere to the left of Penny's chair.
-cnf += left_of("tulips", "penny")
+cnf += left_of(Flowers.tulips, Mothers.penny)
 
 # 11. There are two chairs between the one eating Spaghetti and Kailyn's seat.
-cnf += two_between("spaghetti", "kailyn")
+cnf += two_between(Foods.spaghetti, Mothers.kailyn)
 
 # 12. There is one chair between the one eating Pizza and Holly's chair on the right.
-cnf += one_between("pizza", "holly")
-cnf += right_of("holly", "pizza")
-
+cnf += one_between(Foods.pizza, Mothers.holly)
+cnf += right_of(Mothers.holly, Foods.pizza)
 
 all_solutions = sat_utils.solve_all(cnf)
 print(f"{len(all_solutions)} solutions found")
