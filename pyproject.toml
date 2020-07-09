@@ -1,17 +1,16 @@
 [tool.poetry]
-name = "zebra-puzzles"
+name = "zebra"
 version = "0.1.0"
-description = "Create and solve zebra / Einstein puzzles"
-authors = ["Tushar Chandra"]
+description = "Generator and solver for zebra puzzles"
+authors = ["Tushar Chandra <me@tusharc.dev>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 pycosat = "^0.6.3"
-mypy = "^0.701.0"
-black = {version = "^18.3-alpha.0",allows-prereleases = true}
 
 [tool.poetry.dev-dependencies]
+black = "^19.10b0"
 
 [build-system]
 requires = ["poetry>=0.12"]
