@@ -4,32 +4,43 @@ Solve the Einstein puzzle using Raymond Hettinger's approach.
 """
 
 
+from enum import Enum, auto
 from itertools import product
-from typing import List, Tuple, Union
+from typing import List, Tuple, Type, Union, Literal
 
 import sat_utils
 from sat_utils import CNF, Element
 
+Element = str
 
-def comb(value: str, house: int) -> Element:
+
+class Literal(Enum):
+    """Enum subclass to have the member's value be equal to its name."""
+
+    @staticmethod
+    def _generate_next_value_(name, start, count, last_values) -> Element:
+        return name
+
+
+def comb(value: Literal, house: int) -> Element:
     """Format how a value is shown at a given house"""
 
     return f"{value} {house}"
 
 
-def found_at(value: str, house: int) -> List[Tuple[Element]]:
+def found_at(value: Literal, house: int) -> List[Tuple[Element]]:
     """Value known to be at a specific house"""
 
     return [(comb(value, house),)]
 
 
-def same_house(value1: Element, value2: Element):
+def same_house(value1: Literal, value2: Literal):
     """The two values occur in the same house: brit1 & red1 | brit2 & red2 ..."""
 
     return sat_utils.from_dnf((comb(value1, i), comb(value2, i)) for i in houses)
 
 
-def consecutive(value1: Element, value2: Element):
+def consecutive(value1: Literal, value2: Literal):
     """The values are in consecutive houses: green1 & white2 | green2 & white3 ..."""
 
     return sat_utils.from_dnf(
@@ -37,7 +48,7 @@ def consecutive(value1: Element, value2: Element):
     )
 
 
-def beside(value1: Element, value2: Element):
+def beside(value1: Literal, value2: Literal):
     """The values occur side-by-side: blends1 & cat2 | blends2 & cat1 ..."""
 
     return sat_utils.from_dnf(
@@ -46,7 +57,7 @@ def beside(value1: Element, value2: Element):
     )
 
 
-def left_of(value1: Element, value2: Element):
+def left_of(value1: Literal, value2: Literal):
     """The first value is somewhere to the left of the second value."""
 
     return sat_utils.from_dnf(
@@ -54,7 +65,7 @@ def left_of(value1: Element, value2: Element):
     )
 
 
-def right_of(value1: Element, value2: Element):
+def right_of(value1: Literal, value2: Literal):
     """The first value is somewhere to the right of the second value."""
 
     return sat_utils.from_dnf(
@@ -62,7 +73,7 @@ def right_of(value1: Element, value2: Element):
     )
 
 
-def one_between(value1: Element, value2: Element):
+def one_between(value1: Literal, value2: Literal):
     """The values have one other value in between: cat1 & x2 & dog3 | dog2 & x3 & cat1 ..."""
 
     return sat_utils.from_dnf(
@@ -71,7 +82,7 @@ def one_between(value1: Element, value2: Element):
     )
 
 
-def two_between(value1: Element, value2: Element):
+def two_between(value1: Literal, value2: Literal):
     """The values have two other values in between: cat1 & x2 & y3 & dog4 | ..."""
 
     return sat_utils.from_dnf(
@@ -113,47 +124,82 @@ For each house, find out what color it is, who lives there, what they drinkk, wh
 they smoke, and what pet they own.
 """
 
-# houses = [1, 2, 3, 4, 5]
+houses = [1, 2, 3, 4, 5]
 
-# groups = [
-#     ["yellow", "red", "white", "green", "blue"],
-#     ["dane", "brit", "swede", "norwegian", "german"],
-#     ["horse", "cat", "bird", "fish", "dog"],
-#     ["water", "tea", "milk", "coffee", "root beer"],
-#     ["pall mall", "prince", "blue master", "dunhill", "blends"],
-# ]
 
-# values: List[Element] = [el for group in groups for el in group]
+class Color(Literal):
+    yellow = auto()
+    red = auto()
+    white = auto()
+    green = auto()
+    blue = auto()
 
-# # set up the puzzle with constraints and clues
-# cnf: CNF = []
+
+class Nationality(Literal):
+    dane = auto()
+    brit = auto()
+    swede = auto()
+    norwegian = auto()
+    german = auto()
+
+
+class Animal(Literal):
+    horse = auto()
+    cat = auto()
+    bird = auto()
+    fish = auto()
+    dog = auto()
+
+
+class Drink(Literal):
+    water = auto()
+    tea = auto()
+    milk = auto()
+    coffee = auto()
+    root_beer = auto()
+
+
+class Cigar(Literal):
+    pall_mall = auto()
+    prince = auto()
+    blue_master = auto()
+    dunhill = auto()
+    blends = auto()
+
+
+enum_classes: List[Type[Literal]] = [Color, Nationality, Animal, Drink, Cigar]
+literals: List[Literal] = [el.value for group in enum_classes for el in group]
+
+# set up the puzzle with constraints and clues
+cnf: CNF = []
 
 # # each house gets exactly one value from each attribute group
-# for house in houses:
-#     for group in groups:
-#         cnf += sat_utils.one_of(comb(value, house) for value in group)
+for house in houses:
+    for enum_type in enum_classes:
+        cnf += sat_utils.one_of(comb(value, house) for value in enum_type)
 
-# # each value gets assigned to exactly one house
-# for value in values:
-#     cnf += sat_utils.one_of(comb(value, house) for house in houses)
+# each value gets assigned to exactly one house
+for literal in literals:
+    cnf += sat_utils.one_of(comb(literal, house) for house in houses)
 
-# cnf += same_house("brit", "red")
-# cnf += same_house("swede", "dog")
-# cnf += same_house("dane", "tea")
-# cnf += consecutive("green", "white")
-# cnf += same_house("green", "coffee")
-# cnf += same_house("pall mall", "bird")
-# cnf += same_house("yellow", "dunhill")
-# cnf += found_at("milk", 3)
-# cnf += found_at("norwegian", 1)
-# cnf += beside("blends", "cat")
-# cnf += beside("horse", "dunhill")
-# cnf += same_house("blue master", "root beer")
-# cnf += same_house("german", "prince")
-# cnf += beside("norwegian", "blue")
-# cnf += beside("blends", "water")
+cnf += same_house(Nationality.brit, Color.red)
+cnf += same_house(Nationality.swede, Animal.dog)
+cnf += same_house(Nationality.dane, Drink.tea)
+cnf += consecutive(Color.green, Color.white)
+cnf += same_house(Color.green, Drink.coffee)
+cnf += same_house(Cigar.pall_mall, Animal.bird)
+cnf += same_house(Color.yellow, Cigar.dunhill)
+cnf += found_at(Drink.milk, 3)
+cnf += found_at(Nationality.norwegian, 1)
+cnf += beside(Cigar.blends, Animal.cat)
+cnf += beside(Animal.horse, Cigar.dunhill)
+cnf += same_house(Cigar.blue_master, Drink.root_beer)
+cnf += same_house(Nationality.german, Cigar.prince)
+cnf += beside(Nationality.norwegian, Color.blue)
+cnf += beside(Cigar.blends, Drink.water)
 
-# sat_utils.solve_one(cnf)
+sol = sat_utils.solve_one(cnf)
+print(sol)
 
 
 """
@@ -175,18 +221,8 @@ in between them that neither is sitting in).
 
 houses = [1, 2, 3, 4, 5]
 
-from enum import Enum, auto
-from typing import Type
 
-
-class AutoName(Enum):
-    """Enum subclass to have the member's value be equal to its name."""
-
-    def _generate_next_value_(name: str, start, count, last_values):
-        return name
-
-
-class Mothers(AutoName):
+class Mothers(Literal):
     aniya = auto()
     holly = auto()
     janelle = auto()
@@ -194,7 +230,7 @@ class Mothers(AutoName):
     penny = auto()
 
 
-class Children(AutoName):
+class Children(Literal):
     bella = auto()
     fred = auto()
     meredith = auto()
@@ -202,7 +238,7 @@ class Children(AutoName):
     timothy = auto()
 
 
-class Flowers(AutoName):
+class Flowers(Literal):
     carnations = auto()
     daffodils = auto()
     lilies = auto()
@@ -210,7 +246,7 @@ class Flowers(AutoName):
     tulips = auto()
 
 
-class Foods(AutoName):
+class Foods(Literal):
     grilled_cheese = auto()
     pizza = auto()
     spaghetti = auto()
@@ -218,7 +254,7 @@ class Foods(AutoName):
     stir_fry = auto()
 
 
-enum_classes: List[Type[Enum]] = [Mothers, Children, Flowers, Foods]
+enum_classes: List[Type[Literal]] = [Mothers, Children, Flowers, Foods]
 literals = [el for group in enum_classes for el in group]
 
 # set up the puzzle with constraints and clues
