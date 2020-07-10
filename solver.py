@@ -3,15 +3,22 @@
 Solve the Einstein puzzle using Raymond Hettinger's approach.
 """
 
+from __future__ import annotations
 
 from enum import Enum, auto
 from itertools import product
-from typing import List, Tuple, Type, Union, Literal
+from typing import Iterator, List, Tuple, Type, Union, Literal
+from collections.abc import MutableSequence
 
 import sat_utils
 from sat_utils import CNF, Element
 
 Element = str
+from abc import ABC, abstractmethod
+from typing import Iterable
+
+
+from dataclasses import dataclass, field
 
 
 class Literal(Enum):
@@ -22,73 +29,154 @@ class Literal(Enum):
         return name
 
 
-def comb(value: Literal, house: int) -> Element:
+def comb(value: Literal, house: int) -> str:
     """Format how a value is shown at a given house"""
 
     return f"{value} {house}"
 
 
-def found_at(value: Literal, house: int) -> List[Tuple[Element]]:
+@dataclass
+class Puzzle:
+    """Collection of clues for the zebra puzzle"""
+
+    clues: List[Clue] = field(default_factory=list)
+    constraints: List[Tuple[str]] = field(default_factory=list)
+
+    def add_clue(self, clue: Clue) -> Puzzle:
+        self.clues.append(clue)
+        return self
+
+    def add_constraint(self, constraints: List[Tuple[str]]) -> Puzzle:
+        self.constraints.extend(constraints)
+        return self
+
+    def as_cnf(self) -> List[Tuple[str]]:
+        """Express puzzle as solvable CNF"""
+
+        # this would be a comprehension if we could use iterable unpacking
+        cnf = []
+        for clue in self.clues:
+            cnf.extend(clue.as_cnf())
+
+        cnf.extend(self.constraints)
+        return cnf
+
+
+class Clue(ABC):
+    """Base class for the types of clues that we allow."""
+
+    @abstractmethod
+    def as_cnf(self) -> Iterable[Tuple[str]]:
+        """Express clue as a CNF (and-of-ors)."""
+
+        ...
+
+
+@dataclass
+class found_at(Clue):
     """Value known to be at a specific house"""
 
-    return [(comb(value, house),)]
+    value: Literal
+    house: int
+
+    def as_cnf(self) -> List[Tuple[str]]:
+        return [(comb(self.value, self.house),)]
 
 
-def same_house(value1: Literal, value2: Literal):
-    """The two values occur in the same house: brit1 & red1 | brit2 & red2 ..."""
+@dataclass
+class same_house(Clue):
+    """Value known to be at a specific house"""
 
-    return sat_utils.from_dnf((comb(value1, i), comb(value2, i)) for i in houses)
+    value1: Literal
+    value2: Literal
+
+    def as_cnf(self) -> List[Tuple[str]]:
+        return sat_utils.from_dnf((comb(self.value1, i), comb(self.value2, i)) for i in houses)
 
 
-def consecutive(value1: Literal, value2: Literal):
+@dataclass
+class consecutive(Clue):
     """The values are in consecutive houses: green1 & white2 | green2 & white3 ..."""
 
-    return sat_utils.from_dnf(
-        (comb(value1, i), comb(value2, j)) for i, j in zip(houses, houses[1:])
-    )
+    value1: Literal
+    value2: Literal
+
+    def as_cnf(self) -> List[Tuple[str]]:
+        return sat_utils.from_dnf(
+            (comb(self.value1, i), comb(self.value2, j)) for i, j in zip(houses, houses[1:])
+        )
 
 
-def beside(value1: Literal, value2: Literal):
+@dataclass
+class beside(Clue):
     """The values occur side-by-side: blends1 & cat2 | blends2 & cat1 ..."""
 
-    return sat_utils.from_dnf(
-        [(comb(value1, i), comb(value2, j)) for i, j in zip(houses, houses[1:])]
-        + [(comb(value2, i), comb(value1, j)) for i, j in zip(houses, houses[1:])]
-    )
+    value1: Literal
+    value2: Literal
+
+    def as_cnf(self) -> List[Tuple[str]]:
+        return sat_utils.from_dnf(
+            [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(houses, houses[1:])]
+            + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(houses, houses[1:])]
+        )
 
 
-def left_of(value1: Literal, value2: Literal):
+@dataclass
+class left_of(Clue):
     """The first value is somewhere to the left of the second value."""
 
-    return sat_utils.from_dnf(
-        (comb(value1, i), comb(value2, j)) for i, j in product(houses, houses) if i < j
-    )
+    value1: Literal
+    value2: Literal
+
+    def as_cnf(self) -> List[Tuple[str]]:
+        return sat_utils.from_dnf(
+            (comb(self.value1, i), comb(self.value2, j))
+            for i, j in product(houses, houses)
+            if i < j
+        )
 
 
-def right_of(value1: Literal, value2: Literal):
+@dataclass
+class right_of(Clue):
     """The first value is somewhere to the right of the second value."""
 
-    return sat_utils.from_dnf(
-        (comb(value1, i), comb(value2, j)) for i, j in product(houses, houses) if i > j
-    )
+    value1: Literal
+    value2: Literal
+
+    def as_cnf(self) -> List[Tuple[str]]:
+        return sat_utils.from_dnf(
+            (comb(self.value1, i), comb(self.value2, j))
+            for i, j in product(houses, houses)
+            if i > j
+        )
 
 
-def one_between(value1: Literal, value2: Literal):
+@dataclass
+class one_between(Clue):
     """The values have one other value in between: cat1 & x2 & dog3 | dog2 & x3 & cat1 ..."""
 
-    return sat_utils.from_dnf(
-        [(comb(value1, i), comb(value2, j)) for i, j in zip(houses, houses[2:])]
-        + [(comb(value2, i), comb(value1, j)) for i, j in zip(houses, houses[2:])]
-    )
+    value1: Literal
+    value2: Literal
+
+    def as_cnf(self) -> List[Tuple[str]]:
+        return sat_utils.from_dnf(
+            [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(houses, houses[2:])]
+            + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(houses, houses[2:])]
+        )
 
 
-def two_between(value1: Literal, value2: Literal):
+@dataclass
+class two_between(Clue):
     """The values have two other values in between: cat1 & x2 & y3 & dog4 | ..."""
 
-    return sat_utils.from_dnf(
-        [(comb(value1, i), comb(value2, j)) for i, j in zip(houses, houses[3:])]
-        + [(comb(value2, i), comb(value1, j)) for i, j in zip(houses, houses[3:])]
-    )
+    value1: Literal
+    value2: Literal
+
+    def as_cnf(self) -> List[Tuple[str]]:
+        return sat_utils.from_dnf(
+            [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(houses, houses[3:])]
+            + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(houses, houses[3:])]
+        )
 
 
 """
@@ -168,39 +256,42 @@ class Cigar(Literal):
 
 
 enum_classes: List[Type[Literal]] = [Color, Nationality, Animal, Drink, Cigar]
-literals: List[Literal] = [el.value for group in enum_classes for el in group]
+literals: List[Literal] = [el for group in enum_classes for el in group]
 
 # set up the puzzle with constraints and clues
-cnf: CNF = []
+puzzle = Puzzle()
 
 # # each house gets exactly one value from each attribute group
 for house in houses:
     for enum_type in enum_classes:
-        cnf += sat_utils.one_of(comb(value, house) for value in enum_type)
+        puzzle.add_constraint(sat_utils.one_of(comb(value, house) for value in enum_type))
 
 # each value gets assigned to exactly one house
 for literal in literals:
-    cnf += sat_utils.one_of(comb(literal, house) for house in houses)
+    puzzle.add_constraint(sat_utils.one_of(comb(literal, house) for house in houses))
 
-cnf += same_house(Nationality.brit, Color.red)
-cnf += same_house(Nationality.swede, Animal.dog)
-cnf += same_house(Nationality.dane, Drink.tea)
-cnf += consecutive(Color.green, Color.white)
-cnf += same_house(Color.green, Drink.coffee)
-cnf += same_house(Cigar.pall_mall, Animal.bird)
-cnf += same_house(Color.yellow, Cigar.dunhill)
-cnf += found_at(Drink.milk, 3)
-cnf += found_at(Nationality.norwegian, 1)
-cnf += beside(Cigar.blends, Animal.cat)
-cnf += beside(Animal.horse, Cigar.dunhill)
-cnf += same_house(Cigar.blue_master, Drink.root_beer)
-cnf += same_house(Nationality.german, Cigar.prince)
-cnf += beside(Nationality.norwegian, Color.blue)
-cnf += beside(Cigar.blends, Drink.water)
+puzzle = (
+    puzzle.add_clue(same_house(Nationality.brit, Color.red))
+    .add_clue(same_house(Nationality.swede, Animal.dog))
+    .add_clue(same_house(Nationality.dane, Drink.tea))
+    .add_clue(consecutive(Color.green, Color.white))
+    .add_clue(same_house(Color.green, Drink.coffee))
+    .add_clue(same_house(Cigar.pall_mall, Animal.bird))
+    .add_clue(same_house(Color.yellow, Cigar.dunhill))
+    .add_clue(found_at(Drink.milk, 3))
+    .add_clue(found_at(Nationality.norwegian, 1))
+    .add_clue(beside(Cigar.blends, Animal.cat))
+    .add_clue(beside(Animal.horse, Cigar.dunhill))
+    .add_clue(same_house(Cigar.blue_master, Drink.root_beer))
+    .add_clue(same_house(Nationality.german, Cigar.prince))
+    .add_clue(beside(Nationality.norwegian, Color.blue))
+    .add_clue(beside(Cigar.blends, Drink.water))
+)
 
-sol = sat_utils.solve_one(cnf)
-print(sol)
-
+sols = sat_utils.solve_all(puzzle.as_cnf())
+print(f"{len(sols)} solutions found")
+for sol in sols:
+    print(sol)
 
 """
 Quag's version
@@ -258,58 +349,58 @@ enum_classes: List[Type[Literal]] = [Mothers, Children, Flowers, Foods]
 literals = [el for group in enum_classes for el in group]
 
 # set up the puzzle with constraints and clues
-cnf: CNF = []
+puzzle = Puzzle()
 
 # each house gets exactly one value from each attribute group
 for house in houses:
     for group in enum_classes:
-        cnf += sat_utils.one_of(comb(value, house) for value in group)
+        puzzle.add_constraint(sat_utils.one_of(comb(value, house) for value in group))
 
 # each value gets assigned to exactly one house
 for value in literals:
-    cnf += sat_utils.one_of(comb(value, house) for house in houses)
+    puzzle.add_constraint(sat_utils.one_of(comb(value, house) for house in houses))
 
 
 # 1. There is one chair between the place setting with Lilies and the one eating Grilled Cheese.
-cnf += one_between(Flowers.lilies, Foods.grilled_cheese)
+puzzle = puzzle.add_clue(one_between(Flowers.lilies, Foods.grilled_cheese))
 
 # 2. There is one chair between Timothy's Mom and the one eating Stew.
-cnf += one_between(Children.timothy, Foods.stew)
+puzzle = puzzle.add_clue(one_between(Children.timothy, Foods.stew))
 
 # 3. There are two chairs between the Bella's Mom and Penny's seat on the right.
-cnf += two_between(Children.bella, Mothers.penny)
-cnf += right_of(Mothers.penny, Children.bella)
+puzzle = puzzle.add_clue(two_between(Children.bella, Mothers.penny))
+puzzle = puzzle.add_clue(right_of(Mothers.penny, Children.bella))
 
 # 4. There is one chair between the place setting with Roses and the one eating Spaghetti on the left.
-cnf += one_between(Flowers.roses, Foods.spaghetti)
-cnf += left_of(Foods.spaghetti, Flowers.roses)
+puzzle = puzzle.add_clue(one_between(Flowers.roses, Foods.spaghetti))
+puzzle = puzzle.add_clue(left_of(Foods.spaghetti, Flowers.roses))
 
 # 5. There are two chairs between the place setting with Carnations and Samantha's Mom.
-cnf += two_between(Flowers.carnations, Children.samantha)
+puzzle = puzzle.add_clue(two_between(Flowers.carnations, Children.samantha))
 
 # 6. There is one chair between Meredith's Mom and Timothy's Mom on the left.
-cnf += one_between(Children.meredith, Children.timothy)
-cnf += left_of(Children.timothy, Children.meredith)
+puzzle = puzzle.add_clue(one_between(Children.meredith, Children.timothy))
+puzzle = puzzle.add_clue(left_of(Children.timothy, Children.meredith))
 
 # 7. Aniya's place setting has a lovely Carnation bouquet.
-cnf += same_house(Mothers.aniya, Flowers.carnations)
+puzzle = puzzle.add_clue(same_house(Mothers.aniya, Flowers.carnations))
 
 # 8. There are two chairs between the one eating Grilled Cheese and the one eating Spaghetti.
-cnf += two_between(Foods.grilled_cheese, Foods.spaghetti)
+puzzle = puzzle.add_clue(two_between(Foods.grilled_cheese, Foods.spaghetti))
 
 # 9. The person in the first chair (left-most) is eating Pizza.
-cnf += found_at(Foods.pizza, 1)
+puzzle = puzzle.add_clue(found_at(Foods.pizza, 1))
 
 # 10. The Tulips were placed at one of the place settings somewhere to the left of Penny's chair.
-cnf += left_of(Flowers.tulips, Mothers.penny)
+puzzle = puzzle.add_clue(left_of(Flowers.tulips, Mothers.penny))
 
 # 11. There are two chairs between the one eating Spaghetti and Kailyn's seat.
-cnf += two_between(Foods.spaghetti, Mothers.kailyn)
+puzzle = puzzle.add_clue(two_between(Foods.spaghetti, Mothers.kailyn))
 
 # 12. There is one chair between the one eating Pizza and Holly's chair on the right.
-cnf += one_between(Foods.pizza, Mothers.holly)
-cnf += right_of(Mothers.holly, Foods.pizza)
+puzzle = puzzle.add_clue(one_between(Foods.pizza, Mothers.holly))
+puzzle = puzzle.add_clue(right_of(Mothers.holly, Foods.pizza))
 
-all_solutions = sat_utils.solve_all(cnf)
+all_solutions = sat_utils.solve_all(puzzle.as_cnf())
 print(f"{len(all_solutions)} solutions found")
 print(all_solutions)
