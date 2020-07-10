@@ -35,19 +35,35 @@ def comb(value: Literal, house: int) -> str:
     return f"{value} {house}"
 
 
-@dataclass
 class Puzzle:
-    """Collection of clues for the zebra puzzle"""
+    """
+    A Puzzle is defined as a collection of constraints and clues.
 
-    clues: List[Clue] = field(default_factory=list)
-    constraints: List[Tuple[str]] = field(default_factory=list)
+    Clues are subclassess of Clue. They represent information about the puzzle that can be used by
+    a human to solve it, like "the man who drinks tea owns a cat." Clues aren't converted to CNF
+    until the `as_cnf` method is called.
 
-    def add_clue(self, clue: Clue) -> Puzzle:
-        self.clues.append(clue)
-        return self
+    Constraints are structural properties of the puzzle, given to us in CNF to start. They're
+    things like "each house gets exactly one type of flower" and "each flower must be assigned
+    to one house."
+
+    We can add constraints and clues with `add_constraint` and `add_clue`. Both of these return
+    the instance, so they can be chained together for readability.
+
+    Since in constraint satisfaction land, clues and constraints are the same thing (they're just
+    logical clauses), we lump them all together at solve time.
+    """
+
+    def __init__(self) -> None:
+        self.clues: List[Clue] = []
+        self.constraints: List[Tuple[str]] = []
 
     def add_constraint(self, constraints: List[Tuple[str]]) -> Puzzle:
         self.constraints.extend(constraints)
+        return self
+
+    def add_clue(self, clue: Clue) -> Puzzle:
+        self.clues.append(clue)
         return self
 
     def as_cnf(self) -> List[Tuple[str]]:
