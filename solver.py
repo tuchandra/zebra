@@ -105,9 +105,10 @@ class same_house(Clue):
 
     value1: Literal
     value2: Literal
+    houses: List[int] = field(default_factory=lambda: [1, 2, 3, 4, 5])
 
     def as_cnf(self) -> List[Tuple[str]]:
-        return sat_utils.from_dnf((comb(self.value1, i), comb(self.value2, i)) for i in houses)
+        return sat_utils.from_dnf((comb(self.value1, i), comb(self.value2, i)) for i in self.houses)
 
 
 @dataclass
@@ -116,10 +117,11 @@ class consecutive(Clue):
 
     value1: Literal
     value2: Literal
+    houses: List[int] = field(default_factory=lambda: [1, 2, 3, 4, 5])
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf(
-            (comb(self.value1, i), comb(self.value2, j)) for i, j in zip(houses, houses[1:])
+            (comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[1:])
         )
 
 
@@ -129,11 +131,12 @@ class beside(Clue):
 
     value1: Literal
     value2: Literal
+    houses: List[int] = field(default_factory=lambda: [1, 2, 3, 4, 5])
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf(
-            [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(houses, houses[1:])]
-            + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(houses, houses[1:])]
+            [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[1:])]
+            + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(self.houses, self.houses[1:])]
         )
 
 
@@ -143,11 +146,12 @@ class left_of(Clue):
 
     value1: Literal
     value2: Literal
+    houses: List[int] = field(default_factory=lambda: [1, 2, 3, 4, 5])
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf(
             (comb(self.value1, i), comb(self.value2, j))
-            for i, j in product(houses, houses)
+            for i, j in product(self.houses, self.houses)
             if i < j
         )
 
@@ -158,11 +162,12 @@ class right_of(Clue):
 
     value1: Literal
     value2: Literal
+    houses: List[int] = field(default_factory=lambda: [1, 2, 3, 4, 5])
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf(
             (comb(self.value1, i), comb(self.value2, j))
-            for i, j in product(houses, houses)
+            for i, j in product(self.houses, self.houses)
             if i > j
         )
 
