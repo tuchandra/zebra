@@ -458,45 +458,36 @@ for literal in literals:
     )
 
 
-# 1. There is one chair between the place setting with Lilies and the one eating Grilled Cheese.
-puzzle = puzzle.add_clue(one_between(Flowers.lilies, Foods.grilled_cheese))
-
-# 2. There is one chair between Timothy's Mom and the one eating Stew.
-puzzle = puzzle.add_clue(one_between(Children.timothy, Foods.stew))
-
-# 3. There are two chairs between the Bella's Mom and Penny's seat on the right.
-puzzle = puzzle.add_clue(two_between(Children.bella, Mothers.penny))
-puzzle = puzzle.add_clue(right_of(Mothers.penny, Children.bella))
-
-# 4. There is one chair between the place setting with Roses and the one eating Spaghetti on the left.
-puzzle = puzzle.add_clue(one_between(Flowers.roses, Foods.spaghetti))
-puzzle = puzzle.add_clue(left_of(Foods.spaghetti, Flowers.roses))
-
-# 5. There are two chairs between the place setting with Carnations and Samantha's Mom.
-puzzle = puzzle.add_clue(two_between(Flowers.carnations, Children.samantha))
-
-# 6. There is one chair between Meredith's Mom and Timothy's Mom on the left.
-puzzle = puzzle.add_clue(one_between(Children.meredith, Children.timothy))
-puzzle = puzzle.add_clue(left_of(Children.timothy, Children.meredith))
-
-# 7. Aniya's place setting has a lovely Carnation bouquet.
-puzzle = puzzle.add_clue(same_house(Mothers.aniya, Flowers.carnations))
-
-# 8. There are two chairs between the one eating Grilled Cheese and the one eating Spaghetti.
-puzzle = puzzle.add_clue(two_between(Foods.grilled_cheese, Foods.spaghetti))
-
-# 9. The person in the first chair (left-most) is eating Pizza.
-puzzle = puzzle.add_clue(found_at(Foods.pizza, 1))
-
-# 10. The Tulips were placed at one of the place settings somewhere to the left of Penny's chair.
-puzzle = puzzle.add_clue(left_of(Flowers.tulips, Mothers.penny))
-
-# 11. There are two chairs between the one eating Spaghetti and Kailyn's seat.
-puzzle = puzzle.add_clue(two_between(Foods.spaghetti, Mothers.kailyn))
-
-# 12. There is one chair between the one eating Pizza and Holly's chair on the right.
-puzzle = puzzle.add_clue(one_between(Foods.pizza, Mothers.holly))
-puzzle = puzzle.add_clue(right_of(Mothers.holly, Foods.pizza))
+puzzle = (
+    # 1. There is one chair between the place setting with Lilies and the one eating Grilled Cheese.
+    puzzle.add_clue(one_between(Flowers.lilies, Foods.grilled_cheese))
+    # 2. There is one chair between Timothy's Mom and the one eating Stew.
+    .add_clue(one_between(Children.timothy, Foods.stew))
+    # 3. There are two chairs between the Bella's Mom and Penny's seat on the right.
+    .add_clue(two_between(Children.bella, Mothers.penny))
+    .add_clue(right_of(Mothers.penny, Children.bella))
+    # 4. There is one chair between the place setting with Roses and the one eating Spaghetti on the left.
+    .add_clue(one_between(Flowers.roses, Foods.spaghetti))
+    .add_clue(left_of(Foods.spaghetti, Flowers.roses))
+    # 5. There are two chairs between the place setting with Carnations and Samantha's Mom.
+    .add_clue(two_between(Flowers.carnations, Children.samantha))
+    # 6. There is one chair between Meredith's Mom and Timothy's Mom on the left.
+    .add_clue(one_between(Children.meredith, Children.timothy))
+    .add_clue(left_of(Children.timothy, Children.meredith))
+    # 7. Aniya's place setting has a lovely Carnation bouquet.
+    .add_clue(same_house(Mothers.aniya, Flowers.carnations))
+    # 8. There are two chairs between the one eating Grilled Cheese and the one eating Spaghetti.
+    .add_clue(two_between(Foods.grilled_cheese, Foods.spaghetti))
+    # 9. The person in the first chair (left-most) is eating Pizza.
+    .add_clue(found_at(Foods.pizza, 1))
+    # 10. The Tulips were placed at one of the place settings somewhere to the left of Penny's chair.
+    .add_clue(left_of(Flowers.tulips, Mothers.penny))
+    # 11. There are two chairs between the one eating Spaghetti and Kailyn's seat.
+    .add_clue(two_between(Foods.spaghetti, Mothers.kailyn))
+    # 12. There is one chair between the one eating Pizza and Holly's chair on the right.
+    .add_clue(one_between(Foods.pizza, Mothers.holly))
+    .add_clue(right_of(Mothers.holly, Foods.pizza))
+)
 
 all_solutions = sat_utils.solve_all(puzzle.as_cnf())
 print(f"{len(all_solutions)} solutions found")
