@@ -5,39 +5,35 @@ Solve the Einstein puzzle using Raymond Hettinger's approach.
 
 from __future__ import annotations
 
-from enum import Enum, auto
-import functools
+import random
+from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
+from enum import Enum
+from functools import wraps
 from itertools import product
-from typing import Iterator, List, Tuple, Type, Union, Literal
-from collections.abc import MutableSequence
+from typing import Iterable, List, Tuple, Type
 
 import sat_utils
-from sat_utils import CNF, Element
-
-Element = str
-from abc import ABC, abstractmethod
-from typing import Iterable
-import random
 
 
-from dataclasses import dataclass, field
-
-
-class Literal(Enum):
-    """Enum subclass to have the member's value be equal to its name."""
-
-    @staticmethod
-    def _generate_next_value_(name, start, count, last_values) -> Element:
-        return name
+from literals import (
+    Literal,
+    Color,
+    Nationality,
+    Animal,
+    Drink,
+    Cigar,
+    Children,
+    Mothers,
+    Foods,
+    Flowers,
+)
 
 
 def comb(value: Literal, house: int) -> str:
     """Format how a value is shown at a given house"""
 
     return f"{value} {house}"
-
-
-from functools import wraps
 
 
 def capitalize_first(repr_func):
@@ -74,7 +70,8 @@ class Puzzle:
     logical clauses), we lump them all together at solve time.
     """
 
-    def __init__(self, n_houses: int = 5) -> None:
+    def __init__(self, elements: List[Type[Literal]], n_houses: int = 5) -> None:
+        self.element_classes = elements
         self.houses = range(1, n_houses + 1)
         self.clues: List[Clue] = []
         self.constraints: List[Tuple[str]] = []
@@ -100,7 +97,11 @@ class Puzzle:
 
     def __repr__(self) -> str:
 
-        s = f"This puzzle has {len(self.houses)} houses:\n"
+        s = f"This puzzle has {len(self.houses)} houses with different people in them:\n"
+        for puzzle_element in self.element_classes:
+            s += f" - {puzzle_element.description()} \n"
+
+        s += "\n"
         for i, clue in enumerate(self.clues):
             s += f"{i + 1}. {clue}\n"
 
@@ -351,8 +352,7 @@ Entities:
  * In each house lives a person of unique nationality: British, Danish, German, Norwegian and Swedish.
  * Each person drinks a unique beverage: Beer, coffee, milk, tea and water.
  * Each person smokes a unique cigar brand: Blue Master, Dunhill, Pall Mall, Prince and blend.
- * Each person keeps a unique pet: Cats
- , birds, dogs, fish and horses.
+ * Each person keeps a unique pet: Cats, birds, dogs, fish and horses.
 
 Constraints:
  * The Brit lives in a red house.
@@ -376,51 +376,11 @@ they smoke, and what pet they own.
 """
 
 
-class Color(Literal):
-    yellow = "the person who loves yellow"
-    red = "the person whose favorite color is red"
-    white = "the person who loves white"
-    green = "the person whose favorite color is green"
-    blue = "the person who loves blue"
-
-
-class Nationality(Literal):
-    dane = "the Dane"
-    brit = "the British person"
-    swede = "the Swedish person"
-    norwegian = "the Norwegian"
-    german = "the German"
-
-
-class Animal(Literal):
-    horse = "the person who keeps horses"
-    cat = "the cat lover"
-    bird = "the bird keeper"
-    fish = "the fish enthusiast"
-    dog = "the dog owner"
-
-
-class Drink(Literal):
-    water = "the one who only drinks water"
-    tea = "the tea drinker"
-    milk = "the person who likes milk"
-    coffee = "the coffee drinker"
-    root_beer = "the root beer lover"
-
-
-class Cigar(Literal):
-    pall_mall = "the person partial to Pall Mall"
-    prince = "the Prince smoker"
-    blue_master = "the person who smokes Blue Master"
-    dunhill = "the Dunhill smoker"
-    blends = "the person who smokes many different blends"
-
-
 enum_classes: List[Type[Literal]] = [Color, Nationality, Animal, Drink, Cigar]
 literals: List[Literal] = [el for group in enum_classes for el in group]
 
 # set up the puzzle with constraints and clues
-puzzle = Puzzle()
+puzzle = Puzzle(elements=[Color, Nationality, Drink, Cigar, Animal])
 
 # # each house gets exactly one value from each attribute group
 for house in puzzle.houses:
@@ -430,6 +390,9 @@ for house in puzzle.houses:
 # each value gets assigned to exactly one house
 for literal in literals:
     puzzle.add_constraint(sat_utils.one_of(comb(literal, house) for house in puzzle.houses))
+
+print(Color.description())
+print(Nationality)
 
 puzzle = (
     puzzle.add_clue(same_house(Nationality.brit, Color.red))
@@ -474,43 +437,11 @@ in between them that neither is sitting in).
 """
 
 
-class Mothers(Literal):
-    aniya = "Aniya"
-    holly = "Holly"
-    janelle = "Janelle"
-    kailyn = "Kailyn"
-    penny = "Penny"
-
-
-class Children(Literal):
-    bella = "Bella's mother"
-    fred = "the mother Fred"
-    meredith = "Meredith's mom"
-    samantha = "Samantha's mom"
-    timothy = "the mother of Timothy"
-
-
-class Flowers(Literal):
-    carnations = "the carnations"
-    daffodils = "a bouquet of daffodils"
-    lilies = "some lilies"
-    roses = "the rose bouquet"
-    tulips = "the tulips"
-
-
-class Foods(Literal):
-    grilled_cheese = "the person eating grilled cheese"
-    pizza = "the pizza lover"
-    spaghetti = "the spaghetti eater"
-    stew = "the one having stew"
-    stir_fry = "the person with stir fry"
-
-
 enum_classes: List[Type[Literal]] = [Mothers, Children, Flowers, Foods]
 literals = [el for group in enum_classes for el in group]
 
 # set up the puzzle with constraints and clues
-puzzle = Puzzle()
+puzzle = Puzzle(elements=[Mothers, Children, Flowers, Foods])
 
 # each house gets exactly one value from each attribute group
 for house in puzzle.houses:
