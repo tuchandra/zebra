@@ -6,6 +6,7 @@ Solve the Einstein puzzle using Raymond Hettinger's approach.
 from __future__ import annotations
 
 from enum import Enum, auto
+import functools
 from itertools import product
 from typing import Iterator, List, Tuple, Type, Union, Literal
 from collections.abc import MutableSequence
@@ -16,6 +17,7 @@ from sat_utils import CNF, Element
 Element = str
 from abc import ABC, abstractmethod
 from typing import Iterable
+import random
 
 
 from dataclasses import dataclass, field
@@ -33,6 +35,24 @@ def comb(value: Literal, house: int) -> str:
     """Format how a value is shown at a given house"""
 
     return f"{value} {house}"
+
+
+from functools import wraps
+
+
+def capitalize_first(repr_func):
+    """
+    Decorator for a __repr__ function that capitalizes the first letter without chagning the rest
+
+    (in contrast to str.capitalize(), which capitalizes the first letter and makes the rest lower)
+    """
+
+    @wraps(repr_func)
+    def wrapper(*args, **kwargs):
+        output = repr_func(*args, **kwargs)
+        return output[0].upper() + output[1:]
+
+    return wrapper
 
 
 class Puzzle:
@@ -55,7 +75,7 @@ class Puzzle:
     """
 
     def __init__(self, n_houses: int = 5) -> None:
-        self.n_houses = n_houses
+        self.houses = range(1, n_houses + 1)
         self.clues: List[Clue] = []
         self.constraints: List[Tuple[str]] = []
 
@@ -78,14 +98,24 @@ class Puzzle:
         cnf.extend(self.constraints)
         return cnf
 
+    def __repr__(self) -> str:
+
+        s = f"This puzzle has {len(self.houses)} houses:\n"
+        for i, clue in enumerate(self.clues):
+            s += f"{i + 1}. {clue}\n"
+
+        return s
+
 
 class Clue(ABC):
     """Base class for the types of clues that we allow."""
 
     @abstractmethod
     def as_cnf(self) -> Iterable[Tuple[str]]:
-        """Express clue as a CNF (and-of-ors)."""
+        ...
 
+    @abstractmethod
+    def __repr__(self) -> str:
         ...
 
 
@@ -105,6 +135,11 @@ class found_at(Clue):
     def as_cnf(self) -> List[Tuple[str]]:
         return [(comb(self.value, self.house),)]
 
+    @capitalize_first
+    def __repr__(self) -> str:
+        houses = [None, "first", "second", "third", "fourth", "fifth", "sixth"]
+        return f"{self.value.value} is in the {houses[self.house]} house."
+
 
 @dataclass
 class same_house(Clue):
@@ -122,6 +157,14 @@ class same_house(Clue):
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf((comb(self.value1, i), comb(self.value2, i)) for i in self.houses)
+
+    def __repr__(self) -> str:
+        index = random.randint(0, 2)
+        return [
+            f"The same house has {self.value1.value} and {self.value2.value}.",
+            f"The {self.value1.value} and {self.value2.value} are in the same house.",
+            f"A single house contains both {self.value1.value} and {self.value2.value}.",
+        ][index]
 
 
 @dataclass
@@ -145,6 +188,10 @@ class consecutive(Clue):
             (comb(self.value1, i), comb(self.value2, j))
             for i, j in zip(self.houses, self.houses[1:])
         )
+
+    @capitalize_first
+    def __repr__(self) -> str:
+        return f"{self.value1.value} is directly left of {self.value2.value}."
 
 
 @dataclass
@@ -173,6 +220,10 @@ class beside(Clue):
             ]
         )
 
+    @capitalize_first
+    def __repr__(self) -> str:
+        return f"{self.value1.value} and {self.value2.value} are next to each other."
+
 
 @dataclass
 class left_of(Clue):
@@ -196,6 +247,10 @@ class left_of(Clue):
             if i < j
         )
 
+    @capitalize_first
+    def __repr__(self) -> str:
+        return f"{self.value1.value} is somewhere to the left of {self.value2.value}."
+
 
 @dataclass
 class right_of(Clue):
@@ -218,6 +273,10 @@ class right_of(Clue):
             for i, j in product(self.houses, self.houses)
             if i > j
         )
+
+    @capitalize_first
+    def __repr__(self) -> str:
+        return f"{self.value1.value} is somewhere to the right of {self.value2.value}."
 
 
 @dataclass
@@ -248,6 +307,9 @@ class one_between(Clue):
             ]
         )
 
+    def __repr__(self) -> str:
+        return f"There is one house between the {self.value1.value} and the {self.value2.value}."
+
 
 @dataclass
 class two_between(Clue):
@@ -275,6 +337,9 @@ class two_between(Clue):
             ]
         )
 
+    def __repr__(self) -> str:
+        return f"There are two houses between the {self.value1.value} and the {self.value2.value}."
+
 
 """
 Original version
@@ -286,7 +351,8 @@ Entities:
  * In each house lives a person of unique nationality: British, Danish, German, Norwegian and Swedish.
  * Each person drinks a unique beverage: Beer, coffee, milk, tea and water.
  * Each person smokes a unique cigar brand: Blue Master, Dunhill, Pall Mall, Prince and blend.
- * Each person keeps a unique pet: Cats, birds, dogs, fish and horses.
+ * Each person keeps a unique pet: Cats
+ , birds, dogs, fish and horses.
 
 Constraints:
  * The Brit lives in a red house.
@@ -311,43 +377,43 @@ they smoke, and what pet they own.
 
 
 class Color(Literal):
-    yellow = auto()
-    red = auto()
-    white = auto()
-    green = auto()
-    blue = auto()
+    yellow = "the person who loves yellow"
+    red = "the person whose favorite color is red"
+    white = "the person who loves white"
+    green = "the person whose favorite color is green"
+    blue = "the person who loves blue"
 
 
 class Nationality(Literal):
-    dane = auto()
-    brit = auto()
-    swede = auto()
-    norwegian = auto()
-    german = auto()
+    dane = "the Dane"
+    brit = "the British person"
+    swede = "the Swedish person"
+    norwegian = "the Norwegian"
+    german = "the German"
 
 
 class Animal(Literal):
-    horse = auto()
-    cat = auto()
-    bird = auto()
-    fish = auto()
-    dog = auto()
+    horse = "the person who keeps horses"
+    cat = "the cat lover"
+    bird = "the bird keeper"
+    fish = "the fish enthusiast"
+    dog = "the dog owner"
 
 
 class Drink(Literal):
-    water = auto()
-    tea = auto()
-    milk = auto()
-    coffee = auto()
-    root_beer = auto()
+    water = "the one who only drinks water"
+    tea = "the tea drinker"
+    milk = "the person who likes milk"
+    coffee = "the coffee drinker"
+    root_beer = "the root beer lover"
 
 
 class Cigar(Literal):
-    pall_mall = auto()
-    prince = auto()
-    blue_master = auto()
-    dunhill = auto()
-    blends = auto()
+    pall_mall = "the person partial to Pall Mall"
+    prince = "the Prince smoker"
+    blue_master = "the person who smokes Blue Master"
+    dunhill = "the Dunhill smoker"
+    blends = "the person who smokes many different blends"
 
 
 enum_classes: List[Type[Literal]] = [Color, Nationality, Animal, Drink, Cigar]
@@ -357,15 +423,13 @@ literals: List[Literal] = [el for group in enum_classes for el in group]
 puzzle = Puzzle()
 
 # # each house gets exactly one value from each attribute group
-for house in range(puzzle.n_houses):
+for house in puzzle.houses:
     for enum_type in enum_classes:
         puzzle.add_constraint(sat_utils.one_of(comb(value, house) for value in enum_type))
 
 # each value gets assigned to exactly one house
 for literal in literals:
-    puzzle.add_constraint(
-        sat_utils.one_of(comb(literal, house) for house in range(puzzle.n_houses))
-    )
+    puzzle.add_constraint(sat_utils.one_of(comb(literal, house) for house in puzzle.houses))
 
 puzzle = (
     puzzle.add_clue(same_house(Nationality.brit, Color.red))
@@ -384,6 +448,8 @@ puzzle = (
     .add_clue(beside(Nationality.norwegian, Color.blue))
     .add_clue(beside(Cigar.blends, Drink.water))
 )
+
+print(puzzle)
 
 sols = sat_utils.solve_all(puzzle.as_cnf())
 print(f"{len(sols)} solutions found")
@@ -409,35 +475,35 @@ in between them that neither is sitting in).
 
 
 class Mothers(Literal):
-    aniya = auto()
-    holly = auto()
-    janelle = auto()
-    kailyn = auto()
-    penny = auto()
+    aniya = "Aniya"
+    holly = "Holly"
+    janelle = "Janelle"
+    kailyn = "Kailyn"
+    penny = "Penny"
 
 
 class Children(Literal):
-    bella = auto()
-    fred = auto()
-    meredith = auto()
-    samantha = auto()
-    timothy = auto()
+    bella = "Bella's mother"
+    fred = "the mother Fred"
+    meredith = "Meredith's mom"
+    samantha = "Samantha's mom"
+    timothy = "the mother of Timothy"
 
 
 class Flowers(Literal):
-    carnations = auto()
-    daffodils = auto()
-    lilies = auto()
-    roses = auto()
-    tulips = auto()
+    carnations = "the carnations"
+    daffodils = "a bouquet of daffodils"
+    lilies = "some lilies"
+    roses = "the rose bouquet"
+    tulips = "the tulips"
 
 
 class Foods(Literal):
-    grilled_cheese = auto()
-    pizza = auto()
-    spaghetti = auto()
-    stew = auto()
-    stir_fry = auto()
+    grilled_cheese = "the person eating grilled cheese"
+    pizza = "the pizza lover"
+    spaghetti = "the spaghetti eater"
+    stew = "the one having stew"
+    stir_fry = "the person with stir fry"
 
 
 enum_classes: List[Type[Literal]] = [Mothers, Children, Flowers, Foods]
@@ -447,15 +513,13 @@ literals = [el for group in enum_classes for el in group]
 puzzle = Puzzle()
 
 # each house gets exactly one value from each attribute group
-for house in range(puzzle.n_houses):
+for house in puzzle.houses:
     for group in enum_classes:
         puzzle.add_constraint(sat_utils.one_of(comb(value, house) for value in group))
 
 # each value gets assigned to exactly one house
 for literal in literals:
-    puzzle.add_constraint(
-        sat_utils.one_of(comb(literal, house) for house in range(puzzle.n_houses))
-    )
+    puzzle.add_constraint(sat_utils.one_of(comb(literal, house) for house in puzzle.houses))
 
 
 puzzle = (
@@ -489,6 +553,7 @@ puzzle = (
     .add_clue(right_of(Mothers.holly, Foods.pizza))
 )
 
+print(puzzle)
 all_solutions = sat_utils.solve_all(puzzle.as_cnf())
 print(f"{len(all_solutions)} solutions found")
 print(all_solutions)
