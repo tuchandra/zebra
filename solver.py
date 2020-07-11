@@ -54,7 +54,8 @@ class Puzzle:
     logical clauses), we lump them all together at solve time.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, n_houses: int = 5) -> None:
+        self.n_houses = n_houses
         self.clues: List[Clue] = []
         self.constraints: List[Tuple[str]] = []
 
@@ -90,7 +91,13 @@ class Clue(ABC):
 
 @dataclass
 class found_at(Clue):
-    """Value known to be at a specific house"""
+    """
+    A literal is known to be at a specific house
+    
+    Examples:
+     - the tea drinker lives in the middle house
+     - the fourth house is red
+    """
 
     value: Literal
     house: int
@@ -101,7 +108,13 @@ class found_at(Clue):
 
 @dataclass
 class same_house(Clue):
-    """Value known to be at a specific house"""
+    """
+    Two values are known to be at the same house
+    
+    Examples:
+     - the musician drinks tea
+     - the red house contains a cat
+    """
 
     value1: Literal
     value2: Literal
@@ -113,7 +126,15 @@ class same_house(Clue):
 
 @dataclass
 class consecutive(Clue):
-    """The values are in consecutive houses: green1 & white2 | green2 & white3 ..."""
+    """
+    The first value is directly to the left of the second value
+    
+    Examples:
+     - the green house is directly to the left of the white house
+       (green in 1, white in 2 OR green in 2, white in 3 OR etc.)
+     - the house with the kittens is directly to the right of the tea drinker's home
+       (kittens in 2, tea in 1 OR kittens in 3, tea in 2 OR etc.)
+    """
 
     value1: Literal
     value2: Literal
@@ -121,13 +142,20 @@ class consecutive(Clue):
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf(
-            (comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[1:])
+            (comb(self.value1, i), comb(self.value2, j))
+            for i, j in zip(self.houses, self.houses[1:])
         )
 
 
 @dataclass
 class beside(Clue):
-    """The values occur side-by-side: blends1 & cat2 | blends2 & cat1 ..."""
+    """
+    The two values occur side-by-side (either left or right)
+    
+    Examples:
+     - the coffee drinker is (left or right) of the tea drinker
+     - the cat owner is (left or right) of the green house
+    """
 
     value1: Literal
     value2: Literal
@@ -135,14 +163,27 @@ class beside(Clue):
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf(
-            [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[1:])]
-            + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(self.houses, self.houses[1:])]
+            [
+                (comb(self.value1, i), comb(self.value2, j))
+                for i, j in zip(self.houses, self.houses[1:])
+            ]
+            + [
+                (comb(self.value2, i), comb(self.value1, j))
+                for i, j in zip(self.houses, self.houses[1:])
+            ]
         )
 
 
 @dataclass
 class left_of(Clue):
-    """The first value is somewhere to the left of the second value."""
+    """
+    The first value is somewhere to the left of the second value
+    
+    Examples:
+     - the tea drinker is in house 1 and the musician in 2, 3, 4, or 5;
+       OR the tea drinker in 2, and musician in 3, 4, or 5;
+       OR the tea drinker in 3, musician in 4, 5; OR tea 4, musician 5.
+    """
 
     value1: Literal
     value2: Literal
@@ -158,7 +199,14 @@ class left_of(Clue):
 
 @dataclass
 class right_of(Clue):
-    """The first value is somewhere to the right of the second value."""
+    """
+    The first value is somewhere to the right of the second value.
+    
+    Examples:
+     - the coffee drinker is in house 5 and the artist in 1, 2, 3, 4;
+       OR the coffee drinker in 4, and artist in 1, 2, or 3;
+       OR the coffee drinker in 3, artist in 1, 2; OR coffee 2, artist 1.
+    """
 
     value1: Literal
     value2: Literal
@@ -174,29 +222,57 @@ class right_of(Clue):
 
 @dataclass
 class one_between(Clue):
-    """The values have one other value in between: cat1 & x2 & dog3 | dog2 & x3 & cat1 ..."""
+    """
+    The values are separated by one house
+    
+    Examples (if 5 houses):
+     - the cat is in house 1 and tea drinker in house 3; OR cat 2, tea 4;
+       OR cat 4 house 5
+     - the green house is #1 and the musician in house 3; or green house 2, musician 4;
+       OR green house 3, musician 5.
+    """
 
     value1: Literal
     value2: Literal
+    houses: List[int] = field(default_factory=lambda: [1, 2, 3, 4, 5])
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf(
-            [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(houses, houses[2:])]
-            + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(houses, houses[2:])]
+            [
+                (comb(self.value1, i), comb(self.value2, j))
+                for i, j in zip(self.houses, self.houses[2:])
+            ]
+            + [
+                (comb(self.value2, i), comb(self.value1, j))
+                for i, j in zip(self.houses, self.houses[2:])
+            ]
         )
 
 
 @dataclass
 class two_between(Clue):
-    """The values have two other values in between: cat1 & x2 & y3 & dog4 | ..."""
+    """
+    The values are separated by two houses
+
+    Examples (if 5 houses):
+     - the cat is in house 1 and artist in house 4; or cat 2, artist 5
+     - the dog is in house 1 and red house is #4; or dog 2, red house 5
+    """
 
     value1: Literal
     value2: Literal
+    houses: List[int] = field(default_factory=lambda: [1, 2, 3, 4, 5])
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf(
-            [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(houses, houses[3:])]
-            + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(houses, houses[3:])]
+            [
+                (comb(self.value1, i), comb(self.value2, j))
+                for i, j in zip(self.houses, self.houses[3:])
+            ]
+            + [
+                (comb(self.value2, i), comb(self.value1, j))
+                for i, j in zip(self.houses, self.houses[3:])
+            ]
         )
 
 
@@ -232,8 +308,6 @@ Constraints:
 For each house, find out what color it is, who lives there, what they drinkk, what
 they smoke, and what pet they own.
 """
-
-houses = [1, 2, 3, 4, 5]
 
 
 class Color(Literal):
@@ -283,13 +357,15 @@ literals: List[Literal] = [el for group in enum_classes for el in group]
 puzzle = Puzzle()
 
 # # each house gets exactly one value from each attribute group
-for house in houses:
+for house in range(puzzle.n_houses):
     for enum_type in enum_classes:
         puzzle.add_constraint(sat_utils.one_of(comb(value, house) for value in enum_type))
 
 # each value gets assigned to exactly one house
 for literal in literals:
-    puzzle.add_constraint(sat_utils.one_of(comb(literal, house) for house in houses))
+    puzzle.add_constraint(
+        sat_utils.one_of(comb(literal, house) for house in range(puzzle.n_houses))
+    )
 
 puzzle = (
     puzzle.add_clue(same_house(Nationality.brit, Color.red))
@@ -331,8 +407,6 @@ be in the second chair while the other person is in the fourth (i.e. there is on
 in between them that neither is sitting in).
 """
 
-houses = [1, 2, 3, 4, 5]
-
 
 class Mothers(Literal):
     aniya = auto()
@@ -373,13 +447,15 @@ literals = [el for group in enum_classes for el in group]
 puzzle = Puzzle()
 
 # each house gets exactly one value from each attribute group
-for house in houses:
+for house in range(puzzle.n_houses):
     for group in enum_classes:
         puzzle.add_constraint(sat_utils.one_of(comb(value, house) for value in group))
 
 # each value gets assigned to exactly one house
-for value in literals:
-    puzzle.add_constraint(sat_utils.one_of(comb(value, house) for house in houses))
+for literal in literals:
+    puzzle.add_constraint(
+        sat_utils.one_of(comb(literal, house) for house in range(puzzle.n_houses))
+    )
 
 
 # 1. There is one chair between the place setting with Lilies and the one eating Grilled Cheese.
