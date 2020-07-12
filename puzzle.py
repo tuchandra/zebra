@@ -46,10 +46,10 @@ class Puzzle:
 
     Constraints are structural properties of the puzzle, given to us in CNF to start. They're
     things like "each house gets exactly one type of flower" and "each flower must be assigned
-    to one house."
+    to one house." These will be the same for every Puzzle, so we have a default `set_constraints`
+    method that takes care of them.
 
-    We can add constraints and clues with `add_constraint` and `add_clue`. Both of these return
-    the instance, so they can be chained together for readability.
+    We can add clues with `add_clue`. This returns the instance, so they can be chained together.
 
     Since in constraint satisfaction land, clues and constraints are the same thing (they're just
     logical clauses), we lump them all together at solve time.
@@ -94,7 +94,6 @@ class Puzzle:
         return cnf
 
     def __repr__(self) -> str:
-
         s = f"This puzzle has {len(self.houses)} houses with different people in them:\n"
         for puzzle_element in self.element_classes:
             s += f" - {puzzle_element.description()} \n"
