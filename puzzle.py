@@ -57,12 +57,25 @@ class Puzzle:
 
     def __init__(self, elements: List[Type[Literal]], n_houses: int = 5) -> None:
         self.element_classes = elements
+        self.literals: List[Literal] = [el for group in self.element_classes for el in group]
         self.houses = range(1, n_houses + 1)
         self.clues: List[Clue] = []
         self.constraints: List[Tuple[str]] = []
 
-    def add_constraint(self, constraints: List[Tuple[str]]) -> Puzzle:
+    def _add_constraint(self, constraints: List[Tuple[str]]) -> Puzzle:
         self.constraints.extend(constraints)
+        return self
+
+    def set_constraints(self) -> Puzzle:
+        # each house gets exactly one value from each set of literals
+        for house in self.houses:
+            for enum_type in self.element_classes:
+                self._add_constraint(sat_utils.one_of(comb(value, house) for value in enum_type))
+
+        # each value gets assigned to exactly one house
+        for literal in self.literals:
+            self._add_constraint(sat_utils.one_of(comb(literal, house) for house in self.houses))
+
         return self
 
     def add_clue(self, clue: Clue) -> Puzzle:
@@ -133,20 +146,9 @@ literals: List[Literal] = [el for group in enum_classes for el in group]
 # set up the puzzle with constraints and clues
 puzzle = Puzzle(elements=[Color, Nationality, Drink, Cigar, Animal])
 
-# # each house gets exactly one value from each attribute group
-for house in puzzle.houses:
-    for enum_type in enum_classes:
-        puzzle.add_constraint(sat_utils.one_of(comb(value, house) for value in enum_type))
-
-# each value gets assigned to exactly one house
-for literal in literals:
-    puzzle.add_constraint(sat_utils.one_of(comb(literal, house) for house in puzzle.houses))
-
-print(Color.description())
-print(Nationality)
-
 puzzle = (
-    puzzle.add_clue(same_house(Nationality.brit, Color.red))
+    puzzle.set_constraints()
+    .add_clue(same_house(Nationality.brit, Color.red))
     .add_clue(same_house(Nationality.swede, Animal.dog))
     .add_clue(same_house(Nationality.dane, Drink.tea))
     .add_clue(consecutive(Color.green, Color.white))
@@ -194,19 +196,10 @@ literals = [el for group in enum_classes for el in group]
 # set up the puzzle with constraints and clues
 puzzle = Puzzle(elements=[Mother, Children, Flower, Food])
 
-# each house gets exactly one value from each attribute group
-for house in puzzle.houses:
-    for group in enum_classes:
-        puzzle.add_constraint(sat_utils.one_of(comb(value, house) for value in group))
-
-# each value gets assigned to exactly one house
-for literal in literals:
-    puzzle.add_constraint(sat_utils.one_of(comb(literal, house) for house in puzzle.houses))
-
-
 puzzle = (
+    puzzle.set_constraints()
     # 1. There is one chair between the place setting with Lilies and the one eating Grilled Cheese.
-    puzzle.add_clue(one_between(Flower.lilies, Food.grilled_cheese))
+    .add_clue(one_between(Flower.lilies, Food.grilled_cheese))
     # 2. There is one chair between Timothy's Mom and the one eating Stew.
     .add_clue(one_between(Children.timothy, Food.stew))
     # 3. There are two chairs between the Bella's Mom and Penny's seat on the right.
