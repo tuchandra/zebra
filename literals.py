@@ -90,7 +90,7 @@ class Cigar(Literal):
     blends = "the person who smokes many different blends"
 
 
-class Mothers(Literal):
+class Mother(Literal):
     @classmethod
     def description(cls) -> str:
         return f"The mothers' names are Aniya, Holly, Janelle, Kaillyn, Penny."
@@ -116,7 +116,7 @@ class Children(Literal):
     timothy = "the mother of Timothy"
 
 
-class Flowers(Literal):
+class Flower(Literal):
     @classmethod
     def description(cls) -> str:
         return f"They all have a different favorite flower: carnations, daffodils, lilies, roses, tulips."
@@ -128,7 +128,7 @@ class Flowers(Literal):
     tulips = "the vase of tulips"
 
 
-class Foods(Literal):
+class Food(Literal):
     @classmethod
     def description(cls) -> str:
         return f"Everyone has something different for lunch: grilled cheese, pizza, spaghetti, stew, stir fry."
@@ -138,4 +138,3 @@ class Foods(Literal):
     spaghetti = "the spaghetti eater"
     stew = "the one having stew"
     stir_fry = "the person with stir fry"
-
