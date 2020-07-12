@@ -27,7 +27,7 @@ class Literal(Enum):
 
     @classmethod
     def description(cls) -> str:
-        return "".join(cls.__members__)
+        return "".join(cls.__members__)  # type:ignore
 
 
 class Color(Literal):

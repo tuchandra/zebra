@@ -36,9 +36,7 @@ def make_translate(cnf: CNF) -> Tuple[Dict[Element, int], Dict[int, Element]]:
     return lit2num, num2var
 
 
-def translate(
-    cnf: CNF, uniquify=False
-) -> Tuple[List[Tuple[int, ...]], Dict[int, Element]]:
+def translate(cnf: CNF, uniquify=False) -> Tuple[List[Tuple[int, ...]], Dict[int, Element]]:
     """Translate a symbolic CNF to a numbered CNF and return reverse mapping.
 
     >>> translate([['~P', 'Q'],['~P', 'R']])
@@ -92,12 +90,7 @@ def from_dnf(groups: Iterable[Tuple[str, ...]]) -> CNF:
         nl = {frozenset([literal]): neg(literal) for literal in group}
         # The "clause | literal" prevents dup lits: {x, x, y} -> {x, y}
         # The nl check skips over identities: {x, ~x, y} -> True
-        cnf = {
-            clause | literal
-            for literal in nl
-            for clause in cnf
-            if nl[literal] not in clause
-        }
+        cnf = {clause | literal for literal in nl for clause in cnf if nl[literal] not in clause}
         # The sc check removes clauses with superfluous terms:
         #     {{x}, {x, z}, {y, z}} -> {{x}, {y, z}}
         # Should this be left until the end?
