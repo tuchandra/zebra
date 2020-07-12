@@ -138,3 +138,51 @@ class Food(Literal):
     spaghetti = "the spaghetti eater"
     stew = "the one having stew"
     stir_fry = "the person with stir fry"
+
+
+class Kiro(Literal):
+    @classmethod
+    def description(cls) -> str:
+        return f"Each house has a different type of Kiro: Kaya, Silosaur Costume, Sugar Sketch, Traptor Costume, and Skeleko."
+
+    kaya = "the Kaya Kiro"
+    silosaur = "the Kiro disguised as a Silosaur"
+    sugar_sketch = "the Sugar Sketch Kiro"
+    traptor_costume = "the Kiro in a Traptor costume"
+    skeleko = "the Skeleko Kiro"
+
+
+class Smoothie(Literal):
+    @classmethod
+    def description(cls) -> str:
+        return f"Everyone has a favorite smoothie: cherry, watermelon, spring, dusk, lilac."
+
+    cherry = "the one who likes Cherry Smoothies"
+    watermelon = "the Watermelon Smoothie lover"
+    spring = "the one partial to Spring Smoothies"
+    dusk = "the one whose favorite smoothie is Dusk"
+    lilac = "the Lilac Smoothie drinker"
+
+
+class Bottlecap(Literal):
+    @classmethod
+    def description(cls) -> str:
+        return f"Everyone keeps a certain type of Bottlecap: red, yellow, green, blue, silver."
+
+    red = "the one who has red bottlecaps"
+    yellow = "the one who likes YBC"
+    green = "the GBC keeper"
+    blue = "the blue bottlecap hoarder"
+    silver = "the SBC winner"
+
+
+class RecolorMedal(Literal):
+    @classmethod
+    def description(cls) -> str:
+        return f"Everyone is special in some way: first of its kind, 2nd ed, ghost, pink, gold."
+
+    first = "the first of its kind"
+    second_ed = "the 2nd edition adoptable"
+    ghost = "the ghost recolor"
+    pink = "the pink adoptable"
+    gold = "the one with a heart of gold"
