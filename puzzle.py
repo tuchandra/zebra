@@ -5,7 +5,7 @@ Solve the Einstein puzzle using Raymond Hettinger's approach.
 
 from __future__ import annotations
 
-from typing import List, Tuple, Type
+from typing import Iterable, List, Tuple, Type
 
 import sat_utils
 
@@ -58,7 +58,7 @@ class Puzzle:
     def __init__(self, elements: List[Type[Literal]], n_houses: int = 5) -> None:
         self.element_classes = elements
         self.literals: List[Literal] = [el for group in self.element_classes for el in group]
-        self.houses = range(1, n_houses + 1)
+        self.houses = tuple(range(1, n_houses + 1))
         self.clues: List[Clue] = []
         self.constraints: List[Tuple[str]] = []
 
@@ -80,6 +80,12 @@ class Puzzle:
 
     def add_clue(self, clue: Clue) -> Puzzle:
         self.clues.append(clue)
+        return self
+
+    def add_clues(self, clues: Iterable[Clue]) -> Puzzle:
+        for clue in clues:
+            self.add_clue(clue)
+
         return self
 
     def as_cnf(self) -> List[Tuple[str]]:
@@ -138,38 +144,38 @@ For each house, find out what color it is, who lives there, what they drinkk, wh
 they smoke, and what pet they own.
 """
 
+if __name__ == "__main__":
+    enum_classes: List[Type[Literal]] = [Color, Nationality, Animal, Drink, Cigar]
+    literals: List[Literal] = [el for group in enum_classes for el in group]
 
-enum_classes: List[Type[Literal]] = [Color, Nationality, Animal, Drink, Cigar]
-literals: List[Literal] = [el for group in enum_classes for el in group]
+    # set up the puzzle with constraints and clues
+    puzzle = Puzzle(elements=[Color, Nationality, Drink, Cigar, Animal])
 
-# set up the puzzle with constraints and clues
-puzzle = Puzzle(elements=[Color, Nationality, Drink, Cigar, Animal])
+    puzzle = (
+        puzzle.set_constraints()
+        .add_clue(same_house(Nationality.brit, Color.red))
+        .add_clue(same_house(Nationality.swede, Animal.dog))
+        .add_clue(same_house(Nationality.dane, Drink.tea))
+        .add_clue(consecutive(Color.green, Color.white))
+        .add_clue(same_house(Color.green, Drink.coffee))
+        .add_clue(same_house(Cigar.pall_mall, Animal.bird))
+        .add_clue(same_house(Color.yellow, Cigar.dunhill))
+        .add_clue(found_at(Drink.milk, 3))
+        .add_clue(found_at(Nationality.norwegian, 1))
+        .add_clue(beside(Cigar.blends, Animal.cat))
+        .add_clue(beside(Animal.horse, Cigar.dunhill))
+        .add_clue(same_house(Cigar.blue_master, Drink.root_beer))
+        .add_clue(same_house(Nationality.german, Cigar.prince))
+        .add_clue(beside(Nationality.norwegian, Color.blue))
+        .add_clue(beside(Cigar.blends, Drink.water))
+    )
 
-puzzle = (
-    puzzle.set_constraints()
-    .add_clue(same_house(Nationality.brit, Color.red))
-    .add_clue(same_house(Nationality.swede, Animal.dog))
-    .add_clue(same_house(Nationality.dane, Drink.tea))
-    .add_clue(consecutive(Color.green, Color.white))
-    .add_clue(same_house(Color.green, Drink.coffee))
-    .add_clue(same_house(Cigar.pall_mall, Animal.bird))
-    .add_clue(same_house(Color.yellow, Cigar.dunhill))
-    .add_clue(found_at(Drink.milk, 3))
-    .add_clue(found_at(Nationality.norwegian, 1))
-    .add_clue(beside(Cigar.blends, Animal.cat))
-    .add_clue(beside(Animal.horse, Cigar.dunhill))
-    .add_clue(same_house(Cigar.blue_master, Drink.root_beer))
-    .add_clue(same_house(Nationality.german, Cigar.prince))
-    .add_clue(beside(Nationality.norwegian, Color.blue))
-    .add_clue(beside(Cigar.blends, Drink.water))
-)
+    print(puzzle)
 
-print(puzzle)
-
-sols = sat_utils.solve_all(puzzle.as_cnf())
-print(f"{len(sols)} solutions found")
-for sol in sols:
-    print(sol)
+    sols = sat_utils.solve_all(puzzle.as_cnf())
+    print(f"{len(sols)} solutions found")
+    for sol in sols:
+        print(sol)
 
 """
 Quag's version
@@ -188,46 +194,46 @@ be in the second chair while the other person is in the fourth (i.e. there is on
 in between them that neither is sitting in).
 """
 
+if __name__ == "__main__":
+    enum_classes: List[Type[Literal]] = [Mother, Children, Flower, Food]
+    literals = [el for group in enum_classes for el in group]
 
-enum_classes: List[Type[Literal]] = [Mother, Children, Flower, Food]
-literals = [el for group in enum_classes for el in group]
+    # set up the puzzle with constraints and clues
+    puzzle = Puzzle(elements=[Mother, Children, Flower, Food])
 
-# set up the puzzle with constraints and clues
-puzzle = Puzzle(elements=[Mother, Children, Flower, Food])
+    puzzle = (
+        puzzle.set_constraints()
+        # 1. There is one chair between the place setting with Lilies and the one eating Grilled Cheese.
+        .add_clue(one_between(Flower.lilies, Food.grilled_cheese))
+        # 2. There is one chair between Timothy's Mom and the one eating Stew.
+        .add_clue(one_between(Children.timothy, Food.stew))
+        # 3. There are two chairs between the Bella's Mom and Penny's seat on the right.
+        .add_clue(two_between(Children.bella, Mother.penny))
+        .add_clue(right_of(Mother.penny, Children.bella))
+        # 4. There is one chair between the place setting with Roses and the one eating Spaghetti on the left.
+        .add_clue(one_between(Flower.roses, Food.spaghetti))
+        .add_clue(left_of(Food.spaghetti, Flower.roses))
+        # 5. There are two chairs between the place setting with Carnations and Samantha's Mom.
+        .add_clue(two_between(Flower.carnations, Children.samantha))
+        # 6. There is one chair between Meredith's Mom and Timothy's Mom on the left.
+        .add_clue(one_between(Children.meredith, Children.timothy))
+        .add_clue(left_of(Children.timothy, Children.meredith))
+        # 7. Aniya's place setting has a lovely Carnation bouquet.
+        .add_clue(same_house(Mother.aniya, Flower.carnations))
+        # 8. There are two chairs between the one eating Grilled Cheese and the one eating Spaghetti.
+        .add_clue(two_between(Food.grilled_cheese, Food.spaghetti))
+        # 9. The person in the first chair (left-most) is eating Pizza.
+        .add_clue(found_at(Food.pizza, 1))
+        # 10. The Tulips were placed at one of the place settings somewhere to the left of Penny's chair.
+        .add_clue(left_of(Flower.tulips, Mother.penny))
+        # 11. There are two chairs between the one eating Spaghetti and Kailyn's seat.
+        .add_clue(two_between(Food.spaghetti, Mother.kailyn))
+        # 12. There is one chair between the one eating Pizza and Holly's chair on the right.
+        .add_clue(one_between(Food.pizza, Mother.holly))
+        .add_clue(right_of(Mother.holly, Food.pizza))
+    )
 
-puzzle = (
-    puzzle.set_constraints()
-    # 1. There is one chair between the place setting with Lilies and the one eating Grilled Cheese.
-    .add_clue(one_between(Flower.lilies, Food.grilled_cheese))
-    # 2. There is one chair between Timothy's Mom and the one eating Stew.
-    .add_clue(one_between(Children.timothy, Food.stew))
-    # 3. There are two chairs between the Bella's Mom and Penny's seat on the right.
-    .add_clue(two_between(Children.bella, Mother.penny))
-    .add_clue(right_of(Mother.penny, Children.bella))
-    # 4. There is one chair between the place setting with Roses and the one eating Spaghetti on the left.
-    .add_clue(one_between(Flower.roses, Food.spaghetti))
-    .add_clue(left_of(Food.spaghetti, Flower.roses))
-    # 5. There are two chairs between the place setting with Carnations and Samantha's Mom.
-    .add_clue(two_between(Flower.carnations, Children.samantha))
-    # 6. There is one chair between Meredith's Mom and Timothy's Mom on the left.
-    .add_clue(one_between(Children.meredith, Children.timothy))
-    .add_clue(left_of(Children.timothy, Children.meredith))
-    # 7. Aniya's place setting has a lovely Carnation bouquet.
-    .add_clue(same_house(Mother.aniya, Flower.carnations))
-    # 8. There are two chairs between the one eating Grilled Cheese and the one eating Spaghetti.
-    .add_clue(two_between(Food.grilled_cheese, Food.spaghetti))
-    # 9. The person in the first chair (left-most) is eating Pizza.
-    .add_clue(found_at(Food.pizza, 1))
-    # 10. The Tulips were placed at one of the place settings somewhere to the left of Penny's chair.
-    .add_clue(left_of(Flower.tulips, Mother.penny))
-    # 11. There are two chairs between the one eating Spaghetti and Kailyn's seat.
-    .add_clue(two_between(Food.spaghetti, Mother.kailyn))
-    # 12. There is one chair between the one eating Pizza and Holly's chair on the right.
-    .add_clue(one_between(Food.pizza, Mother.holly))
-    .add_clue(right_of(Mother.holly, Food.pizza))
-)
-
-print(puzzle)
-all_solutions = sat_utils.solve_all(puzzle.as_cnf())
-print(f"{len(all_solutions)} solutions found")
-print(all_solutions)
+    print(puzzle)
+    all_solutions = sat_utils.solve_all(puzzle.as_cnf())
+    print(f"{len(all_solutions)} solutions found")
+    print(all_solutions)
