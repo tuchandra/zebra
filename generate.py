@@ -5,11 +5,11 @@ This is a driver script that can be used to generate new zebra puzzles.
 """
 
 from itertools import product
-from typing import Dict, Iterable, Set, Sized, Tuple
+from typing import Dict, Iterable, Set, Tuple
 from random import sample, randint
 
 from puzzle import Puzzle
-from sat_utils import solve_one
+from sat_utils import itersolve
 
 from clues import (
     Clue,
@@ -106,9 +106,25 @@ for left, right in product(puzzle.houses, puzzle.houses):
         else:
             clues.add(right_of(pair[1], pair[0], puzzle.houses))
 
-print(*clues, sep="\n")
+# generate one-between
+for left, right in zip(puzzle.houses, puzzle.houses[2:]):
+    items_left = {item: loc for item, loc in solution.items() if loc == left}
+    items_right = {item: loc for item, loc in solution.items() if loc == right}
+    pairs: Set[Tuple[Literal, Literal]] = {
+        (item1, item2) for item1, item2 in product(items_left, items_right)
+    }
+    for pair in pairs:
+        clues.add(one_between(pair[0], pair[1], puzzle.houses))
 
-from sat_utils import itersolve
+# generate two-between
+for left, right in zip(puzzle.houses, puzzle.houses[3:]):
+    items_left = {item: loc for item, loc in solution.items() if loc == left}
+    items_right = {item: loc for item, loc in solution.items() if loc == right}
+    pairs: Set[Tuple[Literal, Literal]] = {
+        (item1, item2) for item1, item2 in product(items_left, items_right)
+    }
+    for pair in pairs:
+        clues.add(two_between(pair[0], pair[1], puzzle.houses))
 
 
 def has_unique_solution(puzzle: Puzzle, clues: Iterable[Clue]) -> bool:
@@ -126,28 +142,51 @@ def has_unique_solution(puzzle: Puzzle, clues: Iterable[Clue]) -> bool:
             return False
 
 
+def try_to_remove(puzzle: Puzzle, clues: Set[Clue], n: int) -> Set[Clue]:
+    """
+    Attempt to remove `n` clues from a set of candidate clues; if we are able to, return the new,
+    smaller set of clues. If not, return the original set.
+    """
+
+    candidates: Set[Clue] = set()
+    for _ in range(n):
+        candidates.add(clues.pop())
+
+    if has_unique_solution(puzzle, clues):
+        print(f"Removed {len(candidates)} clues.")
+        return clues
+
+    # we needed at least one of those, add them all back
+    clues = clues | set(candidates)
+    return clues
+
+
 def reduce_clues(puzzle: Puzzle, clues: Set[Clue]) -> Set[Clue]:
     """
     Reduce a set of clues to a minimally solvable set.
 
     A minimally solvable 5-house, 4-attribute puzzle takes between 10 and 20 clues to solve. The
     original set of clues will likely be in the hundreds, and the majority are likely to be
-    redundant. We can observe significant time gains by batch removing clues from a large candidate
-    pool.
+    redundant. We can quickly reduce the set of clues by batch removing clues from the large
+    candidate pool.
 
-    The algorithm:
-     - select a random ordering of the candidate clues
-     - consider smaller_clues, which is clues without the first (random) candidate
-     - if the puzzle is uniquely solvable under smaller_clues, continue
-     - if the puzzle is not uniquely solvable, the candidate was necessary, so add it back and return
-
-    The algorithm for batch reduction (not yet done!):
-     - if there are more than 100 clues, remove a random 10% of them
-     - with this 90%-clue set, test if the puzzle is solvable
-     - if the puzzle is uniquely solvable, continue removing
-     - if the puzzle is not uniquely solvable, one of the candidates in the set was necessary;
-       add them all back and fall back to the one-by-one case
+    The algorithm for batch reduction:
+     1. shuffle all the clues
+     2. attempt to remove 10% of the clues; with this 90%-clue set, test if the puzzle is solvable.
+     3a. if yes: keep them removed, go back to 2 and repeat
+     3b. if no: add them back, keep going to 4
+     4. the same as step (3), but this time trying to remove 5% of the clues
+     5. the same as step (3), but this time trying to remove a single clue
     
+    After we've tried and failed to remove a *single* clue, then the (first part of the) reduction
+    algorithm is done; having that clue was necessary for us to have a unique solution. This doesn't
+    necessarily mean that *all* the clues are need, though, which is what the secondary reduction
+    is for.
+
+    The *secondary reduction process* is much simpler: now that the set is narrowed substantially,
+    we can be more brute-forcey. Attempt to remove each clue and see if the puzzle is still
+    solvable.
+
     """
 
     # this is a stupid way to shuffle the set of clues without modifying it
@@ -155,35 +194,49 @@ def reduce_clues(puzzle: Puzzle, clues: Set[Clue]) -> Set[Clue]:
 
     while True:
         print(f"There are {len(minimal_clues)} clues in ba sing se")
-        candidate = minimal_clues.pop()
-        if has_unique_solution(puzzle, minimal_clues):
-            print(f"Removed clue: {candidate}")
-            continue  # we were fine to remove this clue
 
-        # removing that clue made the puzzle unsolvable; add it back in and we're done.
-        print(f"Oops, that was a mistake! Adding it back. {candidate=}")
-        minimal_clues.add(candidate)
-        print(f"There are {len(minimal_clues)} clues in ba sing se")
+        # Walrus time!
+        #
+        # If the size of minimal_clues before we try to remove some clues is greater than the size
+        # after, then those clues were fine to remove. Go back to the top of the loop and keep
+        # removing more. But if the size is the same, we needed some of those clues. Try to remove
+        # a smaller amount.
+        #
+        # We use the walrus operator to update minimal_clues in place during the comparison. It'll
+        # either be a reduced set of clues or the original set of clues.
+        if len(minimal_clues) > len(
+            (minimal_clues := try_to_remove(puzzle, minimal_clues, len(minimal_clues) // 10))
+        ):
+            continue
 
+        if len(minimal_clues) != len(
+            (minimal_clues := try_to_remove(puzzle, minimal_clues, len(minimal_clues) // 20))
+        ):
+            continue
+
+        if len(minimal_clues) == len((minimal_clues := try_to_remove(puzzle, minimal_clues, 1))):
+            break
+
+    # secondary reduction time!
+    while True:
+        print(f"Starting the secondary reduction.")
+
+        candidates = sample(minimal_clues, len(minimal_clues))
+        for clue in candidates:
+            minimal_clues.remove(clue)
+            if has_unique_solution(puzzle, minimal_clues):
+                print(f"Removed {clue=}")
+                continue  # we were fine to remove this clue
+            minimal_clues.add(clue)
+
+        # if we reach here, all the clues were needed; removing any of them makes the puzzle
+        # impossible to solve.
         return minimal_clues
 
 
-def secondary_reduction(puzzle: Puzzle, clues: Set[Clue]) -> Set[Clue]:
-    """Try to remove a random clue to see if the puzzle is still solvable"""
-
-    for candidate in sample(clues, len(clues)):
-        smaller_clues = clues.difference(set([candidate]))
-        if has_unique_solution(puzzle, smaller_clues):
-            print(f"Removing {candidate=}")
-            return smaller_clues  # we were fine to remove this clue
-
-    # all clues were required to solve the puzzle
-    print(f"All clues were required!")
-    return clues
 
 
 print(f"Puzzle has {len(puzzle.clues)} clues")
 print(has_unique_solution(puzzle, clues))
 reduced = reduce_clues(puzzle, clues)
-for _ in range(20):
-    reduced = secondary_reduction(puzzle, reduced)
+print(*reduced, sep="\n")
