@@ -72,6 +72,9 @@ for element, loc in solution.items():
         if house != loc:
             clues.add(not_at(element, house))
             clues.add(not_at(element, house))
+            clues.add(not_at(element, house))
+            clues.add(not_at(element, house))
+            clues.add(not_at(element, house))
 
 
 # generate same-house clues
@@ -97,22 +100,22 @@ for left, right in zip(puzzle.houses, puzzle.houses[1:]):
         clues.add(consecutive(pair[0], pair[1], puzzle.houses))
         clues.add(beside(pair[0], pair[1], puzzle.houses))
 
-# generate left-of and right-of clues
-for left, right in product(puzzle.houses, puzzle.houses):
-    if left >= right:
-        continue
+# # generate left-of and right-of clues
+# for left, right in product(puzzle.houses, puzzle.houses):
+#     if left >= right:
+#         continue
 
-    items_left = {item: loc for item, loc in solution.items() if loc == left}
-    items_right = {item: loc for item, loc in solution.items() if loc == right}
-    pairs: Set[Tuple[Literal, Literal]] = {
-        (item1, item2) for item1, item2 in product(items_left, items_right)
-    }
-    for pair in pairs:
-        # (a left-of b) is guaranteed to be redundant with (b right-of a), so only add one
-        if randint(0, 2) == 0:
-            clues.add(left_of(pair[0], pair[1], puzzle.houses))
-        else:
-            clues.add(right_of(pair[1], pair[0], puzzle.houses))
+#     items_left = {item: loc for item, loc in solution.items() if loc == left}
+#     items_right = {item: loc for item, loc in solution.items() if loc == right}
+#     pairs: Set[Tuple[Literal, Literal]] = {
+#         (item1, item2) for item1, item2 in product(items_left, items_right)
+#     }
+#     for pair in pairs:
+#         # (a left-of b) is guaranteed to be redundant with (b right-of a), so only add one
+#         if randint(0, 2) == 0:
+#             clues.add(left_of(pair[0], pair[1], puzzle.houses))
+#         else:
+#             clues.add(right_of(pair[1], pair[0], puzzle.houses))
 
 # generate one-between
 for left, right in zip(puzzle.houses, puzzle.houses[2:]):
