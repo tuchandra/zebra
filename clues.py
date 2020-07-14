@@ -79,6 +79,28 @@ class found_at(Clue):
 
 
 @dataclass(eq=True, frozen=True)
+class not_at(Clue):
+    """
+    Two values are known *not* to be at the same house
+
+    Examples:
+     - the musician does not drink tea
+     - the red house does not contain a cat
+    """
+
+    value: Literal
+    house: int
+
+    def as_cnf(self) -> List[Tuple[str]]:
+        return [(sat_utils.neg(comb(self.value, self.house)),)]
+
+    @_capitalize_first
+    def __repr__(self) -> str:
+        houses = [None, "first", "second", "third", "fourth", "fifth", "sixth"]
+        return f"{self.value.value} is not in the {houses[self.house]} house."
+
+
+@dataclass(eq=True, frozen=True)
 class same_house(Clue):
     """
     Two values are known to be at the same house
@@ -95,8 +117,9 @@ class same_house(Clue):
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf((comb(self.value1, i), comb(self.value2, i)) for i in self.houses)
 
+    @_capitalize_first
     def __repr__(self) -> str:
-        return f"The {self.value1.value} and {self.value2.value} are in the same house."
+        return f"{self.value1.value} and {self.value2.value} are in the same house."
 
 
 @dataclass(eq=True, frozen=True)
