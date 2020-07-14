@@ -89,7 +89,9 @@ class Puzzle:
 
     @contextmanager
     def with_clues(self, clues: Iterable[Clue]) -> Generator[Puzzle]:
+        """Create a context in which this Puzzle temporarily has clues added to it"""
 
+        clues = list(clues)  # so we don't accidentally exhaust the iterable
         for clue in clues:
             self.add_clue(clue)
 
