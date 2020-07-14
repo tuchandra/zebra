@@ -179,9 +179,9 @@ class Bottlecap(Literal):
 class RecolorMedal(Literal):
     @classmethod
     def description(cls) -> str:
-        return f"Everyone is special in some way: first of its kind, 2nd ed, ghost, pink, gold."
+        return f"Everyone is special in some way: 1st place, 2nd ed, ghost, pink, gold."
 
-    first = "the adoptable who's the first of its kind"
+    first = "the 1st place adoptable"
     second_ed = "the 2nd edition adoptable"
     ghost = "the ghost recolor"
     pink = "the pink adoptable"

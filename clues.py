@@ -96,12 +96,7 @@ class same_house(Clue):
         return sat_utils.from_dnf((comb(self.value1, i), comb(self.value2, i)) for i in self.houses)
 
     def __repr__(self) -> str:
-        index = random.randint(0, 2)
-        return [
-            f"The same house has {self.value1.value} and {self.value2.value}.",
-            f"The {self.value1.value} and {self.value2.value} are in the same house.",
-            f"A single house contains both {self.value1.value} and {self.value2.value}.",
-        ][index]
+        return f"The {self.value1.value} and {self.value2.value} are in the same house."
 
 
 @dataclass(eq=True, frozen=True)
