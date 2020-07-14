@@ -15,6 +15,7 @@ from clues import (
     Clue,
     comb,
     found_at,
+    not_at,
     same_house,
     consecutive,
     beside,
@@ -62,10 +63,15 @@ solution: Dict[Literal, int] = {
     RecolorMedal.ghost: 5,
 }
 
-# generate found-at clues
+# generate found-at and not-found-at clues
 clues: Set[Clue] = set()
 for element, loc in solution.items():
     clues.add(found_at(element, loc))
+
+    for house in puzzle.houses:
+        if house != loc:
+            clues.add(not_at(element, house))
+            clues.add(not_at(element, house))
 
 
 # generate same-house clues
@@ -76,6 +82,8 @@ for house in puzzle.houses:
     }
     for pair in pairs:
         clues.add(same_house(pair[0], pair[1], puzzle.houses))
+        clues.add(same_house(pair[0], pair[1], puzzle.houses))
+
 
 # generate consecutive and beside clues
 for left, right in zip(puzzle.houses, puzzle.houses[1:]):
@@ -144,7 +152,7 @@ def has_unique_solution(puzzle: Puzzle, clues: Iterable[Clue]) -> bool:
 
 def try_to_remove(puzzle: Puzzle, clues: Set[Clue], n: int) -> Set[Clue]:
     """
-    Attempt to remove `n` clues from a set of candidate clues; if we are able to, return the new,
+    Attempt to remove n clues from a set of candidate clues; if we are able to, return the new,
     smaller set of clues. If not, return the original set.
     """
 
@@ -158,6 +166,23 @@ def try_to_remove(puzzle: Puzzle, clues: Set[Clue], n: int) -> Set[Clue]:
 
     # we needed at least one of those, add them all back
     clues = clues | set(candidates)
+    return clues
+
+
+def reduce_individually(puzzle: Puzzle, clues: Set[Clue]) -> Set[Clue]:
+    """
+    Attempt to remove each candidate clue one by one. If the puzzle remains uniquely solvable,
+    return the reduced set. If not, return the original.
+    """
+
+    candidates = sample(clues, len(clues))
+    for clue in candidates:
+        clues.remove(clue)
+        if has_unique_solution(puzzle, clues):
+            print(f"Removed {clue=}")
+            continue  # we were fine to remove this clue
+        clues.add(clue)
+
     return clues
 
 
@@ -217,26 +242,16 @@ def reduce_clues(puzzle: Puzzle, clues: Set[Clue]) -> Set[Clue]:
         if len(minimal_clues) == len((minimal_clues := try_to_remove(puzzle, minimal_clues, 1))):
             break
 
-    # secondary reduction time!
-    while True:
-        print(f"Starting the secondary reduction.")
+    # secondary reduction time! While we can still remove clues, do so; then we're done.
+    print(f"Starting the secondary reduction.")
+    while len(minimal_clues) > len((minimal_clues := reduce_individually(puzzle, minimal_clues))):
+        pass
 
-        candidates = sample(minimal_clues, len(minimal_clues))
-        for clue in candidates:
-            minimal_clues.remove(clue)
-            if has_unique_solution(puzzle, minimal_clues):
-                print(f"Removed {clue=}")
-                continue  # we were fine to remove this clue
-            minimal_clues.add(clue)
-
-        # if we reach here, all the clues were needed; removing any of them makes the puzzle
-        # impossible to solve.
-        return minimal_clues
+    return minimal_clues
 
 
-
-
-print(f"Puzzle has {len(puzzle.clues)} clues")
-print(has_unique_solution(puzzle, clues))
 reduced = reduce_clues(puzzle, clues)
-print(*reduced, sep="\n")
+for clue in reduced:
+    puzzle.add_clue(clue)
+
+print(puzzle)
