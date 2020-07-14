@@ -5,7 +5,8 @@ Solve the Einstein puzzle using Raymond Hettinger's approach.
 
 from __future__ import annotations
 
-from typing import Iterable, List, Tuple, Type
+from contextlib import contextmanager
+from typing import Generator, Iterable, List, Set, Tuple, Type
 
 import sat_utils
 
@@ -59,7 +60,7 @@ class Puzzle:
         self.element_classes = elements
         self.literals: List[Literal] = [el for group in self.element_classes for el in group]
         self.houses = tuple(range(1, n_houses + 1))
-        self.clues: List[Clue] = []
+        self.clues: Set[Clue] = set()
         self.constraints: List[Tuple[str]] = []
 
     def _add_constraint(self, constraints: List[Tuple[str]]) -> Puzzle:
@@ -79,12 +80,22 @@ class Puzzle:
         return self
 
     def add_clue(self, clue: Clue) -> Puzzle:
-        self.clues.append(clue)
+        self.clues.add(clue)
         return self
 
-    def add_clues(self, clues: Iterable[Clue]) -> Puzzle:
+    def remove_clue(self, clue: Clue) -> Puzzle:
+        self.clues.remove(clue)
+        return self
+
+    @contextmanager
+    def with_clues(self, clues: Iterable[Clue]) -> Generator[Puzzle]:
+
         for clue in clues:
             self.add_clue(clue)
+
+        yield self
+        for clue in clues:
+            self.remove_clue(clue)
 
         return self
 
