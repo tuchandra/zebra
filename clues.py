@@ -263,7 +263,7 @@ class one_between(Clue):
         )
 
     def __repr__(self) -> str:
-        return f"There is one house between the {self.value1.value} and the {self.value2.value}."
+        return f"There is one house between {self.value1.value} and {self.value2.value}."
 
 
 @dataclass(eq=True, frozen=True)
@@ -293,4 +293,4 @@ class two_between(Clue):
         )
 
     def __repr__(self) -> str:
-        return f"There are two houses between the {self.value1.value} and the {self.value2.value}."
+        return f"There are two houses between {self.value1.value} and {self.value2.value}."
