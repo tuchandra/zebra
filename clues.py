@@ -56,7 +56,7 @@ def comb(value: Literal, house: int) -> str:
     return f"{value} {house}"
 
 
-@dataclass
+@dataclass(eq=True, frozen=True)
 class found_at(Clue):
     """
     A literal is known to be at a specific house
@@ -78,7 +78,7 @@ class found_at(Clue):
         return f"{self.value.value} is in the {houses[self.house]} house."
 
 
-@dataclass
+@dataclass(eq=True, frozen=True)
 class same_house(Clue):
     """
     Two values are known to be at the same house
@@ -90,7 +90,7 @@ class same_house(Clue):
 
     value1: Literal
     value2: Literal
-    houses: List[int] = field(default_factory=lambda: [1, 2, 3, 4, 5])
+    houses: Tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf((comb(self.value1, i), comb(self.value2, i)) for i in self.houses)
@@ -104,7 +104,7 @@ class same_house(Clue):
         ][index]
 
 
-@dataclass
+@dataclass(eq=True, frozen=True)
 class consecutive(Clue):
     """
     The first value is directly to the left of the second value
@@ -118,7 +118,7 @@ class consecutive(Clue):
 
     value1: Literal
     value2: Literal
-    houses: List[int] = field(default_factory=lambda: [1, 2, 3, 4, 5])
+    houses: Tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf(
@@ -131,7 +131,7 @@ class consecutive(Clue):
         return f"{self.value1.value} is directly left of {self.value2.value}."
 
 
-@dataclass
+@dataclass(eq=True, frozen=True)
 class beside(Clue):
     """
     The two values occur side-by-side (either left or right)
@@ -143,7 +143,7 @@ class beside(Clue):
 
     value1: Literal
     value2: Literal
-    houses: List[int] = field(default_factory=lambda: [1, 2, 3, 4, 5])
+    houses: Tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf(
@@ -162,7 +162,7 @@ class beside(Clue):
         return f"{self.value1.value} and {self.value2.value} are next to each other."
 
 
-@dataclass
+@dataclass(eq=True, frozen=True)
 class left_of(Clue):
     """
     The first value is somewhere to the left of the second value
@@ -175,7 +175,7 @@ class left_of(Clue):
 
     value1: Literal
     value2: Literal
-    houses: List[int] = field(default_factory=lambda: [1, 2, 3, 4, 5])
+    houses: Tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf(
@@ -189,7 +189,7 @@ class left_of(Clue):
         return f"{self.value1.value} is somewhere to the left of {self.value2.value}."
 
 
-@dataclass
+@dataclass(eq=True, frozen=True)
 class right_of(Clue):
     """
     The first value is somewhere to the right of the second value.
@@ -202,7 +202,7 @@ class right_of(Clue):
 
     value1: Literal
     value2: Literal
-    houses: List[int] = field(default_factory=lambda: [1, 2, 3, 4, 5])
+    houses: Tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf(
@@ -216,7 +216,7 @@ class right_of(Clue):
         return f"{self.value1.value} is somewhere to the right of {self.value2.value}."
 
 
-@dataclass
+@dataclass(eq=True, frozen=True)
 class one_between(Clue):
     """
     The values are separated by one house
@@ -230,7 +230,7 @@ class one_between(Clue):
 
     value1: Literal
     value2: Literal
-    houses: List[int] = field(default_factory=lambda: [1, 2, 3, 4, 5])
+    houses: Tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf(
@@ -248,7 +248,7 @@ class one_between(Clue):
         return f"There is one house between the {self.value1.value} and the {self.value2.value}."
 
 
-@dataclass
+@dataclass(eq=True, frozen=True)
 class two_between(Clue):
     """
     The values are separated by two houses
@@ -260,7 +260,7 @@ class two_between(Clue):
 
     value1: Literal
     value2: Literal
-    houses: List[int] = field(default_factory=lambda: [1, 2, 3, 4, 5])
+    houses: Tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf(
