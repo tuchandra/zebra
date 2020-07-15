@@ -5,34 +5,24 @@ This is a driver script that can be used to generate new zebra puzzles.
 """
 
 from itertools import product
-from typing import Dict, Iterable, Set, Tuple
-from random import sample, randint
-
-from puzzle import Puzzle
-from sat_utils import itersolve
+from random import choices, randint, sample
+from typing import Dict, Iterable, List, Set, Tuple, Type
 
 from clues import (
     Clue,
-    comb,
-    found_at,
-    not_at,
-    same_house,
-    consecutive,
     beside,
+    consecutive,
+    found_at,
     left_of,
-    right_of,
+    not_at,
     one_between,
+    right_of,
+    same_house,
     two_between,
 )
-
-from literals import (
-    Literal,
-    Kiro,
-    Bottlecap,
-    Smoothie,
-    RecolorMedal,
-)
-
+from literals import Bottlecap, Kiro, Literal, RecolorMedal, Smoothie
+from puzzle import Puzzle
+from sat_utils import itersolve
 
 elements = [Kiro, Bottlecap, Smoothie, RecolorMedal]
 
@@ -71,10 +61,6 @@ for element, loc in solution.items():
     for house in puzzle.houses:
         if house != loc:
             clues.add(not_at(element, house))
-            clues.add(not_at(element, house))
-            clues.add(not_at(element, house))
-            clues.add(not_at(element, house))
-            clues.add(not_at(element, house))
 
 
 # generate same-house clues
@@ -84,7 +70,6 @@ for house in puzzle.houses:
         (item1, item2) for item1, item2 in product(items_at_house, repeat=2) if item1 != item2
     }
     for pair in pairs:
-        clues.add(same_house(pair[0], pair[1], puzzle.houses))
         clues.add(same_house(pair[0], pair[1], puzzle.houses))
 
 
@@ -97,25 +82,28 @@ for left, right in zip(puzzle.houses, puzzle.houses[1:]):
     }
     for pair in pairs:
         # consecutive is just a more informative version of beside, but they have same structure
-        clues.add(consecutive(pair[0], pair[1], puzzle.houses))
-        clues.add(beside(pair[0], pair[1], puzzle.houses))
+        # because of this, don't include both
+        if randint(0, 1) == 0:
+            clues.add(consecutive(pair[0], pair[1], puzzle.houses))
+        else:
+            clues.add(beside(pair[0], pair[1], puzzle.houses))
 
-# # generate left-of and right-of clues
-# for left, right in product(puzzle.houses, puzzle.houses):
-#     if left >= right:
-#         continue
+# generate left-of and right-of clues
+for left, right in product(puzzle.houses, puzzle.houses):
+    if left >= right:
+        continue
 
-#     items_left = {item: loc for item, loc in solution.items() if loc == left}
-#     items_right = {item: loc for item, loc in solution.items() if loc == right}
-#     pairs: Set[Tuple[Literal, Literal]] = {
-#         (item1, item2) for item1, item2 in product(items_left, items_right)
-#     }
-#     for pair in pairs:
-#         # (a left-of b) is guaranteed to be redundant with (b right-of a), so only add one
-#         if randint(0, 2) == 0:
-#             clues.add(left_of(pair[0], pair[1], puzzle.houses))
-#         else:
-#             clues.add(right_of(pair[1], pair[0], puzzle.houses))
+    items_left = {item: loc for item, loc in solution.items() if loc == left}
+    items_right = {item: loc for item, loc in solution.items() if loc == right}
+    pairs: Set[Tuple[Literal, Literal]] = {
+        (item1, item2) for item1, item2 in product(items_left, items_right)
+    }
+    for pair in pairs:
+        # (a left-of b) is guaranteed to be redundant with (b right-of a), so only add one
+        if randint(0, 1) == 0:
+            clues.add(left_of(pair[0], pair[1], puzzle.houses))
+        else:
+            clues.add(right_of(pair[1], pair[0], puzzle.houses))
 
 # generate one-between
 for left, right in zip(puzzle.houses, puzzle.houses[2:]):
@@ -159,16 +147,29 @@ def try_to_remove(puzzle: Puzzle, clues: Set[Clue], n: int) -> Set[Clue]:
     smaller set of clues. If not, return the original set.
     """
 
-    candidates: Set[Clue] = set()
-    for _ in range(n):
-        candidates.add(clues.pop())
+    def weight(clue: Clue) -> float:
+        # relative probabilities of each type of clue being selected for removal
+        weights: Dict[Type[Clue], float] = {
+            not_at: 0.5,
+            found_at: 1,
+            left_of: 1.5,
+            right_of: 1.5,
+            one_between: 2,
+            two_between: 2,
+        }
 
+        return weights.get(type(clue), 1)
+
+    weights = [weight(clue) for clue in clues]
+    candidates: Set[Clue] = set(choices(list(clues), weights, k=n))
+
+    clues = clues.difference(candidates)
     if has_unique_solution(puzzle, clues):
         print(f"Removed {len(candidates)} clues.")
         return clues
 
     # we needed at least one of those, add them all back
-    clues = clues | set(candidates)
+    clues = clues | candidates
     return clues
 
 
