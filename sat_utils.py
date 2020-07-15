@@ -5,10 +5,10 @@ __author__ = "Raymond Hettinger"
 import pycosat
 from itertools import combinations
 from functools import lru_cache
-from typing import Any, Dict, FrozenSet, Iterable, List, Set, Tuple, TypeVar
+from typing import Dict, FrozenSet, Iterable, List, Set, Tuple
 
 
-Element = str  # literal, just a string for now
+Element = str  # literal; any string, but here it's <element house#> e.g., "tushar 5" or "chai 2"
 CNF = List[Tuple[Element, ...]]
 
 
