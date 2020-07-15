@@ -24,106 +24,117 @@ from literals import Bottlecap, Kiro, Literal, RecolorMedal, Smoothie
 from puzzle import Puzzle
 from sat_utils import itersolve
 
-elements = [Kiro, Bottlecap, Smoothie, RecolorMedal]
 
-# set up the puzzle with default constraints
-puzzle = Puzzle(elements=elements, n_houses=5).set_constraints()
+def generate_found_at(puzzle: Puzzle, solution: Dict[Literal, int]) -> Set[Clue]:
+    """Generate the `found_at` / `not_at` Clue instances"""
 
-# this will be the solution
-solution: Dict[Literal, int] = {
-    Kiro.kaya: 1,
-    Kiro.sugar_sketch: 2,
-    Kiro.skeleko: 3,
-    Kiro.silosaur: 4,
-    Kiro.traptor_costume: 5,
-    Bottlecap.yellow: 1,
-    Bottlecap.silver: 2,
-    Bottlecap.red: 3,
-    Bottlecap.green: 4,
-    Bottlecap.blue: 5,
-    Smoothie.watermelon: 1,
-    Smoothie.dusk: 2,
-    Smoothie.spring: 3,
-    Smoothie.lilac: 4,
-    Smoothie.cherry: 5,
-    RecolorMedal.second_ed: 1,
-    RecolorMedal.gold: 2,
-    RecolorMedal.pink: 3,
-    RecolorMedal.first: 4,
-    RecolorMedal.ghost: 5,
-}
+    clues: Set[Clue] = set()
+    for element, loc in solution.items():
+        clues.add(found_at(element, loc))
 
-# generate found-at and not-found-at clues
-clues: Set[Clue] = set()
-for element, loc in solution.items():
-    clues.add(found_at(element, loc))
+        for house in puzzle.houses:
+            if house != loc:
+                clues.add(not_at(element, house))
 
+    return clues
+
+
+def generate_same_house(puzzle: Puzzle, solution: Dict[Literal, int]) -> Set[Clue]:
+    """Generate the `same_house` Clue instances"""
+
+    clues: Set[Clue] = set()
     for house in puzzle.houses:
-        if house != loc:
-            clues.add(not_at(element, house))
+        items_at_house = {item: loc for item, loc in solution.items() if loc == house}
+        pairs: Set[Tuple[Literal, Literal]] = {
+            (item1, item2) for item1, item2 in product(items_at_house, repeat=2) if item1 != item2
+        }
+        for pair in pairs:
+            clues.add(same_house(pair[0], pair[1], puzzle.houses))
+
+    return clues
 
 
-# generate same-house clues
-for house in puzzle.houses:
-    items_at_house = {item: loc for item, loc in solution.items() if loc == house}
-    pairs: Set[Tuple[Literal, Literal]] = {
-        (item1, item2) for item1, item2 in product(items_at_house, repeat=2) if item1 != item2
-    }
-    for pair in pairs:
-        clues.add(same_house(pair[0], pair[1], puzzle.houses))
+def generate_consecutive_beside(puzzle: Puzzle, solution: Dict[Literal, int]) -> Set[Clue]:
+    """Generate the `consecutive` / `beside` Clue instances
+
+    (Note that consecutive is just a more informative version of beside. Since they have the same
+    structure, for every possible combination we'll just keep one.
+    """
+
+    clues: Set[Clue] = set()
+    for left, right in zip(puzzle.houses, puzzle.houses[1:]):
+        items_left = {item: loc for item, loc in solution.items() if loc == left}
+        items_right = {item: loc for item, loc in solution.items() if loc == right}
+        pairs: Set[Tuple[Literal, Literal]] = {
+            (item1, item2) for item1, item2 in product(items_left, items_right)
+        }
+        for pair in pairs:
+            # consecutive is just a more informative version of beside, but they have same structure
+            # because of this, don't include both
+            if randint(0, 1) == 0:
+                clues.add(consecutive(pair[0], pair[1], puzzle.houses))
+            else:
+                clues.add(beside(pair[0], pair[1], puzzle.houses))
+
+    return clues
 
 
-# generate consecutive and beside clues
-for left, right in zip(puzzle.houses, puzzle.houses[1:]):
-    items_left = {item: loc for item, loc in solution.items() if loc == left}
-    items_right = {item: loc for item, loc in solution.items() if loc == right}
-    pairs: Set[Tuple[Literal, Literal]] = {
-        (item1, item2) for item1, item2 in product(items_left, items_right)
-    }
-    for pair in pairs:
-        # consecutive is just a more informative version of beside, but they have same structure
-        # because of this, don't include both
-        if randint(0, 1) == 0:
-            clues.add(consecutive(pair[0], pair[1], puzzle.houses))
-        else:
-            clues.add(beside(pair[0], pair[1], puzzle.houses))
+def generate_left_right_of(puzzle: Puzzle, solution: Dict[Literal, int]) -> Set[Clue]:
+    """Generate the `left_of` / `right_of` Clue instances
+    
+    Note that since (x left-of y) is guaranteed to be redundant with (b right-of a), we only add
+    one of these clues to the final set.
+    """
 
-# generate left-of and right-of clues
-for left, right in product(puzzle.houses, puzzle.houses):
-    if left >= right:
-        continue
+    clues: Set[Clue] = set()
+    for left, right in product(puzzle.houses, puzzle.houses):
+        if left >= right:
+            continue
 
-    items_left = {item: loc for item, loc in solution.items() if loc == left}
-    items_right = {item: loc for item, loc in solution.items() if loc == right}
-    pairs: Set[Tuple[Literal, Literal]] = {
-        (item1, item2) for item1, item2 in product(items_left, items_right)
-    }
-    for pair in pairs:
-        # (a left-of b) is guaranteed to be redundant with (b right-of a), so only add one
-        if randint(0, 1) == 0:
-            clues.add(left_of(pair[0], pair[1], puzzle.houses))
-        else:
-            clues.add(right_of(pair[1], pair[0], puzzle.houses))
+        items_left = {item: loc for item, loc in solution.items() if loc == left}
+        items_right = {item: loc for item, loc in solution.items() if loc == right}
+        pairs: Set[Tuple[Literal, Literal]] = {
+            (item1, item2) for item1, item2 in product(items_left, items_right)
+        }
+        for pair in pairs:
+            if randint(0, 1) == 0:
+                clues.add(left_of(pair[0], pair[1], puzzle.houses))
+            else:
+                clues.add(right_of(pair[1], pair[0], puzzle.houses))
 
-# generate one-between
-for left, right in zip(puzzle.houses, puzzle.houses[2:]):
-    items_left = {item: loc for item, loc in solution.items() if loc == left}
-    items_right = {item: loc for item, loc in solution.items() if loc == right}
-    pairs: Set[Tuple[Literal, Literal]] = {
-        (item1, item2) for item1, item2 in product(items_left, items_right)
-    }
-    for pair in pairs:
-        clues.add(one_between(pair[0], pair[1], puzzle.houses))
+    return clues
 
-# generate two-between
-for left, right in zip(puzzle.houses, puzzle.houses[3:]):
-    items_left = {item: loc for item, loc in solution.items() if loc == left}
-    items_right = {item: loc for item, loc in solution.items() if loc == right}
-    pairs: Set[Tuple[Literal, Literal]] = {
-        (item1, item2) for item1, item2 in product(items_left, items_right)
-    }
-    for pair in pairs:
-        clues.add(two_between(pair[0], pair[1], puzzle.houses))
+
+def generate_one_between(puzzle: Puzzle, solution: Dict[Literal, int]) -> Set[Clue]:
+    """Generate the `one_between` Clue instances"""
+
+    clues: Set[Clue] = set()
+    for left, right in zip(puzzle.houses, puzzle.houses[2:]):
+        items_left = {item: loc for item, loc in solution.items() if loc == left}
+        items_right = {item: loc for item, loc in solution.items() if loc == right}
+        pairs: Set[Tuple[Literal, Literal]] = {
+            (item1, item2) for item1, item2 in product(items_left, items_right)
+        }
+        for pair in pairs:
+            clues.add(one_between(pair[0], pair[1], puzzle.houses))
+
+    return clues
+
+
+def generate_two_between(puzzle: Puzzle, solution: Dict[Literal, int]) -> Set[Clue]:
+    """Generate the `two_between` Clue instances"""
+
+    clues: Set[Clue] = set()
+    for left, right in zip(puzzle.houses, puzzle.houses[3:]):
+        items_left = {item: loc for item, loc in solution.items() if loc == left}
+        items_right = {item: loc for item, loc in solution.items() if loc == right}
+        pairs: Set[Tuple[Literal, Literal]] = {
+            (item1, item2) for item1, item2 in product(items_left, items_right)
+        }
+        for pair in pairs:
+            clues.add(two_between(pair[0], pair[1], puzzle.houses))
+
+    return clues
 
 
 def has_unique_solution(puzzle: Puzzle, clues: Iterable[Clue]) -> bool:
@@ -254,8 +265,50 @@ def reduce_clues(puzzle: Puzzle, clues: Set[Clue]) -> Set[Clue]:
     return minimal_clues
 
 
-reduced = reduce_clues(puzzle, clues)
-for clue in reduced:
-    puzzle.add_clue(clue)
+if __name__ == "__main__":
+    elements = [Kiro, Bottlecap, Smoothie, RecolorMedal]
 
-print(puzzle)
+    # set up the puzzle with default constraints
+    puzzle = Puzzle(elements=elements, n_houses=5).set_constraints()
+
+    # this will be the solution
+    solution: Dict[Literal, int] = {
+        Kiro.kaya: 1,
+        Kiro.sugar_sketch: 2,
+        Kiro.skeleko: 3,
+        Kiro.silosaur: 4,
+        Kiro.traptor_costume: 5,
+        Bottlecap.yellow: 1,
+        Bottlecap.silver: 2,
+        Bottlecap.red: 3,
+        Bottlecap.green: 4,
+        Bottlecap.blue: 5,
+        Smoothie.watermelon: 1,
+        Smoothie.dusk: 2,
+        Smoothie.spring: 3,
+        Smoothie.lilac: 4,
+        Smoothie.cherry: 5,
+        RecolorMedal.second_ed: 1,
+        RecolorMedal.gold: 2,
+        RecolorMedal.pink: 3,
+        RecolorMedal.first: 4,
+        RecolorMedal.ghost: 5,
+    }
+
+    # generate all the clues
+    clues: Set[Clue] = set()
+    for generate_function in (
+        generate_found_at,
+        generate_same_house,
+        generate_consecutive_beside,
+        generate_left_right_of,
+        generate_one_between,
+        generate_two_between,
+    ):
+        clues = clues.union(generate_function(puzzle, solution))
+
+    reduced = reduce_clues(puzzle, clues)
+    for clue in reduced:
+        puzzle.add_clue(clue)
+
+    print(puzzle)
