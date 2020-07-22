@@ -164,6 +164,30 @@ class Smoothie(Literal):
     lilac = "the Lilac smoothie drinker"
 
 
+class Smoothie2(Literal):
+    @classmethod
+    def description(cls) -> str:
+        return f"Everyone has a favorite smoothie: blueberry, lemon, phantom spring, sakura, butterscotch."
+
+    blueberry = "the adoptable who likes Blueberry smoothies"
+    lemon = "the Lemon smoothie lover"
+    phantom_spring = "the adoptable who likes Phantom Spring smoothies"
+    sakura = "the adoptable whose favorite smoothie is Sakura"
+    butterscotch = "the Butterscotch smoothie drinker"
+
+
+class Smoothie3(Literal):
+    @classmethod
+    def description(cls) -> str:
+        return f"Everyone has a favorite smoothie: dawn, desert, lime, abyss, life."
+
+    dawn = "the adoptable who likes Dawn smoothies"
+    desert = "the Desert smoothie lover"
+    lime = "the adoptable who likes Lime smoothies"
+    abyss = "the adoptable whose favorite smoothie is Abyss"
+    life = "the Life smoothie drinker"
+
+
 class Bottlecap(Literal):
     @classmethod
     def description(cls) -> str:
@@ -186,3 +210,27 @@ class RecolorMedal(Literal):
     ghost = "the ghost recolor"
     pink = "the pink adoptable"
     gold = "the adoptable with a heart of gold"
+
+
+class FavoriteGame(Literal):
+    @classmethod
+    def description(cls) -> str:
+        return f"Everyone has a favorite game: Dirt Digger, Guess the Number, Fishing Fever, Wonder Wheel, Quality Assurance."
+
+    dirt_digger = "the adoptable who likes Dirt Digger"
+    guess_the_number = "the one who plays Guess the Number"
+    fishing_fever = "the Fishing Fever lover"
+    wonder_wheel = "the adoptable who spins the Wonder Wheel"
+    quality_assurance = "the adoptable who plays Quality Assurance"
+
+
+class Tribe(Literal):
+    @classmethod
+    def description(cls) -> str:
+        return f"Everyone has an Altazan tribe: quake, cursed, forest, volcano, storm."
+
+    quake = "the one in the Quake tribe"
+    cursed = "the Cursed tribe member"
+    forest = "the Forest tribe member"
+    volcano = "the adoptable in the Volcano tribe"
+    storm = "the adoptable in the Storm tribe"
