@@ -20,7 +20,7 @@ from clues import (
     same_house,
     two_between,
 )
-from literals import Bottlecap, Kiro, Literal, RecolorMedal, Smoothie
+from literals import *
 from puzzle import Puzzle
 from sat_utils import itersolve
 
@@ -266,33 +266,33 @@ def reduce_clues(puzzle: Puzzle, clues: Set[Clue]) -> Set[Clue]:
 
 
 if __name__ == "__main__":
-    elements = [Kiro, Bottlecap, Smoothie, RecolorMedal]
+    elements = [Kaya, Smoothie2, Tribe, FavoriteGame]
 
     # set up the puzzle with default constraints
     puzzle = Puzzle(elements=elements, n_houses=5).set_constraints()
 
     # this will be the solution
     solution: Dict[Literal, int] = {
-        Kiro.kaya: 1,
-        Kiro.sugar_sketch: 2,
-        Kiro.skeleko: 3,
-        Kiro.silosaur: 4,
-        Kiro.traptor_costume: 5,
-        Bottlecap.yellow: 1,
-        Bottlecap.silver: 2,
-        Bottlecap.red: 3,
-        Bottlecap.green: 4,
-        Bottlecap.blue: 5,
-        Smoothie.watermelon: 1,
-        Smoothie.dusk: 2,
-        Smoothie.spring: 3,
-        Smoothie.lilac: 4,
-        Smoothie.cherry: 5,
-        RecolorMedal.second_ed: 1,
-        RecolorMedal.gold: 2,
-        RecolorMedal.pink: 3,
-        RecolorMedal.first: 4,
-        RecolorMedal.ghost: 5,
+        Smoothie2.blueberry: 1,
+        Smoothie2.butterscotch: 2,
+        Smoothie2.phantom_spring: 3,
+        Smoothie2.lemon: 4,
+        Smoothie2.sakura: 5,
+        FavoriteGame.quality_assurance: 1,
+        FavoriteGame.dirt_digger: 2,
+        FavoriteGame.fishing_fever: 3,
+        FavoriteGame.wonder_wheel: 4,
+        FavoriteGame.guess_the_number: 5,
+        Tribe.quake: 1,
+        Tribe.cursed: 2,
+        Tribe.storm: 3,
+        Tribe.forest: 4,
+        Tribe.volcano: 5,
+        Kaya.life: 1,
+        Kaya.joy: 2,
+        Kaya.wisdom: 3,
+        Kaya.love: 4,
+        Kaya.harmony: 5,
     }
 
     # generate all the clues
