@@ -6,7 +6,7 @@ Solve the Einstein puzzle using Raymond Hettinger's approach.
 from __future__ import annotations
 
 from contextlib import contextmanager
-from typing import Generator, Iterable, List, Set, Tuple, Type
+from typing import Dict, Generator, Iterable, List, Set, Tuple, Type
 
 import sat_utils
 
@@ -56,9 +56,30 @@ class Puzzle:
     logical clauses), we lump them all together at solve time.
     """
 
-    def __init__(self, elements: List[Type[Literal]], n_houses: int = 5) -> None:
-        self.element_classes = elements
-        self.literals: List[Literal] = [el for group in self.element_classes for el in group]
+    def __init__(
+        self,
+        *,
+        element_types: Iterable[Type[Literal]],
+        elements: Iterable[Literal] = None,
+        n_houses: int = 5,
+    ) -> None:
+        """
+        Initialize a puzzle with different kinds of elements. The `element_types` is a list of the
+        *kinds* of literals we're using, i.e., Smoothie, FavoriteFood, FavoriteColor, etc. The
+        `elements` is a list of the literals themselves, since some of the literal types have more
+        than `n_houses` elements.
+
+        If `elements` is not provided, we assume that every member of each of `element_types` is
+        part of the puzzle. This is the case in example puzzles, but rarely the case for generated
+        ones.
+        """
+
+        self.element_classes = list(element_types)
+        if elements is None:
+            self.literals = [el for el_class in self.element_classes for el in el_class]
+        else:
+            self.literals = list(elements)
+
         self.houses = tuple(range(1, n_houses + 1))
         self.clues: Set[Clue] = set()
         self.constraints: List[Tuple[str]] = []
@@ -70,8 +91,11 @@ class Puzzle:
     def set_constraints(self) -> Puzzle:
         # each house gets exactly one value from each set of literals
         for house in self.houses:
-            for enum_type in self.element_classes:
-                self._add_constraint(sat_utils.one_of(comb(value, house) for value in enum_type))
+            for element_type in self.element_classes:
+                literals_of_that_type = [l for l in self.literals if isinstance(l, element_type)]
+                self._add_constraint(
+                    sat_utils.one_of(comb(value, house) for value in literals_of_that_type)
+                )
 
         # each value gets assigned to exactly one house
         for literal in self.literals:
@@ -117,8 +141,9 @@ class Puzzle:
         s += f"There are {len(self.houses)} houses ({self.houses[0]} on the left, "
         s += f"{self.houses[-1]} on the right), each with different people in them. "
         s += f"They all have different characteristics:\n"
-        for puzzle_element in self.element_classes:
-            s += f" - {puzzle_element.description()} \n"
+        for element_type in self.element_classes:
+            literals = [l for l in self.literals if isinstance(l, element_type)]
+            s += f" - {element_type.description()}: " + ", ".join(e.name for e in literals) + "\n"
 
         s += "\n"
         for i, clue in enumerate(self.clues):
@@ -165,7 +190,7 @@ if __name__ == "__main__":
     literals: List[Literal] = [el for group in enum_classes for el in group]
 
     # set up the puzzle with constraints and clues
-    puzzle = Puzzle(elements=[Color, Nationality, Drink, Cigar, Animal])
+    puzzle = Puzzle(element_types=[Color, Nationality, Drink, Cigar, Animal])
 
     puzzle = (
         puzzle.set_constraints()
@@ -215,7 +240,7 @@ if __name__ == "__main__":
     literals = [el for group in enum_classes for el in group]
 
     # set up the puzzle with constraints and clues
-    puzzle = Puzzle(elements=[Mother, Children, Flower, Food])
+    puzzle = Puzzle(element_types=[Mother, Children, Flower, Food])
 
     puzzle = (
         puzzle.set_constraints()

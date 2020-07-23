@@ -143,55 +143,55 @@ class Food(Literal):
 class Kiro(Literal):
     @classmethod
     def description(cls) -> str:
-        return f"Each house has a different type of Kiro: Kaya, Silosaur Costume, Sugar Sketch, Traptor Costume, and Skeleko."
+        return f"Each house has a different type of Kiro"
 
     kaya = "the Kaya Kiro"
-    silosaur = "the Kiro disguised as a Silosaur"
     sugar_sketch = "the Sugar Sketch Kiro"
+    silosaur = "the Kiro disguised as a Silosaur"
+    skyrant = "the Kiro in a Skyrant costume "
     traptor_costume = "the Kiro in a Traptor costume"
+    terasaur_costume = "the Terasaur Costume Kiro"
     skeleko = "the Skeleko Kiro"
+    zodiac_dragon = "the Zodiac Dragon Kiro"
+    gem_dragon = "the Gem Dragon Kiro"
+    plushie = "the Plushie Kiro"
+    gloray = "the Gloray Kiro"
+    rabbit = "the Rabbit Kiro"
+    holiday_sweets = "the Holiday Sweets Kiro"
+    baby = "the Baby Kiro"
+    zaeris = "the Zaeris Kiro"
 
 
 class Smoothie(Literal):
     @classmethod
     def description(cls) -> str:
-        return f"Everyone has a favorite smoothie: Cherry, Watermelon, Spring, Dusk, Lilac."
+        return f"Everyone has a favorite smoothie"
 
     cherry = "the adoptable who likes Cherry smoothies"
-    watermelon = "the Watermelon smoothie lover"
-    spring = "the adoptable who likes Spring smoothies"
-    dusk = "the adoptable whose favorite smoothie is Dusk"
-    lilac = "the Lilac smoothie drinker"
-
-
-class Smoothie2(Literal):
-    @classmethod
-    def description(cls) -> str:
-        return f"Everyone has a favorite smoothie: Blueberry, Lemon, Phantom Spring, Sakura, Butterscotch."
-
-    blueberry = "the adoptable who likes Blueberry smoothies"
-    lemon = "the Lemon smoothie lover"
-    phantom_spring = "the adoptable who likes Phantom Spring smoothies"
-    sakura = "the adoptable whose favorite smoothie is Sakura"
-    butterscotch = "the Butterscotch smoothie drinker"
-
-
-class Smoothie3(Literal):
-    @classmethod
-    def description(cls) -> str:
-        return f"Everyone has a favorite smoothie: Dawn, Desert, Lime, Abyss, Life."
-
-    dawn = "the adoptable who likes Dawn smoothies"
     desert = "the Desert smoothie lover"
-    lime = "the adoptable who likes Lime smoothies"
+    watermelon = "the Watermelon smoothie lover"
+    dragonfruit = "the Dragonfruit smoothie lover"
+    lime = "the adoptable who drinks Lime smoothies"
+    blueberry = "the adoptable who drinks Blueberry smoothies"
+    lemon = "the Lemon smoothie lover"
+    dusk = "the adoptable whose favorite smoothie is Dusk"
+    dawn = "the adoptable who likes Dawn smoothies"
+    spring = "the adoptable who likes Spring smoothies"
+    seafoam = "the adoptable who likes Seafoam smoothies"
+    phantom_spring = "the adoptable who likes Phantom Spring smoothies"
     abyss = "the adoptable whose favorite smoothie is Abyss"
+    butterscotch = "the Butterscotch smoothie drinker"
+    lilac = "the Lilac smoothie drinker"
+    sakura = "the adoptable whose favorite smoothie is Sakura"
     life = "the Life smoothie drinker"
+    darkness = "the Darkness smoothie drinker"
+    earth = "the adoptable who likes Earth smoothies"
 
 
 class Bottlecap(Literal):
     @classmethod
     def description(cls) -> str:
-        return f"Everyone keeps a certain type of Bottlecap: red, yellow, green, blue, silver."
+        return f"Everyone keeps a certain type of Bottlecap"
 
     red = "the adoptable who has red bottlecaps"
     yellow = "the adoptable who likes YBC"
@@ -203,9 +203,9 @@ class Bottlecap(Literal):
 class RecolorMedal(Literal):
     @classmethod
     def description(cls) -> str:
-        return f"Everyone is special in some way: 1st place, 2nd ed, ghost, pink, gold."
+        return f"Everyone has a recolor or medal"
 
-    first = "the 1st place adoptable"
+    top_level = "the top level adoptable"
     second_ed = "the 2nd edition adoptable"
     ghost = "the ghost recolor"
     pink = "the pink adoptable"
@@ -215,19 +215,21 @@ class RecolorMedal(Literal):
 class FavoriteGame(Literal):
     @classmethod
     def description(cls) -> str:
-        return f"Everyone has a favorite game: Dirt Digger, Guess the Number, Fishing Fever, Wonder Wheel, Quality Assurance."
+        return f"Everyone has a favorite game"
 
     dirt_digger = "the adoptable who likes Dirt Digger"
     guess_the_number = "the one who plays Guess the Number"
     fishing_fever = "the Fishing Fever lover"
+    sock_summoning = "the adoptable who plays Sock Summoning"
     wonder_wheel = "the adoptable who spins the Wonder Wheel"
     quality_assurance = "the adoptable who plays Quality Assurance"
+    stop_and_swap = "the one who often plays Stop and Swap"
 
 
 class Tribe(Literal):
     @classmethod
     def description(cls) -> str:
-        return f"Everyone has an Altazan tribe: Quake, Cursed, Forest, Volcano, Storm."
+        return f"Everyone has an Altazan tribe"
 
     quake = "the one in the Quake tribe"
     cursed = "the Cursed tribe member"
@@ -239,11 +241,47 @@ class Tribe(Literal):
 class Kaya(Literal):
     @classmethod
     def description(cls) -> str:
-        return f"They are of five different types: Joy, Life, Harmony, Wisdom, Love."
+        return f"They are five different types of Kaya"
 
     joy = "the Kaya of Joy"
     life = "the Kaya of Life"
     harmony = "the Kaya of Harmony"
     wisdom = "the Kaya of Wisdom"
     love = "the Kaya of Love"
+
+
+class TraptorPrimary(Literal):
+    @classmethod
+    def description(cls) -> str:
+        return f"They have different primary colors"
+
+    majestic = "the Majestic traptor"
+    grand = "the Grand traptor"
+    stunning = "the Stunning traptor"
+    marvellous = "the Marvellous traptor"
+    heroic = "the Heroic traptor"
+
+
+class TraptorSecondary(Literal):
+    @classmethod
+    def description(cls) -> str:
+        return f"They have different secondary colors"
+
+    sky = "the Sky traptor"
+    forest = "the Forest traptor"
+    night = "the Night traptor"
+    sun = "the Sun traptor"
+    sand = "the Sand traptor"
+
+
+class TraptorTertiary(Literal):
+    @classmethod
+    def description(cls) -> str:
+        return f"They have different tertiary colors"
+
+    soarer = "the Soarer traptor"
+    diver = "the Diver traptor"
+    screecher = "the Screecher traptor"
+    hunter = "the Hunter traptor"
+    nurturer = "the Nurturer traptor"
 

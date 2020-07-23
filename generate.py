@@ -265,19 +265,19 @@ def reduce_clues(puzzle: Puzzle, clues: Set[Clue]) -> Set[Clue]:
     return minimal_clues
 
 
-if __name__ == "__main__":
-    elements = [Kaya, Smoothie2, Tribe, FavoriteGame]
+import random
 
-    # set up the puzzle with default constraints
-    puzzle = Puzzle(elements=elements, n_houses=5).set_constraints()
+if __name__ == "__main__":
+    random.seed(12)
+    elements = [Kaya, Smoothie, Tribe, FavoriteGame]
 
     # this will be the solution
     solution: Dict[Literal, int] = {
-        Smoothie2.blueberry: 1,
-        Smoothie2.butterscotch: 2,
-        Smoothie2.phantom_spring: 3,
-        Smoothie2.lemon: 4,
-        Smoothie2.sakura: 5,
+        Smoothie.blueberry: 1,
+        Smoothie.butterscotch: 2,
+        Smoothie.phantom_spring: 3,
+        Smoothie.lemon: 4,
+        Smoothie.sakura: 5,
         FavoriteGame.quality_assurance: 1,
         FavoriteGame.dirt_digger: 2,
         FavoriteGame.fishing_fever: 3,
@@ -294,6 +294,10 @@ if __name__ == "__main__":
         Kaya.love: 4,
         Kaya.harmony: 5,
     }
+
+    # set up the puzzle with default constraints
+    puzzle = Puzzle(element_types=elements, elements=solution.keys(), n_houses=5).set_constraints()
+    print(puzzle)
 
     # generate all the clues
     clues: Set[Clue] = set()
