@@ -155,7 +155,7 @@ class Kiro(Literal):
 class Smoothie(Literal):
     @classmethod
     def description(cls) -> str:
-        return f"Everyone has a favorite smoothie: cherry, watermelon, spring, dusk, lilac."
+        return f"Everyone has a favorite smoothie: Cherry, Watermelon, Spring, Dusk, Lilac."
 
     cherry = "the adoptable who likes Cherry smoothies"
     watermelon = "the Watermelon smoothie lover"
@@ -167,7 +167,7 @@ class Smoothie(Literal):
 class Smoothie2(Literal):
     @classmethod
     def description(cls) -> str:
-        return f"Everyone has a favorite smoothie: blueberry, lemon, phantom spring, sakura, butterscotch."
+        return f"Everyone has a favorite smoothie: Blueberry, Lemon, Phantom Spring, Sakura, Butterscotch."
 
     blueberry = "the adoptable who likes Blueberry smoothies"
     lemon = "the Lemon smoothie lover"
@@ -179,7 +179,7 @@ class Smoothie2(Literal):
 class Smoothie3(Literal):
     @classmethod
     def description(cls) -> str:
-        return f"Everyone has a favorite smoothie: dawn, desert, lime, abyss, life."
+        return f"Everyone has a favorite smoothie: Dawn, Desert, Lime, Abyss, Life."
 
     dawn = "the adoptable who likes Dawn smoothies"
     desert = "the Desert smoothie lover"
@@ -227,10 +227,23 @@ class FavoriteGame(Literal):
 class Tribe(Literal):
     @classmethod
     def description(cls) -> str:
-        return f"Everyone has an Altazan tribe: quake, cursed, forest, volcano, storm."
+        return f"Everyone has an Altazan tribe: Quake, Cursed, Forest, Volcano, Storm."
 
     quake = "the one in the Quake tribe"
     cursed = "the Cursed tribe member"
     forest = "the Forest tribe member"
     volcano = "the adoptable in the Volcano tribe"
     storm = "the adoptable in the Storm tribe"
+
+
+class Kaya(Literal):
+    @classmethod
+    def description(cls) -> str:
+        return f"They are of five different types: Joy, Life, Harmony, Wisdom, Love."
+
+    joy = "the Kaya of Joy"
+    life = "the Kaya of Life"
+    harmony = "the Kaya of Harmony"
+    wisdom = "the Kaya of Wisdom"
+    love = "the Kaya of Love"
+
