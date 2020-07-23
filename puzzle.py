@@ -113,7 +113,10 @@ class Puzzle:
         return cnf
 
     def __repr__(self) -> str:
-        s = f"This puzzle has {len(self.houses)} houses with different people in them:\n"
+        s = f"This is a logic puzzle. "
+        s += f"There are {len(self.houses)} houses ({self.houses[0]} on the left, "
+        s += f"{self.houses[-1]} on the right), each with different people in them. "
+        s += f"They all have different characteristics:\n"
         for puzzle_element in self.element_classes:
             s += f" - {puzzle_element.description()} \n"
 
