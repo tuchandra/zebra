@@ -212,6 +212,20 @@ class RecolorMedal(Literal):
     gold = "the adoptable with a heart of gold"
 
 
+class NPC(Literal):
+    @classmethod
+    def description(cls) -> str:
+        return f"Each is an NPC on the site"
+
+    jim = "Dirt Digger Jim"
+    amelia = "Amelia"
+    chip = "Fishin' Chip"
+    riley = "Ringmaster Riley"
+    crowley = "Crowley"
+    silver = "Silver the Kua"
+    jagger = "Jagger"
+
+
 class FavoriteGame(Literal):
     @classmethod
     def description(cls) -> str:
@@ -222,8 +236,11 @@ class FavoriteGame(Literal):
     fishing_fever = "the Fishing Fever lover"
     sock_summoning = "the adoptable who plays Sock Summoning"
     wonder_wheel = "the adoptable who spins the Wonder Wheel"
+    fetch = "the adoptable playing Fetch"
     quality_assurance = "the adoptable who plays Quality Assurance"
     stop_and_swap = "the one who often plays Stop and Swap"
+    uchi_fusion = "the one who plays Uchi Fusion"
+    freedom_forest = "the one in Freedom Forest"
 
 
 class Tribe(Literal):
@@ -284,4 +301,17 @@ class TraptorTertiary(Literal):
     screecher = "the Screecher traptor"
     hunter = "the Hunter traptor"
     nurturer = "the Nurturer traptor"
+
+
+class Egg(Literal):
+    @classmethod
+    def description(cls) -> str:
+        return f"They are each giving out a type of egg"
+
+    golden = "the one giving out Golden Eggs"
+    trollden = "the one who keeps Trollden Eggs"
+    topaz = "the one with Topaz Eggs"
+    crystal = "the one giving out Crystal Eggs"
+    traptor = "the one who has Traptor Eggs"
+    marinodon = "the one giving out Marinodon Eggs"
 
