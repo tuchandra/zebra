@@ -138,9 +138,10 @@ class Puzzle:
 
     def __repr__(self) -> str:
         s = f"This is a logic puzzle. "
-        s += f"There are {len(self.houses)} houses ({self.houses[0]} on the left, "
-        s += f"{self.houses[-1]} on the right), each with different people in them. "
-        s += f"They all have different characteristics:\n"
+        s += f"There are {len(self.houses)} houses (numbered {self.houses[0]} on the left, "
+        s += f"{self.houses[-1]} on the right), from the perspective of someone standing across "
+        s += f"the street from them. Each has a different person in them. "
+        s += f"They have different characteristics:\n"
         for element_type in self.element_classes:
             literals = [l for l in self.literals if isinstance(l, element_type)]
             s += f" - {element_type.description()}: " + ", ".join(e.name for e in literals) + "\n"
