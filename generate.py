@@ -162,7 +162,7 @@ def try_to_remove(puzzle: Puzzle, clues: Set[Clue], n: int) -> Set[Clue]:
         # relative probabilities of each type of clue being selected for removal
         weights: Dict[Type[Clue], float] = {
             not_at: 0.5,
-            found_at: 1,
+            found_at: 0.75,
             left_of: 1.5,
             right_of: 1.5,
             one_between: 2,
@@ -269,34 +269,32 @@ import random
 
 if __name__ == "__main__":
     random.seed(12)
-    elements = [Kaya, Smoothie, Tribe, FavoriteGame]
+    elements = [NPC, FavoriteGame, Egg]
 
     # this will be the solution
     solution: Dict[Literal, int] = {
-        Smoothie.blueberry: 1,
-        Smoothie.butterscotch: 2,
-        Smoothie.phantom_spring: 3,
-        Smoothie.lemon: 4,
-        Smoothie.sakura: 5,
-        FavoriteGame.quality_assurance: 1,
-        FavoriteGame.dirt_digger: 2,
-        FavoriteGame.fishing_fever: 3,
+        NPC.jim: 1,
+        NPC.jagger: 2,
+        NPC.chip: 3,
+        NPC.amelia: 4,
+        NPC.riley: 5,
+        NPC.silver: 6,
+        Egg.trollden: 1,
+        Egg.golden: 2,
+        Egg.traptor: 3,
+        Egg.crystal: 4,
+        Egg.marinodon: 5,
+        Egg.topaz: 6,
+        FavoriteGame.fetch: 1,
+        FavoriteGame.fishing_fever: 2,
+        FavoriteGame.freedom_forest: 3,
         FavoriteGame.wonder_wheel: 4,
         FavoriteGame.guess_the_number: 5,
-        Tribe.quake: 1,
-        Tribe.cursed: 2,
-        Tribe.storm: 3,
-        Tribe.forest: 4,
-        Tribe.volcano: 5,
-        Kaya.life: 1,
-        Kaya.joy: 2,
-        Kaya.wisdom: 3,
-        Kaya.love: 4,
-        Kaya.harmony: 5,
+        FavoriteGame.dirt_digger: 6,
     }
 
     # set up the puzzle with default constraints
-    puzzle = Puzzle(element_types=elements, elements=solution.keys(), n_houses=5).set_constraints()
+    puzzle = Puzzle(element_types=elements, elements=solution.keys(), n_houses=6).set_constraints()
     print(puzzle)
 
     # generate all the clues
