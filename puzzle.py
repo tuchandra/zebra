@@ -6,6 +6,7 @@ Solve the Einstein puzzle using Raymond Hettinger's approach.
 from __future__ import annotations
 
 from contextlib import contextmanager
+from random import shuffle
 from typing import Dict, Generator, Iterable, List, Set, Tuple, Type
 
 import sat_utils
@@ -144,6 +145,7 @@ class Puzzle:
         s += f"They have different characteristics:\n"
         for element_type in self.element_classes:
             literals = [l for l in self.literals if isinstance(l, element_type)]
+            shuffle(literals)
             s += f" - {element_type.description()}: " + ", ".join(e.name for e in literals) + "\n"
 
         s += "\n"
