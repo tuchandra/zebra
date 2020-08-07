@@ -6,7 +6,7 @@ This is a driver script that can be used to generate new zebra puzzles.
 
 from itertools import product
 from random import choices, randint, sample
-from typing import Dict, Iterable, List, Set, Tuple, Type
+from typing import Dict, Iterable, List, Optional, Set, Tuple, Type
 
 from clues import (
     Clue,
@@ -161,12 +161,14 @@ def try_to_remove(puzzle: Puzzle, clues: Set[Clue], n: int) -> Set[Clue]:
     def weight(clue: Clue) -> float:
         # relative probabilities of each type of clue being selected for removal
         weights: Dict[Type[Clue], float] = {
-            not_at: 0.5,
+            not_at: 0.75,
             found_at: 0.75,
-            left_of: 1.5,
-            right_of: 1.5,
-            one_between: 2,
-            two_between: 2,
+            same_house: 0.75,
+            left_of: 1.2,
+            right_of: 1.2,
+            beside: 1.2,
+            one_between: 1.5,
+            two_between: 1.5,
         }
 
         return weights.get(type(clue), 1)
@@ -184,10 +186,14 @@ def try_to_remove(puzzle: Puzzle, clues: Set[Clue], n: int) -> Set[Clue]:
     return clues
 
 
-def reduce_individually(puzzle: Puzzle, clues: Set[Clue]) -> Set[Clue]:
+def reduce_individually(
+    puzzle: Puzzle, clues: Set[Clue], removed: Set[Clue]
+) -> Tuple[Set[Clue], Set[Clue]]:
     """
-    Attempt to remove each candidate clue one by one. If the puzzle remains uniquely solvable,
-    return the reduced set. If not, return the original.
+    Attempt to remove each candidate clue one by one. 
+    
+    The sets `clues` and `removed` are modified in-place. Unnecessary clues get removed from `clues`
+    and added to `removed`. If no clues can be removed, we return the original two sets.
     """
 
     candidates = sample(clues, len(clues))
@@ -195,13 +201,14 @@ def reduce_individually(puzzle: Puzzle, clues: Set[Clue]) -> Set[Clue]:
         clues.remove(clue)
         if has_unique_solution(puzzle, clues):
             print(f"Removed {clue=}")
+            removed.add(clue)
             continue  # we were fine to remove this clue
         clues.add(clue)
 
-    return clues
+    return clues, removed
 
 
-def reduce_clues(puzzle: Puzzle, clues: Set[Clue]) -> Set[Clue]:
+def reduce_clues(puzzle: Puzzle, clues: Set[Clue]) -> Tuple[Set[Clue], Set[Clue]]:
     """
     Reduce a set of clues to a minimally solvable set.
 
@@ -226,6 +233,12 @@ def reduce_clues(puzzle: Puzzle, clues: Set[Clue]) -> Set[Clue]:
     The *secondary reduction process* is much simpler: now that the set is narrowed substantially,
     we can be more brute-forcey. Attempt to remove each clue and see if the puzzle is still
     solvable.
+
+    However, the secondary reduction process can result in a puzzle that is *too hard* to solve
+    (though technically uniquely solvable by a computer or sufficiently skilled human). This
+    algorithm returns a second set of clues that were removed during the secondary reduction
+    process. These can be thought of as extra clues to add or hints to give to anyone solving the
+    puzzle.
 
     """
 
@@ -259,42 +272,48 @@ def reduce_clues(puzzle: Puzzle, clues: Set[Clue]) -> Set[Clue]:
 
     # secondary reduction time! While we can still remove clues, do so; then we're done.
     print(f"Starting the secondary reduction.")
-    while len(minimal_clues) > len((minimal_clues := reduce_individually(puzzle, minimal_clues))):
-        pass
+    removed_clues: Set[Clue] = set()
+    while True:
+        minimal_clues_size = len(minimal_clues)
+        minimal_clues, removed_clues = reduce_individually(puzzle, minimal_clues, removed_clues)
+        if len(minimal_clues) == minimal_clues_size:
+            break
 
-    return minimal_clues
+    return minimal_clues, removed_clues
 
 
 import random
 
 if __name__ == "__main__":
     random.seed(12)
-    elements = [NPC, FavoriteGame, Egg]
+    elements = [TraptorPrimary, TraptorSecondary, TraptorTertiary, Smoothie]
 
     # this will be the solution
     solution: Dict[Literal, int] = {
-        NPC.jim: 1,
-        NPC.jagger: 2,
-        NPC.chip: 3,
-        NPC.amelia: 4,
-        NPC.riley: 5,
-        NPC.silver: 6,
-        Egg.trollden: 1,
-        Egg.golden: 2,
-        Egg.traptor: 3,
-        Egg.crystal: 4,
-        Egg.marinodon: 5,
-        Egg.topaz: 6,
-        FavoriteGame.fetch: 1,
-        FavoriteGame.fishing_fever: 2,
-        FavoriteGame.freedom_forest: 3,
-        FavoriteGame.wonder_wheel: 4,
-        FavoriteGame.guess_the_number: 5,
-        FavoriteGame.dirt_digger: 6,
+        TraptorPrimary.grand: 1,
+        TraptorPrimary.majestic: 2,
+        TraptorPrimary.stunning: 3,
+        TraptorPrimary.heroic: 4,
+        TraptorPrimary.marvellous: 5,
+        TraptorSecondary.forest: 1,
+        TraptorSecondary.night: 2,
+        TraptorSecondary.sun: 3,
+        TraptorSecondary.sky: 4,
+        TraptorSecondary.sand: 5,
+        TraptorTertiary.soarer: 1,
+        TraptorTertiary.screecher: 2,
+        TraptorTertiary.nurturer: 3,
+        TraptorTertiary.hunter: 4,
+        TraptorTertiary.diver: 5,
+        Smoothie.seafoam: 1,
+        Smoothie.sakura: 2,
+        Smoothie.life: 3,
+        Smoothie.earth: 4,
+        Smoothie.abyss: 5,
     }
 
     # set up the puzzle with default constraints
-    puzzle = Puzzle(element_types=elements, elements=solution.keys(), n_houses=6).set_constraints()
+    puzzle = Puzzle(element_types=elements, elements=solution.keys(), n_houses=5).set_constraints()
     print(puzzle)
 
     # generate all the clues
@@ -309,8 +328,11 @@ if __name__ == "__main__":
     ):
         clues = clues.union(generate_function(puzzle, solution))
 
-    reduced = reduce_clues(puzzle, clues)
+    reduced, extras = reduce_clues(puzzle, clues)
     for clue in reduced:
         puzzle.add_clue(clue)
 
     print(puzzle)
+    print("Here are some extra clues if the puzzle is too hard:")
+    for clue in extras:
+        print(f" - {clue}")
