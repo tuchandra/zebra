@@ -272,11 +272,11 @@ class TraptorPrimary(Literal):
     def description(cls) -> str:
         return f"They have different primary colors"
 
-    majestic = "the Majestic traptor"
-    grand = "the Grand traptor"
-    stunning = "the Stunning traptor"
-    marvellous = "the Marvellous traptor"
-    heroic = "the Heroic traptor"
+    majestic = "the Majestic Traptor"
+    grand = "the Grand Traptor"
+    stunning = "the Stunning Traptor"
+    marvellous = "the Marvellous Traptor"
+    heroic = "the Heroic Traptor"
 
 
 class TraptorSecondary(Literal):
@@ -284,11 +284,11 @@ class TraptorSecondary(Literal):
     def description(cls) -> str:
         return f"They have different secondary colors"
 
-    sky = "the Sky traptor"
-    forest = "the Forest traptor"
-    night = "the Night traptor"
-    sun = "the Sun traptor"
-    sand = "the Sand traptor"
+    sky = "the Sky Traptor"
+    forest = "the Forest Traptor"
+    night = "the Night Traptor"
+    sun = "the Sun Traptor"
+    sand = "the Sand Traptor"
 
 
 class TraptorTertiary(Literal):
@@ -296,11 +296,11 @@ class TraptorTertiary(Literal):
     def description(cls) -> str:
         return f"They have different tertiary colors"
 
-    soarer = "the Soarer traptor"
-    diver = "the Diver traptor"
-    screecher = "the Screecher traptor"
-    hunter = "the Hunter traptor"
-    nurturer = "the Nurturer traptor"
+    soarer = "the Soarer Traptor"
+    diver = "the Diver Traptor"
+    screecher = "the Screecher Traptor"
+    hunter = "the Hunter Traptor"
+    nurturer = "the Nurturer Traptor"
 
 
 class Egg(Literal):
@@ -314,4 +314,16 @@ class Egg(Literal):
     crystal = "the one giving out Crystal Eggs"
     traptor = "the one who has Traptor Eggs"
     marinodon = "the one giving out Marinodon Eggs"
+
+
+class Dinomon(Literal):
+    @classmethod
+    def description(cls) -> str:
+        return f"Each is a different species of Dinomon"
+
+    terasaur = "the Terasaur"
+    carnodon = "the Carnodon"
+    silosaur = "the Silosaur"
+    marinodon = "the Marinodon"
+    traptor = "the Traptor"
 
