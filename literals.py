@@ -327,3 +327,35 @@ class Dinomon(Literal):
     marinodon = "the Marinodon"
     traptor = "the Traptor"
 
+
+class UchiType(Literal):
+    @classmethod
+    def description(cls) -> str:
+        return f"Each is a different type of Uchi"
+
+    skunk = "the Skunk Uchi"
+    eyes = "the Eyes Uchi"
+    umbral = "the Umbral Uchi"
+    mummy = "the Mummy Uchi"
+
+
+class UchiPrimary(Literal):
+    @classmethod
+    def description(cls) -> str:
+        return f"Each Uchi has a different body color"
+
+    blue = "the blue body Uchi"
+    red = "the Uchi with a red body"
+    yellow = "the yellow body Uchi"
+    green = "the Uchi with a green body"
+
+
+class UchiSecondary(Literal):
+    @classmethod
+    def description(cls) -> str:
+        return f"Each Uchi has a different secondary color (e.g., eyes, umbral, etc.)"
+
+    black = "the Uchi with secondary color black"
+    orange = "the Uchi with secondary color orange"
+    purple = "the Uchi with secondary color purple"
+    white = "the Uchi with secondary color white"
