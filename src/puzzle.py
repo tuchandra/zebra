@@ -9,8 +9,8 @@ from collections.abc import Generator, Iterable
 from contextlib import contextmanager
 from random import shuffle
 
-import sat_utils
-from clues import (
+from . import sat_utils
+from .clues import (
     Clue,
     beside,
     comb,
@@ -22,7 +22,7 @@ from clues import (
     same_house,
     two_between,
 )
-from literals import (
+from .literals import (
     Animal,
     Children,
     Cigar,

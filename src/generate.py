@@ -4,6 +4,7 @@ puzzle_generator.py
 This is a driver script that can be used to generate new zebra puzzles.
 """
 
+import random
 from collections.abc import Iterable
 from itertools import product
 from random import choices, randint, sample
@@ -193,7 +194,7 @@ def reduce_individually(
     and added to `removed`. If no clues can be removed, we return the original two sets.
     """
 
-    candidates = sample(clues, len(clues))
+    candidates = sample(tuple(clues), len(clues))
     for clue in candidates:
         clues.remove(clue)
         if has_unique_solution(puzzle, clues):
@@ -240,7 +241,7 @@ def reduce_clues(puzzle: Puzzle, clues: set[Clue]) -> tuple[set[Clue], set[Clue]
     """
 
     # this is a stupid way to shuffle the set of clues without modifying it
-    minimal_clues = set(sample(clues, k=len(clues)))
+    minimal_clues = set(sample(tuple(clues), k=len(clues)))
 
     while True:
         print(f"There are {len(minimal_clues)} clues in ba sing se")
@@ -277,9 +278,6 @@ def reduce_clues(puzzle: Puzzle, clues: set[Clue]) -> tuple[set[Clue], set[Clue]
             break
 
     return minimal_clues, removed_clues
-
-
-import random
 
 if __name__ == "__main__":
     random.seed(12)

@@ -17,8 +17,8 @@ from dataclasses import dataclass, field
 from functools import wraps
 from itertools import product
 
-import sat_utils
-from literals import SATLiteral
+from . import sat_utils
+from .literals import SATLiteral
 
 
 def _capitalize_first(repr_func):
