@@ -4,11 +4,11 @@ puzzle_generator.py
 This is a driver script that can be used to generate new zebra puzzles.
 """
 
+from collections.abc import Iterable
 from itertools import product
 from random import choices, randint, sample
-from typing import Dict, Iterable, List, Optional, Set, Tuple, Type
 
-from clues import (
+from .clues import (
     Clue,
     beside,
     consecutive,
@@ -20,15 +20,15 @@ from clues import (
     same_house,
     two_between,
 )
-from literals import *
-from puzzle import Puzzle
-from sat_utils import itersolve
+from .literals import SATLiteral, Smoothie, TraptorPrimary, TraptorSecondary, TraptorTertiary
+from .puzzle import Puzzle
+from .sat_utils import itersolve
 
 
-def generate_found_at(puzzle: Puzzle, solution: Dict[Literal, int]) -> Set[Clue]:
+def generate_found_at(puzzle: Puzzle, solution: dict[SATLiteral, int]) -> set[Clue]:
     """Generate the `found_at` / `not_at` Clue instances"""
 
-    clues: Set[Clue] = set()
+    clues: set[Clue] = set()
     for element, loc in solution.items():
         clues.add(found_at(element, loc))
 
@@ -39,13 +39,13 @@ def generate_found_at(puzzle: Puzzle, solution: Dict[Literal, int]) -> Set[Clue]
     return clues
 
 
-def generate_same_house(puzzle: Puzzle, solution: Dict[Literal, int]) -> Set[Clue]:
+def generate_same_house(puzzle: Puzzle, solution: dict[SATLiteral, int]) -> set[Clue]:
     """Generate the `same_house` Clue instances"""
 
-    clues: Set[Clue] = set()
+    clues: set[Clue] = set()
     for house in puzzle.houses:
         items_at_house = {item: loc for item, loc in solution.items() if loc == house}
-        pairs: Set[Tuple[Literal, Literal]] = {
+        pairs: set[tuple[SATLiteral, SATLiteral]] = {
             (item1, item2) for item1, item2 in product(items_at_house, repeat=2) if item1 != item2
         }
         for pair in pairs:
@@ -54,18 +54,20 @@ def generate_same_house(puzzle: Puzzle, solution: Dict[Literal, int]) -> Set[Clu
     return clues
 
 
-def generate_consecutive_beside(puzzle: Puzzle, solution: Dict[Literal, int]) -> Set[Clue]:
+def generate_consecutive_beside(puzzle: Puzzle, solution: dict[SATLiteral, int]) -> set[Clue]:
     """Generate the `consecutive` / `beside` Clue instances
 
     (Note that consecutive is just a more informative version of beside. Since they have the same
     structure, for every possible combination we'll just keep one.
     """
 
-    clues: Set[Clue] = set()
+    clues: set[Clue] = set()
     for left, right in zip(puzzle.houses, puzzle.houses[1:]):
         items_left = {item: loc for item, loc in solution.items() if loc == left}
         items_right = {item: loc for item, loc in solution.items() if loc == right}
-        pairs: Set[Tuple[Literal, Literal]] = {(item1, item2) for item1, item2 in product(items_left, items_right)}
+        pairs: set[tuple[SATLiteral, SATLiteral]] = {
+            (item1, item2) for item1, item2 in product(items_left, items_right)
+        }
         for pair in pairs:
             # consecutive is just a more informative version of beside, but they have same structure
             # because of this, don't include both
@@ -77,21 +79,23 @@ def generate_consecutive_beside(puzzle: Puzzle, solution: Dict[Literal, int]) ->
     return clues
 
 
-def generate_left_right_of(puzzle: Puzzle, solution: Dict[Literal, int]) -> Set[Clue]:
+def generate_left_right_of(puzzle: Puzzle, solution: dict[SATLiteral, int]) -> set[Clue]:
     """Generate the `left_of` / `right_of` Clue instances
 
     Note that since (x left-of y) is guaranteed to be redundant with (b right-of a), we only add
     one of these clues to the final set.
     """
 
-    clues: Set[Clue] = set()
+    clues: set[Clue] = set()
     for left, right in product(puzzle.houses, puzzle.houses):
         if left >= right:
             continue
 
         items_left = {item: loc for item, loc in solution.items() if loc == left}
         items_right = {item: loc for item, loc in solution.items() if loc == right}
-        pairs: Set[Tuple[Literal, Literal]] = {(item1, item2) for item1, item2 in product(items_left, items_right)}
+        pairs: set[tuple[SATLiteral, SATLiteral]] = {
+            (item1, item2) for item1, item2 in product(items_left, items_right)
+        }
         for pair in pairs:
             if randint(0, 1) == 0:
                 clues.add(left_of(pair[0], pair[1], puzzle.houses))
@@ -101,28 +105,32 @@ def generate_left_right_of(puzzle: Puzzle, solution: Dict[Literal, int]) -> Set[
     return clues
 
 
-def generate_one_between(puzzle: Puzzle, solution: Dict[Literal, int]) -> Set[Clue]:
+def generate_one_between(puzzle: Puzzle, solution: dict[SATLiteral, int]) -> set[Clue]:
     """Generate the `one_between` Clue instances"""
 
-    clues: Set[Clue] = set()
+    clues: set[Clue] = set()
     for left, right in zip(puzzle.houses, puzzle.houses[2:]):
         items_left = {item: loc for item, loc in solution.items() if loc == left}
         items_right = {item: loc for item, loc in solution.items() if loc == right}
-        pairs: Set[Tuple[Literal, Literal]] = {(item1, item2) for item1, item2 in product(items_left, items_right)}
+        pairs: set[tuple[SATLiteral, SATLiteral]] = {
+            (item1, item2) for item1, item2 in product(items_left, items_right)
+        }
         for pair in pairs:
             clues.add(one_between(pair[0], pair[1], puzzle.houses))
 
     return clues
 
 
-def generate_two_between(puzzle: Puzzle, solution: Dict[Literal, int]) -> Set[Clue]:
+def generate_two_between(puzzle: Puzzle, solution: dict[SATLiteral, int]) -> set[Clue]:
     """Generate the `two_between` Clue instances"""
 
-    clues: Set[Clue] = set()
+    clues: set[Clue] = set()
     for left, right in zip(puzzle.houses, puzzle.houses[3:]):
         items_left = {item: loc for item, loc in solution.items() if loc == left}
         items_right = {item: loc for item, loc in solution.items() if loc == right}
-        pairs: Set[Tuple[Literal, Literal]] = {(item1, item2) for item1, item2 in product(items_left, items_right)}
+        pairs: set[tuple[SATLiteral, SATLiteral]] = {
+            (item1, item2) for item1, item2 in product(items_left, items_right)
+        }
         for pair in pairs:
             clues.add(two_between(pair[0], pair[1], puzzle.houses))
 
@@ -138,13 +146,10 @@ def has_unique_solution(puzzle: Puzzle, clues: Iterable[Clue]) -> bool:
         _first_solution = next(solutions)
 
         # test if second solution exists or not; if it doesn't, uniquely solvable
-        if next(solutions, None) is None:
-            return True
-        else:
-            return False
+        return next(solutions, None) is None
 
 
-def try_to_remove(puzzle: Puzzle, clues: Set[Clue], n: int) -> Set[Clue]:
+def try_to_remove(puzzle: Puzzle, clues: set[Clue], n: int) -> set[Clue]:
     """
     Attempt to remove n clues from a set of candidate clues; if we are able to, return the new,
     smaller set of clues. If not, return the original set.
@@ -152,7 +157,7 @@ def try_to_remove(puzzle: Puzzle, clues: Set[Clue], n: int) -> Set[Clue]:
 
     def weight(clue: Clue) -> float:
         # relative probabilities of each type of clue being selected for removal
-        weights: Dict[Type[Clue], float] = {
+        weights: dict[type[Clue], float] = {
             not_at: 0.75,
             found_at: 0.75,
             same_house: 0.75,
@@ -166,7 +171,7 @@ def try_to_remove(puzzle: Puzzle, clues: Set[Clue], n: int) -> Set[Clue]:
         return weights.get(type(clue), 1)
 
     weights = [weight(clue) for clue in clues]
-    candidates: Set[Clue] = set(choices(list(clues), weights, k=n))
+    candidates: set[Clue] = set(choices(list(clues), weights, k=n))
 
     clues = clues.difference(candidates)
     if has_unique_solution(puzzle, clues):
@@ -178,7 +183,9 @@ def try_to_remove(puzzle: Puzzle, clues: Set[Clue], n: int) -> Set[Clue]:
     return clues
 
 
-def reduce_individually(puzzle: Puzzle, clues: Set[Clue], removed: Set[Clue]) -> Tuple[Set[Clue], Set[Clue]]:
+def reduce_individually(
+    puzzle: Puzzle, clues: set[Clue], removed: set[Clue]
+) -> tuple[set[Clue], set[Clue]]:
     """
     Attempt to remove each candidate clue one by one.
 
@@ -198,7 +205,7 @@ def reduce_individually(puzzle: Puzzle, clues: Set[Clue], removed: Set[Clue]) ->
     return clues, removed
 
 
-def reduce_clues(puzzle: Puzzle, clues: Set[Clue]) -> Tuple[Set[Clue], Set[Clue]]:
+def reduce_clues(puzzle: Puzzle, clues: set[Clue]) -> tuple[set[Clue], set[Clue]]:
     """
     Reduce a set of clues to a minimally solvable set.
 
@@ -247,18 +254,22 @@ def reduce_clues(puzzle: Puzzle, clues: Set[Clue]) -> Tuple[Set[Clue], Set[Clue]
         #
         # We use the walrus operator to update minimal_clues in place during the comparison. It'll
         # either be a reduced set of clues or the original set of clues.
-        if len(minimal_clues) > len((minimal_clues := try_to_remove(puzzle, minimal_clues, len(minimal_clues) // 10))):
+        if len(minimal_clues) > len(
+            minimal_clues := try_to_remove(puzzle, minimal_clues, len(minimal_clues) // 10)
+        ):
             continue
 
-        if len(minimal_clues) != len((minimal_clues := try_to_remove(puzzle, minimal_clues, len(minimal_clues) // 20))):
+        if len(minimal_clues) != len(
+            minimal_clues := try_to_remove(puzzle, minimal_clues, len(minimal_clues) // 20)
+        ):
             continue
 
-        if len(minimal_clues) == len((minimal_clues := try_to_remove(puzzle, minimal_clues, 1))):
+        if len(minimal_clues) == len(minimal_clues := try_to_remove(puzzle, minimal_clues, 1)):
             break
 
     # secondary reduction time! While we can still remove clues, do so; then we're done.
-    print(f"Starting the secondary reduction.")
-    removed_clues: Set[Clue] = set()
+    print("Starting the secondary reduction.")
+    removed_clues: set[Clue] = set()
     while True:
         minimal_clues_size = len(minimal_clues)
         minimal_clues, removed_clues = reduce_individually(puzzle, minimal_clues, removed_clues)
@@ -275,7 +286,7 @@ if __name__ == "__main__":
     elements = [TraptorPrimary, TraptorSecondary, TraptorTertiary, Smoothie]
 
     # this will be the solution
-    solution: Dict[Literal, int] = {
+    solution: dict[SATLiteral, int] = {
         TraptorPrimary.grand: 1,
         TraptorPrimary.majestic: 2,
         TraptorPrimary.stunning: 3,
@@ -303,7 +314,7 @@ if __name__ == "__main__":
     print(puzzle)
 
     # generate all the clues
-    clues: Set[Clue] = set()
+    clues: set[Clue] = set()
     for generate_function in (
         generate_found_at,
         generate_same_house,

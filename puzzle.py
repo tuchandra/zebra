@@ -5,36 +5,34 @@ Solve the Einstein puzzle using Raymond Hettinger's approach.
 
 from __future__ import annotations
 
+from collections.abc import Generator, Iterable
 from contextlib import contextmanager
 from random import shuffle
-from typing import Dict, Generator, Iterable, List, Set, Tuple, Type
 
 import sat_utils
-
 from clues import (
     Clue,
-    comb,
-    found_at,
-    same_house,
-    consecutive,
     beside,
+    comb,
+    consecutive,
+    found_at,
     left_of,
-    right_of,
     one_between,
+    right_of,
+    same_house,
     two_between,
 )
-
 from literals import (
-    Literal,
-    Color,
-    Nationality,
     Animal,
-    Drink,
-    Cigar,
     Children,
-    Mother,
-    Food,
+    Cigar,
+    Color,
+    Drink,
     Flower,
+    Food,
+    Mother,
+    Nationality,
+    SATLiteral,
 )
 
 
@@ -60,8 +58,8 @@ class Puzzle:
     def __init__(
         self,
         *,
-        element_types: Iterable[Type[Literal]],
-        elements: Iterable[Literal] = None,
+        element_types: Iterable[type[SATLiteral]],
+        elements: Iterable[SATLiteral] = None,
         n_houses: int = 5,
     ) -> None:
         """
@@ -82,10 +80,10 @@ class Puzzle:
             self.literals = list(elements)
 
         self.houses = tuple(range(1, n_houses + 1))
-        self.clues: Set[Clue] = set()
-        self.constraints: List[Tuple[str]] = []
+        self.clues: set[Clue] = set()
+        self.constraints: list[tuple[str]] = []
 
-    def _add_constraint(self, constraints: List[Tuple[str]]) -> Puzzle:
+    def _add_constraint(self, constraints: list[tuple[str]]) -> Puzzle:
         self.constraints.extend(constraints)
         return self
 
@@ -124,7 +122,7 @@ class Puzzle:
 
         return self
 
-    def as_cnf(self) -> List[Tuple[str]]:
+    def as_cnf(self) -> list[tuple[str]]:
         """Express puzzle as solvable CNF"""
 
         # this would be a comprehension if we could use iterable unpacking
@@ -136,11 +134,11 @@ class Puzzle:
         return cnf
 
     def __repr__(self) -> str:
-        s = f"This is a logic puzzle. "
+        s = "This is a logic puzzle. "
         s += f"There are {len(self.houses)} houses (numbered {self.houses[0]} on the left, "
         s += f"{self.houses[-1]} on the right), from the perspective of someone standing across "
-        s += f"the street from them. Each has a different person in them. "
-        s += f"They have different characteristics:\n"
+        s += "the street from them. Each has a different person in them. "
+        s += "They have different characteristics:\n"
         for element_type in self.element_classes:
             literals = [l for l in self.literals if isinstance(l, element_type)]
             shuffle(literals)
@@ -187,8 +185,8 @@ they smoke, and what pet they own.
 """
 
 if __name__ == "__main__":
-    enum_classes: List[Type[Literal]] = [Color, Nationality, Animal, Drink, Cigar]
-    literals: List[Literal] = [el for group in enum_classes for el in group]
+    enum_classes: list[type[SATLiteral]] = [Color, Nationality, Animal, Drink, Cigar]
+    literals: list[SATLiteral] = [el for group in enum_classes for el in group]
 
     # set up the puzzle with constraints and clues
     puzzle = Puzzle(element_types=[Color, Nationality, Drink, Cigar, Animal])
@@ -237,7 +235,7 @@ in between them that neither is sitting in).
 """
 
 if __name__ == "__main__":
-    enum_classes: List[Type[Literal]] = [Mother, Children, Flower, Food]
+    enum_classes: list[type[SATLiteral]] = [Mother, Children, Flower, Food]
     literals = [el for group in enum_classes for el in group]
 
     # set up the puzzle with constraints and clues

@@ -10,17 +10,15 @@ can be used in a puzzle description.
 
 """
 
-import random
-
-import sat_utils
 
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from functools import wraps
 from itertools import product
-from typing import Iterable, List, Tuple
 
-from literals import Literal
+import sat_utils
+from literals import SATLiteral
 
 
 def _capitalize_first(repr_func):
@@ -42,7 +40,7 @@ class Clue(ABC):
     """Base class for the types of clues that we allow."""
 
     @abstractmethod
-    def as_cnf(self) -> Iterable[Tuple[str]]:
+    def as_cnf(self) -> Iterable[tuple[str]]:
         ...
 
     @abstractmethod
@@ -50,7 +48,7 @@ class Clue(ABC):
         ...
 
 
-def comb(value: Literal, house: int) -> str:
+def comb(value: SATLiteral, house: int) -> str:
     """Format how a value is shown at a given house"""
 
     return f"{value} {house}"
@@ -66,10 +64,10 @@ class found_at(Clue):
      - the fourth house is red
     """
 
-    value: Literal
+    value: SATLiteral
     house: int
 
-    def as_cnf(self) -> List[Tuple[str]]:
+    def as_cnf(self) -> list[tuple[str]]:
         return [(comb(self.value, self.house),)]
 
     @_capitalize_first
@@ -88,10 +86,10 @@ class not_at(Clue):
      - the red house does not contain a cat
     """
 
-    value: Literal
+    value: SATLiteral
     house: int
 
-    def as_cnf(self) -> List[Tuple[str]]:
+    def as_cnf(self) -> list[tuple[str]]:
         return [(sat_utils.neg(comb(self.value, self.house)),)]
 
     @_capitalize_first
@@ -110,11 +108,11 @@ class same_house(Clue):
      - the red house contains a cat
     """
 
-    value1: Literal
-    value2: Literal
-    houses: Tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
+    value1: SATLiteral
+    value2: SATLiteral
+    houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
-    def as_cnf(self) -> List[Tuple[str]]:
+    def as_cnf(self) -> list[tuple[str]]:
         return sat_utils.from_dnf((comb(self.value1, i), comb(self.value2, i)) for i in self.houses)
 
     @_capitalize_first
@@ -134,11 +132,11 @@ class consecutive(Clue):
        (kittens in 2, tea in 1 OR kittens in 3, tea in 2 OR etc.)
     """
 
-    value1: Literal
-    value2: Literal
-    houses: Tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
+    value1: SATLiteral
+    value2: SATLiteral
+    houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
-    def as_cnf(self) -> List[Tuple[str]]:
+    def as_cnf(self) -> list[tuple[str]]:
         return sat_utils.from_dnf(
             (comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[1:])
         )
@@ -158,11 +156,11 @@ class beside(Clue):
      - the cat owner is (left or right) of the green house
     """
 
-    value1: Literal
-    value2: Literal
-    houses: Tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
+    value1: SATLiteral
+    value2: SATLiteral
+    houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
-    def as_cnf(self) -> List[Tuple[str]]:
+    def as_cnf(self) -> list[tuple[str]]:
         return sat_utils.from_dnf(
             [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[1:])]
             + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(self.houses, self.houses[1:])]
@@ -184,11 +182,11 @@ class left_of(Clue):
        OR the tea drinker in 3, musician in 4, 5; OR tea 4, musician 5.
     """
 
-    value1: Literal
-    value2: Literal
-    houses: Tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
+    value1: SATLiteral
+    value2: SATLiteral
+    houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
-    def as_cnf(self) -> List[Tuple[str]]:
+    def as_cnf(self) -> list[tuple[str]]:
         return sat_utils.from_dnf(
             (comb(self.value1, i), comb(self.value2, j)) for i, j in product(self.houses, self.houses) if i < j
         )
@@ -209,11 +207,11 @@ class right_of(Clue):
        OR the coffee drinker in 3, artist in 1, 2; OR coffee 2, artist 1.
     """
 
-    value1: Literal
-    value2: Literal
-    houses: Tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
+    value1: SATLiteral
+    value2: SATLiteral
+    houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
-    def as_cnf(self) -> List[Tuple[str]]:
+    def as_cnf(self) -> list[tuple[str]]:
         return sat_utils.from_dnf(
             (comb(self.value1, i), comb(self.value2, j)) for i, j in product(self.houses, self.houses) if i > j
         )
@@ -235,11 +233,11 @@ class one_between(Clue):
        OR green house 3, musician 5.
     """
 
-    value1: Literal
-    value2: Literal
-    houses: Tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
+    value1: SATLiteral
+    value2: SATLiteral
+    houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
-    def as_cnf(self) -> List[Tuple[str]]:
+    def as_cnf(self) -> list[tuple[str]]:
         return sat_utils.from_dnf(
             [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[2:])]
             + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(self.houses, self.houses[2:])]
@@ -259,11 +257,11 @@ class two_between(Clue):
      - the dog is in house 1 and red house is #4; or dog 2, red house 5
     """
 
-    value1: Literal
-    value2: Literal
-    houses: Tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
+    value1: SATLiteral
+    value2: SATLiteral
+    houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
-    def as_cnf(self) -> List[Tuple[str]]:
+    def as_cnf(self) -> list[tuple[str]]:
         return sat_utils.from_dnf(
             [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[3:])]
             + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(self.houses, self.houses[3:])]

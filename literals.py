@@ -17,7 +17,7 @@ just import Literal and implement a class like the ones here.
 from enum import Enum
 
 
-class Literal(Enum):
+class SATLiteral(Enum):
     """
     Common parent class for all puzzle elements (colors, occupations, pets, etc.).
 
@@ -30,10 +30,10 @@ class Literal(Enum):
         return "".join(cls.__members__)  # type:ignore
 
 
-class Color(Literal):
+class Color(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"Each person has a favorite color: yellow, red, white, green, or blue."
+        return "Each person has a favorite color: yellow, red, white, green, or blue."
 
     yellow = "the person who loves yellow"
     red = "the person whose favorite color is red"
@@ -42,10 +42,10 @@ class Color(Literal):
     blue = "the person who loves blue"
 
 
-class Nationality(Literal):
+class Nationality(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"The people are of nationalities: Danish, British, Swedish, Norwegian, German."
+        return "The people are of nationalities: Danish, British, Swedish, Norwegian, German."
 
     dane = "the Dane"
     brit = "the British person"
@@ -54,10 +54,10 @@ class Nationality(Literal):
     german = "the German"
 
 
-class Animal(Literal):
+class Animal(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"The people keep different animals: horses, cats, birds, fish, and dogs."
+        return "The people keep different animals: horses, cats, birds, fish, and dogs."
 
     horse = "the person who keeps horses"
     cat = "the cat lover"
@@ -66,10 +66,10 @@ class Animal(Literal):
     dog = "the dog owner"
 
 
-class Drink(Literal):
+class Drink(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"Each person has a favorite drink: water, tea, milk, coffee, and root beer."
+        return "Each person has a favorite drink: water, tea, milk, coffee, and root beer."
 
     water = "the one who only drinks water"
     tea = "the tea drinker"
@@ -78,10 +78,10 @@ class Drink(Literal):
     root_beer = "the root beer lover"
 
 
-class Cigar(Literal):
+class Cigar(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"Everyone has a different favorite cigar: Pall Mall, Prince, Blue Master, Dunhill, and blends."
+        return "Everyone has a different favorite cigar: Pall Mall, Prince, Blue Master, Dunhill, and blends."
 
     pall_mall = "the person partial to Pall Mall"
     prince = "the Prince smoker"
@@ -90,10 +90,10 @@ class Cigar(Literal):
     blends = "the person who smokes many different blends"
 
 
-class Mother(Literal):
+class Mother(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"The mothers' names are Aniya, Holly, Janelle, Kaillyn, Penny."
+        return "The mothers' names are Aniya, Holly, Janelle, Kaillyn, Penny."
 
     aniya = "Aniya"
     holly = "Holly"
@@ -102,10 +102,10 @@ class Mother(Literal):
     penny = "Penny"
 
 
-class Children(Literal):
+class Children(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"Each mother is accompanied by their child: Bella, Fred, Meredith, Samantha, Timothy."
+        return "Each mother is accompanied by their child: Bella, Fred, Meredith, Samantha, Timothy."
 
     bella = "Bella's mother"
     fred = "the mother Fred"
@@ -114,10 +114,10 @@ class Children(Literal):
     timothy = "the mother of Timothy"
 
 
-class Flower(Literal):
+class Flower(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"They all have a different favorite flower: carnations, daffodils, lilies, roses, tulips."
+        return "They all have a different favorite flower: carnations, daffodils, lilies, roses, tulips."
 
     carnations = "a carnations arrangement"
     daffodils = "a bouquet of daffodils"
@@ -126,10 +126,10 @@ class Flower(Literal):
     tulips = "the vase of tulips"
 
 
-class Food(Literal):
+class Food(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"Everyone has something different for lunch: grilled cheese, pizza, spaghetti, stew, stir fry."
+        return "Everyone has something different for lunch: grilled cheese, pizza, spaghetti, stew, stir fry."
 
     grilled_cheese = "the person eating grilled cheese"
     pizza = "the pizza lover"
@@ -138,10 +138,10 @@ class Food(Literal):
     stir_fry = "the person with stir fry"
 
 
-class Kiro(Literal):
+class Kiro(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"Each house has a different type of Kiro"
+        return "Each house has a different type of Kiro"
 
     kaya = "the Kaya Kiro"
     sugar_sketch = "the Sugar Sketch Kiro"
@@ -160,10 +160,10 @@ class Kiro(Literal):
     zaeris = "the Zaeris Kiro"
 
 
-class Smoothie(Literal):
+class Smoothie(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"Everyone has a favorite smoothie"
+        return "Everyone has a favorite smoothie"
 
     cherry = "the adoptable who likes Cherry smoothies"
     desert = "the Desert smoothie lover"
@@ -186,10 +186,10 @@ class Smoothie(Literal):
     earth = "the adoptable who likes Earth smoothies"
 
 
-class Bottlecap(Literal):
+class Bottlecap(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"Everyone keeps a certain type of Bottlecap"
+        return "Everyone keeps a certain type of Bottlecap"
 
     red = "the adoptable who has red bottlecaps"
     yellow = "the adoptable who likes YBC"
@@ -198,10 +198,10 @@ class Bottlecap(Literal):
     silver = "the SBC winner"
 
 
-class RecolorMedal(Literal):
+class RecolorMedal(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"Everyone has a recolor or medal"
+        return "Everyone has a recolor or medal"
 
     top_level = "the top level adoptable"
     second_ed = "the 2nd edition adoptable"
@@ -210,10 +210,10 @@ class RecolorMedal(Literal):
     gold = "the adoptable with a heart of gold"
 
 
-class NPC(Literal):
+class NPC(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"Each is an NPC on the site"
+        return "Each is an NPC on the site"
 
     jim = "Dirt Digger Jim"
     amelia = "Amelia"
@@ -224,10 +224,10 @@ class NPC(Literal):
     jagger = "Jagger"
 
 
-class FavoriteGame(Literal):
+class FavoriteGame(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"Everyone has a favorite game"
+        return "Everyone has a favorite game"
 
     dirt_digger = "the adoptable who likes Dirt Digger"
     guess_the_number = "the one who plays Guess the Number"
@@ -241,10 +241,10 @@ class FavoriteGame(Literal):
     freedom_forest = "the one in Freedom Forest"
 
 
-class Tribe(Literal):
+class Tribe(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"Everyone has an Altazan tribe"
+        return "Everyone has an Altazan tribe"
 
     quake = "the one in the Quake tribe"
     cursed = "the Cursed tribe member"
@@ -253,10 +253,10 @@ class Tribe(Literal):
     storm = "the adoptable in the Storm tribe"
 
 
-class Kaya(Literal):
+class Kaya(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"They are five different types of Kaya"
+        return "They are five different types of Kaya"
 
     joy = "the Kaya of Joy"
     life = "the Kaya of Life"
@@ -265,10 +265,10 @@ class Kaya(Literal):
     love = "the Kaya of Love"
 
 
-class TraptorPrimary(Literal):
+class TraptorPrimary(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"They have different primary colors"
+        return "They have different primary colors"
 
     majestic = "the Majestic Traptor"
     grand = "the Grand Traptor"
@@ -277,10 +277,10 @@ class TraptorPrimary(Literal):
     heroic = "the Heroic Traptor"
 
 
-class TraptorSecondary(Literal):
+class TraptorSecondary(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"They have different secondary colors"
+        return "They have different secondary colors"
 
     sky = "the Sky Traptor"
     forest = "the Forest Traptor"
@@ -289,10 +289,10 @@ class TraptorSecondary(Literal):
     sand = "the Sand Traptor"
 
 
-class TraptorTertiary(Literal):
+class TraptorTertiary(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"They have different tertiary colors"
+        return "They have different tertiary colors"
 
     soarer = "the Soarer Traptor"
     diver = "the Diver Traptor"
@@ -301,10 +301,10 @@ class TraptorTertiary(Literal):
     nurturer = "the Nurturer Traptor"
 
 
-class Egg(Literal):
+class Egg(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"They are each giving out a type of egg"
+        return "They are each giving out a type of egg"
 
     golden = "the one giving out Golden Eggs"
     trollden = "the one who keeps Trollden Eggs"
@@ -314,10 +314,10 @@ class Egg(Literal):
     marinodon = "the one giving out Marinodon Eggs"
 
 
-class Dinomon(Literal):
+class Dinomon(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"Each is a different species of Dinomon"
+        return "Each is a different species of Dinomon"
 
     terasaur = "the Terasaur"
     carnodon = "the Carnodon"
@@ -326,10 +326,10 @@ class Dinomon(Literal):
     traptor = "the Traptor"
 
 
-class UchiType(Literal):
+class UchiType(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"Each is a different type of Uchi"
+        return "Each is a different type of Uchi"
 
     skunk = "the Skunk Uchi"
     eyes = "the Eyes Uchi"
@@ -337,10 +337,10 @@ class UchiType(Literal):
     mummy = "the Mummy Uchi"
 
 
-class UchiPrimary(Literal):
+class UchiPrimary(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"Each Uchi has a different body color"
+        return "Each Uchi has a different body color"
 
     blue = "the blue body Uchi"
     red = "the Uchi with a red body"
@@ -348,12 +348,41 @@ class UchiPrimary(Literal):
     green = "the Uchi with a green body"
 
 
-class UchiSecondary(Literal):
+class UchiSecondary(SATLiteral):
     @classmethod
     def description(cls) -> str:
-        return f"Each Uchi has a different secondary color (e.g., eyes, umbral, etc.)"
+        return "Each Uchi has a different secondary color (e.g., eyes, umbral, etc.)"
 
     black = "the Uchi with secondary color black"
     orange = "the Uchi with secondary color orange"
     purple = "the Uchi with secondary color purple"
     white = "the Uchi with secondary color white"
+
+__all__ = [
+    "SATLiteral",
+    "Color",
+    "Nationality",
+    "Animal",
+    "Drink",
+    "Cigar",
+    "Mother",
+    "Children",
+    "Flower",
+    "Food",
+    "Kiro",
+    "Smoothie",
+    "Bottlecap",
+    "RecolorMedal",
+    "NPC",
+    "FavoriteGame",
+    "Tribe",
+    "Kaya",
+    "TraptorPrimary",
+    "TraptorSecondary",
+    "TraptorTertiary",
+    "Egg",
+    "Dinomon",
+    "UchiType",
+    "UchiPrimary",
+    "UchiSecondary",
+]
