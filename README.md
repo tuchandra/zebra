@@ -1,4 +1,6 @@
 # Zebra Puzzles
+*Today, in 2023, project is largely unmaintained. I'm using it as a playground for some things I want to try out, but I don't recommend anyone build off this.*
+
 ![Example puzzle](sample_grid.png)
 
 Remember logic puzzles like this? With clues like:
@@ -6,7 +8,7 @@ Remember logic puzzles like this? With clues like:
  * *Ruby's favorite video game is Pokemon.*
  * *The chai drinker does not like the color blue.*
 
-I loved these as a kid, and watching Raymond Hettinger's [PyCon 2019 talk](https://www.youtube.com/watch?v=_GP9OpZPUYc) inspired me to revisit these problems. He showed us how to solve them---I wanted to learn how to generate them.
+I loved these as a kid, and watching Raymond Hettinger's [PyCon 2019 talk](https://www.youtube.com/watch?v=_GP9OpZPUYc) inspired me to revisit these problems. He showed us how to solve them—I wanted to learn how to generate them.
 
 Using modern Python and constraint satisfaction (SAT) solvers, this project can be used to create random zebra puzzles.
 
@@ -20,10 +22,12 @@ This project has five Python files:
 
 The project uses Python 3.8 (required!) and [pycosat](https://pypi.org/project/pycosat/). I manage dependencies with Poetry, but do whatever you want. I made heavy use of type hinting through the *excellent* [Pylance](github.com/microsoft/pylance-release/) VS Code extension that Microsoft [just released](https://devblogs.microsoft.com/python/announcing-pylance-fast-feature-rich-language-support-for-python-in-visual-studio-code/).
 
+*n.b.: this is funny to read 3 years after Pylance was released. It's great to see how far the typing ecosystem has come since then.*
+
 ## Future work
 There are a few things I still want to do:
  * configure random solution generation
  * try out creating a smaller size (e.g., 4 houses) with more categories; that sounds like a fun puzzle!
  * create a better CLI
 
-These will come at time. But the project is finally at a place that I'm happy with, and so I'm excited to share and write about it.
+These may happen. But the project is finally at a place that I'm happy with, and so I'm excited to share and write about it.
