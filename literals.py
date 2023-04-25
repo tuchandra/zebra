@@ -105,9 +105,7 @@ class Mother(Literal):
 class Children(Literal):
     @classmethod
     def description(cls) -> str:
-        return (
-            f"Each mother is accompanied by their child: Bella, Fred, Meredith, Samantha, Timothy."
-        )
+        return f"Each mother is accompanied by their child: Bella, Fred, Meredith, Samantha, Timothy."
 
     bella = "Bella's mother"
     fred = "the mother Fred"

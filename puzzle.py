@@ -94,9 +94,7 @@ class Puzzle:
         for house in self.houses:
             for element_type in self.element_classes:
                 literals_of_that_type = [l for l in self.literals if isinstance(l, element_type)]
-                self._add_constraint(
-                    sat_utils.one_of(comb(value, house) for value in literals_of_that_type)
-                )
+                self._add_constraint(sat_utils.one_of(comb(value, house) for value in literals_of_that_type))
 
         # each value gets assigned to exactly one house
         for literal in self.literals:

@@ -65,9 +65,7 @@ def generate_consecutive_beside(puzzle: Puzzle, solution: Dict[Literal, int]) ->
     for left, right in zip(puzzle.houses, puzzle.houses[1:]):
         items_left = {item: loc for item, loc in solution.items() if loc == left}
         items_right = {item: loc for item, loc in solution.items() if loc == right}
-        pairs: Set[Tuple[Literal, Literal]] = {
-            (item1, item2) for item1, item2 in product(items_left, items_right)
-        }
+        pairs: Set[Tuple[Literal, Literal]] = {(item1, item2) for item1, item2 in product(items_left, items_right)}
         for pair in pairs:
             # consecutive is just a more informative version of beside, but they have same structure
             # because of this, don't include both
@@ -81,7 +79,7 @@ def generate_consecutive_beside(puzzle: Puzzle, solution: Dict[Literal, int]) ->
 
 def generate_left_right_of(puzzle: Puzzle, solution: Dict[Literal, int]) -> Set[Clue]:
     """Generate the `left_of` / `right_of` Clue instances
-    
+
     Note that since (x left-of y) is guaranteed to be redundant with (b right-of a), we only add
     one of these clues to the final set.
     """
@@ -93,9 +91,7 @@ def generate_left_right_of(puzzle: Puzzle, solution: Dict[Literal, int]) -> Set[
 
         items_left = {item: loc for item, loc in solution.items() if loc == left}
         items_right = {item: loc for item, loc in solution.items() if loc == right}
-        pairs: Set[Tuple[Literal, Literal]] = {
-            (item1, item2) for item1, item2 in product(items_left, items_right)
-        }
+        pairs: Set[Tuple[Literal, Literal]] = {(item1, item2) for item1, item2 in product(items_left, items_right)}
         for pair in pairs:
             if randint(0, 1) == 0:
                 clues.add(left_of(pair[0], pair[1], puzzle.houses))
@@ -112,9 +108,7 @@ def generate_one_between(puzzle: Puzzle, solution: Dict[Literal, int]) -> Set[Cl
     for left, right in zip(puzzle.houses, puzzle.houses[2:]):
         items_left = {item: loc for item, loc in solution.items() if loc == left}
         items_right = {item: loc for item, loc in solution.items() if loc == right}
-        pairs: Set[Tuple[Literal, Literal]] = {
-            (item1, item2) for item1, item2 in product(items_left, items_right)
-        }
+        pairs: Set[Tuple[Literal, Literal]] = {(item1, item2) for item1, item2 in product(items_left, items_right)}
         for pair in pairs:
             clues.add(one_between(pair[0], pair[1], puzzle.houses))
 
@@ -128,9 +122,7 @@ def generate_two_between(puzzle: Puzzle, solution: Dict[Literal, int]) -> Set[Cl
     for left, right in zip(puzzle.houses, puzzle.houses[3:]):
         items_left = {item: loc for item, loc in solution.items() if loc == left}
         items_right = {item: loc for item, loc in solution.items() if loc == right}
-        pairs: Set[Tuple[Literal, Literal]] = {
-            (item1, item2) for item1, item2 in product(items_left, items_right)
-        }
+        pairs: Set[Tuple[Literal, Literal]] = {(item1, item2) for item1, item2 in product(items_left, items_right)}
         for pair in pairs:
             clues.add(two_between(pair[0], pair[1], puzzle.houses))
 
@@ -186,12 +178,10 @@ def try_to_remove(puzzle: Puzzle, clues: Set[Clue], n: int) -> Set[Clue]:
     return clues
 
 
-def reduce_individually(
-    puzzle: Puzzle, clues: Set[Clue], removed: Set[Clue]
-) -> Tuple[Set[Clue], Set[Clue]]:
+def reduce_individually(puzzle: Puzzle, clues: Set[Clue], removed: Set[Clue]) -> Tuple[Set[Clue], Set[Clue]]:
     """
-    Attempt to remove each candidate clue one by one. 
-    
+    Attempt to remove each candidate clue one by one.
+
     The sets `clues` and `removed` are modified in-place. Unnecessary clues get removed from `clues`
     and added to `removed`. If no clues can be removed, we return the original two sets.
     """
@@ -224,7 +214,7 @@ def reduce_clues(puzzle: Puzzle, clues: Set[Clue]) -> Tuple[Set[Clue], Set[Clue]
      3b. if no: add them back, keep going to 4
      4. the same as step (3), but this time trying to remove 5% of the clues
      5. the same as step (3), but this time trying to remove a single clue
-    
+
     After we've tried and failed to remove a *single* clue, then the (first part of the) reduction
     algorithm is done; having that clue was necessary for us to have a unique solution. This doesn't
     necessarily mean that *all* the clues are need, though, which is what the secondary reduction
@@ -257,14 +247,10 @@ def reduce_clues(puzzle: Puzzle, clues: Set[Clue]) -> Tuple[Set[Clue], Set[Clue]
         #
         # We use the walrus operator to update minimal_clues in place during the comparison. It'll
         # either be a reduced set of clues or the original set of clues.
-        if len(minimal_clues) > len(
-            (minimal_clues := try_to_remove(puzzle, minimal_clues, len(minimal_clues) // 10))
-        ):
+        if len(minimal_clues) > len((minimal_clues := try_to_remove(puzzle, minimal_clues, len(minimal_clues) // 10))):
             continue
 
-        if len(minimal_clues) != len(
-            (minimal_clues := try_to_remove(puzzle, minimal_clues, len(minimal_clues) // 20))
-        ):
+        if len(minimal_clues) != len((minimal_clues := try_to_remove(puzzle, minimal_clues, len(minimal_clues) // 20))):
             continue
 
         if len(minimal_clues) == len((minimal_clues := try_to_remove(puzzle, minimal_clues, 1))):

@@ -60,7 +60,7 @@ def comb(value: Literal, house: int) -> str:
 class found_at(Clue):
     """
     A literal is known to be at a specific house
-    
+
     Examples:
      - the tea drinker lives in the middle house
      - the fourth house is red
@@ -104,7 +104,7 @@ class not_at(Clue):
 class same_house(Clue):
     """
     Two values are known to be at the same house
-    
+
     Examples:
      - the musician drinks tea
      - the red house contains a cat
@@ -126,7 +126,7 @@ class same_house(Clue):
 class consecutive(Clue):
     """
     The first value is directly to the left of the second value
-    
+
     Examples:
      - the green house is directly to the left of the white house
        (green in 1, white in 2 OR green in 2, white in 3 OR etc.)
@@ -140,8 +140,7 @@ class consecutive(Clue):
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf(
-            (comb(self.value1, i), comb(self.value2, j))
-            for i, j in zip(self.houses, self.houses[1:])
+            (comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[1:])
         )
 
     @_capitalize_first
@@ -153,7 +152,7 @@ class consecutive(Clue):
 class beside(Clue):
     """
     The two values occur side-by-side (either left or right)
-    
+
     Examples:
      - the coffee drinker is (left or right) of the tea drinker
      - the cat owner is (left or right) of the green house
@@ -165,14 +164,8 @@ class beside(Clue):
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf(
-            [
-                (comb(self.value1, i), comb(self.value2, j))
-                for i, j in zip(self.houses, self.houses[1:])
-            ]
-            + [
-                (comb(self.value2, i), comb(self.value1, j))
-                for i, j in zip(self.houses, self.houses[1:])
-            ]
+            [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[1:])]
+            + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(self.houses, self.houses[1:])]
         )
 
     @_capitalize_first
@@ -184,7 +177,7 @@ class beside(Clue):
 class left_of(Clue):
     """
     The first value is somewhere to the left of the second value
-    
+
     Examples:
      - the tea drinker is in house 1 and the musician in 2, 3, 4, or 5;
        OR the tea drinker in 2, and musician in 3, 4, or 5;
@@ -197,9 +190,7 @@ class left_of(Clue):
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf(
-            (comb(self.value1, i), comb(self.value2, j))
-            for i, j in product(self.houses, self.houses)
-            if i < j
+            (comb(self.value1, i), comb(self.value2, j)) for i, j in product(self.houses, self.houses) if i < j
         )
 
     @_capitalize_first
@@ -211,7 +202,7 @@ class left_of(Clue):
 class right_of(Clue):
     """
     The first value is somewhere to the right of the second value.
-    
+
     Examples:
      - the coffee drinker is in house 5 and the artist in 1, 2, 3, 4;
        OR the coffee drinker in 4, and artist in 1, 2, or 3;
@@ -224,9 +215,7 @@ class right_of(Clue):
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf(
-            (comb(self.value1, i), comb(self.value2, j))
-            for i, j in product(self.houses, self.houses)
-            if i > j
+            (comb(self.value1, i), comb(self.value2, j)) for i, j in product(self.houses, self.houses) if i > j
         )
 
     @_capitalize_first
@@ -238,7 +227,7 @@ class right_of(Clue):
 class one_between(Clue):
     """
     The values are separated by one house
-    
+
     Examples (if 5 houses):
      - the cat is in house 1 and tea drinker in house 3; OR cat 2, tea 4;
        OR cat 4 house 5
@@ -252,14 +241,8 @@ class one_between(Clue):
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf(
-            [
-                (comb(self.value1, i), comb(self.value2, j))
-                for i, j in zip(self.houses, self.houses[2:])
-            ]
-            + [
-                (comb(self.value2, i), comb(self.value1, j))
-                for i, j in zip(self.houses, self.houses[2:])
-            ]
+            [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[2:])]
+            + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(self.houses, self.houses[2:])]
         )
 
     def __repr__(self) -> str:
@@ -282,14 +265,8 @@ class two_between(Clue):
 
     def as_cnf(self) -> List[Tuple[str]]:
         return sat_utils.from_dnf(
-            [
-                (comb(self.value1, i), comb(self.value2, j))
-                for i, j in zip(self.houses, self.houses[3:])
-            ]
-            + [
-                (comb(self.value2, i), comb(self.value1, j))
-                for i, j in zip(self.houses, self.houses[3:])
-            ]
+            [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[3:])]
+            + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(self.houses, self.houses[3:])]
         )
 
     def __repr__(self) -> str:
