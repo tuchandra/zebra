@@ -6,12 +6,37 @@ authors = ["Tushar Chandra <me@tusharc.dev>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.11"
 pycosat = "^0.6.3"
+pydantic = ">=2.0a2"
+python-sat = {extras = ["aiger", "pblib"], version = "^0.1.8.dev3"}
 
-[tool.poetry.dev-dependencies]
-black = "^19.10b0"
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+ruff = "^0.0.262"
+pyright = "^1.1.304"
 
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
+
+[tool.black]
+line-length = 120
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+ignore = ["E501"]
+select = [
+  "E",
+  "F",
+  "RUF100",  # unused-noqa
+  "I",  # isort
+  "N",  # pep8-naming
+  "PT",  # flake8-pytest-style
+  "PTH",  # flake8-use-pathlib
+  "SIM",  # flake8-simplify
+  "UP",  # pyupgrade
+]
