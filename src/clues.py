@@ -55,7 +55,7 @@ def comb(value: SATLiteral, house: int) -> str:
 
 
 @dataclass(eq=True, frozen=True)
-class found_at(Clue):
+class found_at(Clue):  # noqa: N801
     """
     A literal is known to be at a specific house
 
@@ -77,7 +77,7 @@ class found_at(Clue):
 
 
 @dataclass(eq=True, frozen=True)
-class not_at(Clue):
+class not_at(Clue):  # noqa: N801
     """
     Two values are known *not* to be at the same house
 
@@ -99,7 +99,7 @@ class not_at(Clue):
 
 
 @dataclass(eq=True, frozen=True)
-class same_house(Clue):
+class same_house(Clue):  # noqa: N801
     """
     Two values are known to be at the same house
 
@@ -121,7 +121,7 @@ class same_house(Clue):
 
 
 @dataclass(eq=True, frozen=True)
-class consecutive(Clue):
+class consecutive(Clue):  # noqa: N801
     """
     The first value is directly to the left of the second value
 
@@ -147,7 +147,7 @@ class consecutive(Clue):
 
 
 @dataclass(eq=True, frozen=True)
-class beside(Clue):
+class beside(Clue):  # noqa: N801
     """
     The two values occur side-by-side (either left or right)
 
@@ -172,7 +172,7 @@ class beside(Clue):
 
 
 @dataclass(eq=True, frozen=True)
-class left_of(Clue):
+class left_of(Clue):  # noqa: N801
     """
     The first value is somewhere to the left of the second value
 
@@ -197,7 +197,7 @@ class left_of(Clue):
 
 
 @dataclass(eq=True, frozen=True)
-class right_of(Clue):
+class right_of(Clue):  # noqa: N801
     """
     The first value is somewhere to the right of the second value.
 
@@ -222,7 +222,7 @@ class right_of(Clue):
 
 
 @dataclass(eq=True, frozen=True)
-class one_between(Clue):
+class one_between(Clue):  # noqa: N801
     """
     The values are separated by one house
 
@@ -248,7 +248,7 @@ class one_between(Clue):
 
 
 @dataclass(eq=True, frozen=True)
-class two_between(Clue):
+class two_between(Clue):  # noqa: N801
     """
     The values are separated by two houses
 

@@ -184,9 +184,7 @@ def try_to_remove(puzzle: Puzzle, clues: set[Clue], n: int) -> set[Clue]:
     return clues
 
 
-def reduce_individually(
-    puzzle: Puzzle, clues: set[Clue], removed: set[Clue]
-) -> tuple[set[Clue], set[Clue]]:
+def reduce_individually(puzzle: Puzzle, clues: set[Clue], removed: set[Clue]) -> tuple[set[Clue], set[Clue]]:
     """
     Attempt to remove each candidate clue one by one.
 
@@ -255,14 +253,10 @@ def reduce_clues(puzzle: Puzzle, clues: set[Clue]) -> tuple[set[Clue], set[Clue]
         #
         # We use the walrus operator to update minimal_clues in place during the comparison. It'll
         # either be a reduced set of clues or the original set of clues.
-        if len(minimal_clues) > len(
-            minimal_clues := try_to_remove(puzzle, minimal_clues, len(minimal_clues) // 10)
-        ):
+        if len(minimal_clues) > len(minimal_clues := try_to_remove(puzzle, minimal_clues, len(minimal_clues) // 10)):
             continue
 
-        if len(minimal_clues) != len(
-            minimal_clues := try_to_remove(puzzle, minimal_clues, len(minimal_clues) // 20)
-        ):
+        if len(minimal_clues) != len(minimal_clues := try_to_remove(puzzle, minimal_clues, len(minimal_clues) // 20)):
             continue
 
         if len(minimal_clues) == len(minimal_clues := try_to_remove(puzzle, minimal_clues, 1)):
@@ -278,6 +272,7 @@ def reduce_clues(puzzle: Puzzle, clues: set[Clue]) -> tuple[set[Clue], set[Clue]
             break
 
     return minimal_clues, removed_clues
+
 
 if __name__ == "__main__":
     random.seed(12)

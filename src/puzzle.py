@@ -91,7 +91,7 @@ class Puzzle:
         # each house gets exactly one value from each set of literals
         for house in self.houses:
             for element_type in self.element_classes:
-                literals_of_that_type = [l for l in self.literals if isinstance(l, element_type)]
+                literals_of_that_type = [l for l in self.literals if isinstance(l, element_type)]  # noqa: E741
                 self._add_constraint(sat_utils.one_of(comb(value, house) for value in literals_of_that_type))
 
         # each value gets assigned to exactly one house
@@ -140,7 +140,7 @@ class Puzzle:
         s += "the street from them. Each has a different person in them. "
         s += "They have different characteristics:\n"
         for element_type in self.element_classes:
-            literals = [l for l in self.literals if isinstance(l, element_type)]
+            literals = [l for l in self.literals if isinstance(l, element_type)]  # noqa: E741
             shuffle(literals)
             s += f" - {element_type.description()}: " + ", ".join(e.name for e in literals) + "\n"
 

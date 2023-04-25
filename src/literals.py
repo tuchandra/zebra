@@ -358,6 +358,7 @@ class UchiSecondary(SATLiteral):
     purple = "the Uchi with secondary color purple"
     white = "the Uchi with secondary color white"
 
+
 __all__ = [
     "SATLiteral",
     "Color",
