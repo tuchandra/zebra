@@ -11,7 +11,6 @@ a custom __repr__ method that gets used in the puzzle description.
 
 Included is a base Literal class from which all literals should inherit. To extend these,
 just import Literal and implement a class like the ones here.
-
 """
 
 from enum import Enum
@@ -28,114 +27,6 @@ class SATLiteral(Enum):
     @classmethod
     def description(cls) -> str:
         return "".join(cls.__members__)  # type:ignore
-
-
-class Color(SATLiteral):
-    @classmethod
-    def description(cls) -> str:
-        return "Each person has a favorite color: yellow, red, white, green, or blue."
-
-    yellow = "the person who loves yellow"
-    red = "the person whose favorite color is red"
-    white = "the person who loves white"
-    green = "the person whose favorite color is green"
-    blue = "the person who loves blue"
-
-
-class Nationality(SATLiteral):
-    @classmethod
-    def description(cls) -> str:
-        return "The people are of nationalities: Danish, British, Swedish, Norwegian, German."
-
-    dane = "the Dane"
-    brit = "the British person"
-    swede = "the Swedish person"
-    norwegian = "the Norwegian"
-    german = "the German"
-
-
-class Animal(SATLiteral):
-    @classmethod
-    def description(cls) -> str:
-        return "The people keep different animals: horses, cats, birds, fish, and dogs."
-
-    horse = "the person who keeps horses"
-    cat = "the cat lover"
-    bird = "the bird keeper"
-    fish = "the fish enthusiast"
-    dog = "the dog owner"
-
-
-class Drink(SATLiteral):
-    @classmethod
-    def description(cls) -> str:
-        return "Each person has a favorite drink: water, tea, milk, coffee, and root beer."
-
-    water = "the one who only drinks water"
-    tea = "the tea drinker"
-    milk = "the person who likes milk"
-    coffee = "the coffee drinker"
-    root_beer = "the root beer lover"
-
-
-class Cigar(SATLiteral):
-    @classmethod
-    def description(cls) -> str:
-        return "Everyone has a different favorite cigar: Pall Mall, Prince, Blue Master, Dunhill, and blends."
-
-    pall_mall = "the person partial to Pall Mall"
-    prince = "the Prince smoker"
-    blue_master = "the person who smokes Blue Master"
-    dunhill = "the Dunhill smoker"
-    blends = "the person who smokes many different blends"
-
-
-class Mother(SATLiteral):
-    @classmethod
-    def description(cls) -> str:
-        return "The mothers' names are Aniya, Holly, Janelle, Kaillyn, Penny."
-
-    aniya = "Aniya"
-    holly = "Holly"
-    janelle = "Janelle"
-    kailyn = "Kailyn"
-    penny = "Penny"
-
-
-class Children(SATLiteral):
-    @classmethod
-    def description(cls) -> str:
-        return "Each mother is accompanied by their child: Bella, Fred, Meredith, Samantha, Timothy."
-
-    bella = "Bella's mother"
-    fred = "the mother Fred"
-    meredith = "Meredith's mom"
-    samantha = "Samantha's mom"
-    timothy = "the mother of Timothy"
-
-
-class Flower(SATLiteral):
-    @classmethod
-    def description(cls) -> str:
-        return "They all have a different favorite flower: carnations, daffodils, lilies, roses, tulips."
-
-    carnations = "a carnations arrangement"
-    daffodils = "a bouquet of daffodils"
-    lilies = "the boquet of lilies"
-    roses = "the rose bouquet"
-    tulips = "the vase of tulips"
-
-
-class Food(SATLiteral):
-    @classmethod
-    def description(cls) -> str:
-        return "Everyone has something different for lunch: grilled cheese, pizza, spaghetti, stew, stir fry."
-
-    grilled_cheese = "the person eating grilled cheese"
-    pizza = "the pizza lover"
-    spaghetti = "the spaghetti eater"
-    stew = "the one having stew"
-    stir_fry = "the person with stir fry"
 
 
 class Kiro(SATLiteral):
@@ -361,16 +252,6 @@ class UchiSecondary(SATLiteral):
 
 __all__ = [
     "SATLiteral",
-    "Color",
-    "Nationality",
-    "Animal",
-    "Drink",
-    "Cigar",
-    "Mother",
-    "Children",
-    "Flower",
-    "Food",
-    "Kiro",
     "Smoothie",
     "Bottlecap",
     "RecolorMedal",

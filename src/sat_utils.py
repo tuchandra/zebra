@@ -36,7 +36,7 @@ def make_translate(cnf: CNF) -> tuple[dict[Element, int], dict[int, Element]]:
     return lit2num, num2var
 
 
-def translate(cnf: CNF, uniquify=False) -> tuple[list[tuple[int, ...]], dict[int, Element]]:
+def translate(cnf: CNF, uniquify: bool = False) -> tuple[list[tuple[int, ...]], dict[int, Element]]:
     """Translate a symbolic CNF to a numbered CNF and return reverse mapping.
 
     >>> translate([['~P', 'Q'],['~P', 'R']])
