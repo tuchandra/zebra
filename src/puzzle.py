@@ -10,13 +10,8 @@ from contextlib import contextmanager
 from random import shuffle
 
 from . import sat_utils
-from .clues import (
-    Clue,
-    comb,
-)
-from .literals import (
-    SATLiteral,
-)
+from .clues import Clue, comb
+from .literals import SATLiteral
 
 
 class Puzzle:

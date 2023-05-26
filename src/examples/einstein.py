@@ -33,10 +33,10 @@ they smoke, and what pet they own.
 
 from __future__ import annotations
 
-from .. import sat_utils
-from ..clues import beside, consecutive, found_at, same_house
-from ..literals import SATLiteral
-from ..puzzle import Puzzle
+from src import sat_utils
+from src.clues import beside, consecutive, found_at, same_house
+from src.literals import SATLiteral
+from src.puzzle import Puzzle
 
 
 class Color(SATLiteral):

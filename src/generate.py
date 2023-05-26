@@ -9,6 +9,10 @@ from collections.abc import Iterable
 from itertools import product
 from random import choices, randint, sample
 
+from src.literals import SATLiteral, Smoothie, TraptorPrimary, TraptorSecondary, TraptorTertiary
+from src.puzzle import Puzzle
+from src.sat_utils import itersolve
+
 from .clues import (
     Clue,
     beside,
@@ -21,9 +25,6 @@ from .clues import (
     same_house,
     two_between,
 )
-from .literals import SATLiteral, Smoothie, TraptorPrimary, TraptorSecondary, TraptorTertiary
-from .puzzle import Puzzle
-from .sat_utils import itersolve
 
 
 def generate_found_at(puzzle: Puzzle, solution: dict[SATLiteral, int]) -> set[Clue]:

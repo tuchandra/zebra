@@ -17,8 +17,8 @@ in between them that neither is sitting in).
 
 from __future__ import annotations
 
-from .. import sat_utils
-from ..clues import (
+from src import sat_utils
+from src.clues import (
     found_at,
     left_of,
     one_between,
@@ -26,8 +26,8 @@ from ..clues import (
     same_house,
     two_between,
 )
-from ..literals import SATLiteral
-from ..puzzle import Puzzle
+from src.literals import SATLiteral
+from src.puzzle import Puzzle
 
 
 class Children(SATLiteral):
