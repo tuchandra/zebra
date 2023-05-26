@@ -6,7 +6,7 @@ authors = ["Tushar Chandra <me@tusharc.dev>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "3.12.0"
 pycosat = "^0.6.3"
 pydantic = ">=2.0a2"
 python-sat = {extras = ["aiger", "pblib"], version = "^0.1.8.dev3"}
@@ -40,3 +40,6 @@ select = [
   "SIM",  # flake8-simplify
   "UP",  # pyupgrade
 ]
+
+[tool.pyright]
+typeCheckingMode = "strict"
