@@ -28,13 +28,17 @@ target-version = ["py311"]
 line-length = 120
 target-version = "py311"
 
-ignore = ["E501"]
+ignore = [
+  "E501",  # line length
+]
 select = [
-  "E",
   "F",
+  "E",
+  "W",
   "RUF100",  # unused-noqa
   "I",  # isort
   "N",  # pep8-naming
+  "C4",  # flake8-comprehensions
   "PT",  # flake8-pytest-style
   "PTH",  # flake8-use-pathlib
   "SIM",  # flake8-simplify
