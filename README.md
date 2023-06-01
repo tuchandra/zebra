@@ -23,7 +23,7 @@ This project has five Python files in `src/`:
 There's a currently empty `tests/` dir.
 
 ## Requirements
-- Python 3.11
+- Python 3.12 (beta)
 - Poetry
 
 This uses the SAT solver [pycosat](https://pypi.org/project/pycosat/), but PySAT is listed as a dependency, too.)
