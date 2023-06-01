@@ -7,7 +7,8 @@ This is a driver script that can be used to generate new zebra puzzles.
 import random
 from collections.abc import Iterable
 from itertools import product
-from random import choices, randint, sample
+
+from icecream import ic  # pyright: ignore[reportMissingTypeStubs]
 
 from src.literals import SATLiteral, Smoothie, TraptorPrimary, TraptorSecondary, TraptorTertiary
 from src.puzzle import Puzzle
@@ -73,7 +74,7 @@ def generate_consecutive_beside(puzzle: Puzzle, solution: dict[SATLiteral, int])
         for pair in pairs:
             # consecutive is just a more informative version of beside, but they have same structure
             # because of this, don't include both
-            if randint(0, 1) == 0:
+            if random.randint(0, 1) == 0:
                 clues.add(consecutive(pair[0], pair[1], puzzle.houses))
             else:
                 clues.add(beside(pair[0], pair[1], puzzle.houses))
@@ -99,7 +100,7 @@ def generate_left_right_of(puzzle: Puzzle, solution: dict[SATLiteral, int]) -> s
             (item1, item2) for item1, item2 in product(items_left, items_right)
         }
         for pair in pairs:
-            if randint(0, 1) == 0:
+            if random.randint(0, 1) == 0:
                 clues.add(left_of(pair[0], pair[1], puzzle.houses))
             else:
                 clues.add(right_of(pair[1], pair[0], puzzle.houses))
@@ -173,7 +174,7 @@ def try_to_remove(puzzle: Puzzle, clues: set[Clue], n: int) -> set[Clue]:
         return weights.get(type(clue), 1)
 
     weights = [weight(clue) for clue in clues]
-    candidates: set[Clue] = set(choices(list(clues), weights, k=n))
+    candidates: set[Clue] = set(random.choices(list(clues), weights, k=n))
 
     clues = clues.difference(candidates)
     if has_unique_solution(puzzle, clues):
@@ -193,7 +194,7 @@ def reduce_individually(puzzle: Puzzle, clues: set[Clue], removed: set[Clue]) ->
     and added to `removed`. If no clues can be removed, we return the original two sets.
     """
 
-    candidates = sample(tuple(clues), len(clues))
+    candidates = random.sample(tuple(clues), len(clues))
     for clue in candidates:
         clues.remove(clue)
         if has_unique_solution(puzzle, clues):
@@ -240,7 +241,7 @@ def reduce_clues(puzzle: Puzzle, clues: set[Clue]) -> tuple[set[Clue], set[Clue]
     """
 
     # this is a stupid way to shuffle the set of clues without modifying it
-    minimal_clues = set(sample(tuple(clues), k=len(clues)))
+    minimal_clues = set(random.sample(tuple(clues), k=len(clues)))
 
     while True:
         print(f"There are {len(minimal_clues)} clues in ba sing se")
@@ -277,35 +278,43 @@ def reduce_clues(puzzle: Puzzle, clues: set[Clue]) -> tuple[set[Clue], set[Clue]
 
 if __name__ == "__main__":
     random.seed(12)
-    elements = [TraptorPrimary, TraptorSecondary, TraptorTertiary, Smoothie]
+    element_types = [TraptorPrimary, TraptorSecondary, TraptorTertiary, Smoothie]
 
-    # this will be the solution
-    solution: dict[SATLiteral, int] = {
-        TraptorPrimary.grand: 1,
-        TraptorPrimary.majestic: 2,
-        TraptorPrimary.stunning: 3,
-        TraptorPrimary.heroic: 4,
-        TraptorPrimary.marvellous: 5,
-        TraptorSecondary.forest: 1,
-        TraptorSecondary.night: 2,
-        TraptorSecondary.sun: 3,
-        TraptorSecondary.sky: 4,
-        TraptorSecondary.sand: 5,
-        TraptorTertiary.soarer: 1,
-        TraptorTertiary.screecher: 2,
-        TraptorTertiary.nurturer: 3,
-        TraptorTertiary.hunter: 4,
-        TraptorTertiary.diver: 5,
-        Smoothie.seafoam: 1,
-        Smoothie.sakura: 2,
-        Smoothie.life: 3,
-        Smoothie.earth: 4,
-        Smoothie.abyss: 5,
+    # Size of puzzle = number of "houses" or whatever
+    puzzle_size = 5
+
+    # Some elements have extra members, and we need to randomize the solution
+    # random.sample takes N (puzzle_size) values without replacement
+    puzzle_elements: dict[type[SATLiteral], list[SATLiteral]] = {
+        # Smoothie: [Smoothie.lilac, Smoothie.earth, ...],
+        # TraptorPrimary: [TraptorPrimary.marvellous, TraptorPrimary.heroic, ...]
+        # etc ...
     }
+    for element in element_types:
+        members = list(element.__members__.values())
+        puzzle_elements[element] = random.sample(members, puzzle_size)
+
+    # Construct the solution now
+    solution: dict[SATLiteral, int] = {
+        # Smoothie.lilac: 1,
+        # Smoothie.earth: 2,
+        # ...,
+        # TraptorPrimary.marvellous: 1,
+        # TraptorPrimary.heroic: 2,
+        # ...,
+    }
+    for element, members in puzzle_elements.items():
+        solution |= {el: pos + 1 for pos, el in enumerate(members)}
 
     # set up the puzzle with default constraints
-    puzzle = Puzzle(element_types=elements, elements=solution.keys(), n_houses=5).set_constraints()
-    print(puzzle)
+    puzzle = Puzzle(
+        element_types=element_types,
+        elements=solution.keys(),
+        n_houses=puzzle_size,
+    ).set_constraints()
+
+    print(f"\nOriginal puzzle\n{'-' * 30}")
+    ic(puzzle)
 
     # generate all the clues
     clues: set[Clue] = set()
@@ -319,11 +328,18 @@ if __name__ == "__main__":
     ):
         clues = clues.union(generate_function(puzzle, solution))
 
+    print(f"\nStarting puzzle reduction ...\n{'-' * 30}")
     reduced, extras = reduce_clues(puzzle, clues)
     for clue in reduced:
         puzzle.add_clue(clue)
 
-    print(puzzle)
-    print("Here are some extra clues if the puzzle is too hard:")
+    print(f"\nNarrowed puzzle\n{'-' * 30}")
+    ic(puzzle)
+
+    print(f"\nSupplemental clues\n{'-' * 30}")
     for clue in extras:
         print(f" - {clue}")
+
+    print()
+    print(f"\nSolution\n{'-' * 30}")
+    ic(solution)
