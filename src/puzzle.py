@@ -8,10 +8,15 @@ from __future__ import annotations
 from collections.abc import Generator, Iterable
 from contextlib import contextmanager
 from random import shuffle
+from typing import NewType, Self
 
 from . import sat_utils
 from .clues import Clue, comb
 from .literals import SATLiteral
+
+# type ClueCNF = tuple[str, ...]  # Python 3.12 syntax, breaks black/ruff
+
+ClueCNF = NewType("ClueCNF", tuple[str, ...])
 
 
 class Puzzle:
@@ -87,7 +92,7 @@ class Puzzle:
         return self
 
     @contextmanager
-    def with_clues(self, clues: Iterable[Clue]) -> Generator[Puzzle]:
+    def with_clues(self, clues: Iterable[Clue]) -> Generator[Puzzle, None, Self]:
         """Create a context in which this Puzzle temporarily has clues added to it"""
 
         clues = list(clues)  # so we don't accidentally exhaust the iterable
@@ -100,11 +105,10 @@ class Puzzle:
 
         return self
 
-    def as_cnf(self) -> list[tuple[str]]:
+    def as_cnf(self) -> list[ClueCNF]:
         """Express puzzle as solvable CNF"""
 
-        # this would be a comprehension if we could use iterable unpacking
-        cnf = []
+        cnf: list[ClueCNF] = []
         for clue in self.clues:
             cnf.extend(clue.as_cnf())
 
