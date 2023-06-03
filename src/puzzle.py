@@ -8,15 +8,11 @@ from __future__ import annotations
 from collections.abc import Generator, Iterable
 from contextlib import contextmanager
 from random import shuffle
-from typing import NewType, Self
+from typing import Self
 
 from . import sat_utils
-from .clues import Clue, comb
+from .clues import Clue, ClueCNF, comb
 from .literals import SATLiteral
-
-# type ClueCNF = tuple[str, ...]  # Python 3.12 syntax, breaks black/ruff
-
-ClueCNF = NewType("ClueCNF", tuple[str, ...])
 
 
 class Puzzle:
@@ -64,9 +60,9 @@ class Puzzle:
 
         self.houses = tuple(range(1, n_houses + 1))
         self.clues: set[Clue] = set()
-        self.constraints: list[tuple[str]] = []
+        self.constraints: list[ClueCNF] = []
 
-    def _add_constraint(self, constraints: list[tuple[str]]) -> Puzzle:
+    def _add_constraint(self, constraints: list[ClueCNF]) -> Puzzle:
         self.constraints.extend(constraints)
         return self
 

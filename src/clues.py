@@ -16,9 +16,14 @@ from collections.abc import Iterable
 from dataclasses import dataclass, field
 from functools import wraps
 from itertools import product
+from typing import NewType
 
 from . import sat_utils
 from .literals import SATLiteral
+
+# type ClueCNF = tuple[str, ...]  # Python 3.12 syntax, breaks black/ruff
+
+ClueCNF = NewType("ClueCNF", tuple[str, ...])
 
 
 def _capitalize_first(repr_func):
@@ -40,7 +45,7 @@ class Clue(ABC):
     """Base class for the types of clues that we allow."""
 
     @abstractmethod
-    def as_cnf(self) -> Iterable[tuple[str]]:
+    def as_cnf(self) -> Iterable[ClueCNF]:
         ...
 
     @abstractmethod

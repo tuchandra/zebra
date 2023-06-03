@@ -333,13 +333,17 @@ if __name__ == "__main__":
     for clue in reduced:
         puzzle.add_clue(clue)
 
-    print(f"\nNarrowed puzzle\n{'-' * 30}")
+    print(f"\nNarrowed puzzle\n{'-' * 15}")
     ic(puzzle)
 
-    print(f"\nSupplemental clues\n{'-' * 30}")
+    print(f"\nSupplemental clues\n{'-' * 18}")
     for clue in extras:
         print(f" - {clue}")
 
     print()
-    print(f"\nSolution\n{'-' * 30}")
-    ic(solution)
+    print(f"\nSolution\n{'-' * 8}")
+
+    for index in range(puzzle_size):
+        print(f"({index+1}) |>")
+        print(*[f"- {elements[index]}" for _, elements in puzzle_elements.items()], sep="\n")
+        print()
