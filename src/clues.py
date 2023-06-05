@@ -12,11 +12,11 @@ can be used in a puzzle description.
 
 
 from abc import ABC, abstractmethod
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from functools import wraps
 from itertools import product
-from typing import NewType
+from typing import NewType, ParamSpec
 
 from . import sat_utils
 from .literals import SATLiteral
@@ -24,9 +24,10 @@ from .literals import SATLiteral
 # type ClueCNF = tuple[str, ...]  # Python 3.12 syntax, breaks black/ruff
 
 ClueCNF = NewType("ClueCNF", tuple[str, ...])
+P = ParamSpec("P")
 
 
-def _capitalize_first(repr_func):
+def _capitalize_first(repr_func: Callable[P, str]) -> Callable[P, str]:
     """
     Decorator for a __repr__ function that capitalizes the first letter without chagning the rest
 
@@ -34,7 +35,7 @@ def _capitalize_first(repr_func):
     """
 
     @wraps(repr_func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> str:
         output = repr_func(*args, **kwargs)
         return output[0].upper() + output[1:]
 
