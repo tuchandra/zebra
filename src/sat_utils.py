@@ -2,17 +2,19 @@
 
 __author__ = "Raymond Hettinger"
 
-from collections.abc import Iterable
+from collections.abc import Sequence
 from functools import cache
 from itertools import combinations
+from typing import Any, NewType
 
 import pycosat
 
+SATLiteral = NewType("SATLiteral", str)
 Element = str  # literal; any string, but here it's <element house#> e.g., "tushar 5" or "chai 2"
-CNF = list[tuple[Element, ...]]
+ClueCNF = list[tuple[SATLiteral, ...]]
 
 
-def make_translate(cnf: CNF) -> tuple[dict[Element, int], dict[int, Element]]:
+def make_translate(cnf: ClueCNF) -> tuple[dict[Element, int], dict[int, Element]]:
     """Make a translator from symbolic CNF to pycosat's numbered clauses.
 
     Return literal to number dictionary and reverse lookup dict.
@@ -36,7 +38,7 @@ def make_translate(cnf: CNF) -> tuple[dict[Element, int], dict[int, Element]]:
     return lit2num, num2var
 
 
-def translate(cnf: CNF, uniquify: bool = False) -> tuple[list[tuple[int, ...]], dict[int, Element]]:
+def translate(cnf: ClueCNF, uniquify: bool = False) -> tuple[list[tuple[int, ...]], dict[int, Element]]:
     """Translate a symbolic CNF to a numbered CNF and return reverse mapping.
 
     >>> translate([['~P', 'Q'],['~P', 'R']])
@@ -54,31 +56,37 @@ def translate(cnf: CNF, uniquify: bool = False) -> tuple[list[tuple[int, ...]], 
     return numbered_cnf, num2var
 
 
-def itersolve(symbolic_cnf: CNF, include_neg: bool = False):
+def itersolve(symbolic_cnf: ClueCNF, include_neg: bool = False):
     numbered_cnf, num2var = translate(symbolic_cnf)
     for solution in pycosat.itersolve(numbered_cnf):
         yield [num2var[n] for n in solution if include_neg or n > 0]
 
 
-def solve_all(symbolic_cnf: CNF, include_neg: bool = False):
+def solve_all(symbolic_cnf: ClueCNF, include_neg: bool = False):
     return list(itersolve(symbolic_cnf, include_neg))
 
 
-def solve_one(symbolic_cnf: CNF, include_neg: bool = False):
+def solve_one(symbolic_cnf: ClueCNF, include_neg: bool = False):
     return next(itersolve(symbolic_cnf, include_neg))
 
 
 ############### Support for Building CNFs ##########################
 
 
+def comb(value: Any, house: int) -> SATLiteral:
+    """Format how a value is shown at a given house"""
+
+    return SATLiteral(f"{value} {house}")
+
+
 @cache
-def neg(element: str) -> str:
+def neg(element: SATLiteral) -> SATLiteral:
     """Negate a single element"""
 
-    return element[1:] if element.startswith("~") else "~" + element
+    return SATLiteral(element[1:] if element.startswith("~") else "~" + element)
 
 
-def from_dnf(groups: Iterable[tuple[str, ...]]) -> CNF:
+def from_dnf(groups: Sequence[tuple[str, ...]]) -> ClueCNF:
     """Convert from or-of-ands to and-of-ors
 
     >>> from_dnf([['~P'], ['Q', 'R']])
@@ -109,37 +117,37 @@ class Q:
     ('~B', '~C')]
     """
 
-    def __init__(self, elements: Iterable[Element]):
+    def __init__(self, elements: Sequence[Element]):
         self.elements = tuple(elements)
 
-    def __lt__(self, n: int) -> CNF:
+    def __lt__(self, n: int) -> ClueCNF:
         return list(combinations(map(neg, self.elements), n))
 
-    def __le__(self, n: int) -> CNF:
+    def __le__(self, n: int) -> ClueCNF:
         return self < n + 1
 
-    def __gt__(self, n: int) -> CNF:
+    def __gt__(self, n: int) -> ClueCNF:
         return list(combinations(self.elements, len(self.elements) - n))
 
-    def __ge__(self, n: int) -> CNF:
+    def __ge__(self, n: int) -> ClueCNF:
         return self > n - 1
 
-    def __eq__(self, n: int) -> CNF:  # type:ignore
+    def __eq__(self, n: int) -> ClueCNF:  # type:ignore
         return (self <= n) + (self >= n)
 
-    def __ne__(self, n) -> CNF:  # type:ignore
+    def __ne__(self, n) -> ClueCNF:  # type:ignore
         raise NotImplementedError
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(elements={self.elements!r})"
 
 
-def all_of(elements: list[Element]) -> CNF:
+def all_of(elements: Sequence[Element]) -> ClueCNF:
     """Forces inclusion of matching rows on a truth table"""
     return Q(elements) == len(elements)
 
 
-def some_of(elements: Iterable[Element]) -> CNF:
+def some_of(elements: Sequence[Element]) -> ClueCNF:
     """At least one of the elements must be true
 
     >>> some_of(['A', 'B', 'C'])
@@ -148,7 +156,7 @@ def some_of(elements: Iterable[Element]) -> CNF:
     return Q(elements) >= 1
 
 
-def one_of(elements: Iterable[Element]) -> CNF:
+def one_of(elements: Sequence[Element]) -> ClueCNF:
     """Exactly one of the elements is true
 
     >>> one_of(['A', 'B', 'C'])
@@ -160,11 +168,11 @@ def one_of(elements: Iterable[Element]) -> CNF:
     return Q(elements) == 1
 
 
-def basic_fact(element: Element) -> CNF:
+def basic_fact(element: Element) -> ClueCNF:
     """Assert that this one element always matches"""
     return Q([element]) == 1
 
 
-def none_of(elements: Iterable[Element]) -> CNF:
+def none_of(elements: Sequence[Element]) -> ClueCNF:
     """Forces exclusion of matching rows on a truth table"""
     return Q(elements) == 0

@@ -12,19 +12,19 @@ can be used in a puzzle description.
 
 
 from abc import ABC, abstractmethod
-from collections.abc import Callable, Iterable
-from dataclasses import dataclass, field
+from collections.abc import Callable
+from dataclasses import dataclass
 from functools import wraps
 from itertools import product
-from typing import NewType, ParamSpec
+from typing import ParamSpec
 
 from src.elements import PuzzleElement
+from src.sat_utils import ClueCNF, comb
 
 from . import sat_utils
 
 # type ClueCNF = tuple[str, ...]  # Python 3.12 syntax, breaks black/ruff
 
-ClueCNF = NewType("ClueCNF", tuple[str, ...])
 P = ParamSpec("P")
 
 
@@ -47,18 +47,12 @@ class Clue(ABC):
     """Base class for the types of clues that we allow."""
 
     @abstractmethod
-    def as_cnf(self) -> Iterable[ClueCNF]:
+    def as_cnf(self) -> ClueCNF:
         ...
 
     @abstractmethod
     def __repr__(self) -> str:
         ...
-
-
-def comb(value: PuzzleElement, house: int) -> str:
-    """Format how a value is shown at a given house"""
-
-    return f"{value} {house}"
 
 
 @dataclass(eq=True, frozen=True)
@@ -74,7 +68,7 @@ class found_at(Clue):  # noqa: N801
     value: PuzzleElement
     house: int
 
-    def as_cnf(self) -> list[tuple[str]]:
+    def as_cnf(self) -> ClueCNF:
         return [(comb(self.value, self.house),)]
 
     @_capitalize_first
@@ -96,7 +90,7 @@ class not_at(Clue):  # noqa: N801
     value: PuzzleElement
     house: int
 
-    def as_cnf(self) -> list[tuple[str]]:
+    def as_cnf(self) -> ClueCNF:
         return [(sat_utils.neg(comb(self.value, self.house)),)]
 
     @_capitalize_first
@@ -117,9 +111,9 @@ class same_house(Clue):  # noqa: N801
 
     value1: PuzzleElement
     value2: PuzzleElement
-    houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
+    houses: tuple[int, ...]
 
-    def as_cnf(self) -> list[tuple[str]]:
+    def as_cnf(self) -> ClueCNF:
         return sat_utils.from_dnf((comb(self.value1, i), comb(self.value2, i)) for i in self.houses)
 
     @_capitalize_first
@@ -141,9 +135,9 @@ class consecutive(Clue):  # noqa: N801
 
     value1: PuzzleElement
     value2: PuzzleElement
-    houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
+    houses: tuple[int, ...]
 
-    def as_cnf(self) -> list[tuple[str]]:
+    def as_cnf(self) -> ClueCNF:
         return sat_utils.from_dnf(
             (comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[1:])
         )
@@ -165,9 +159,9 @@ class beside(Clue):  # noqa: N801
 
     value1: PuzzleElement
     value2: PuzzleElement
-    houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
+    houses: tuple[int, ...]
 
-    def as_cnf(self) -> list[tuple[str]]:
+    def as_cnf(self) -> ClueCNF:
         return sat_utils.from_dnf(
             [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[1:])]
             + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(self.houses, self.houses[1:])]
@@ -191,9 +185,9 @@ class left_of(Clue):  # noqa: N801
 
     value1: PuzzleElement
     value2: PuzzleElement
-    houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
+    houses: tuple[int, ...]
 
-    def as_cnf(self) -> list[tuple[str]]:
+    def as_cnf(self) -> ClueCNF:
         return sat_utils.from_dnf(
             (comb(self.value1, i), comb(self.value2, j)) for i, j in product(self.houses, self.houses) if i < j
         )
@@ -216,9 +210,9 @@ class right_of(Clue):  # noqa: N801
 
     value1: PuzzleElement
     value2: PuzzleElement
-    houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
+    houses: tuple[int, ...]
 
-    def as_cnf(self) -> list[tuple[str]]:
+    def as_cnf(self) -> ClueCNF:
         return sat_utils.from_dnf(
             (comb(self.value1, i), comb(self.value2, j)) for i, j in product(self.houses, self.houses) if i > j
         )
@@ -242,9 +236,9 @@ class one_between(Clue):  # noqa: N801
 
     value1: PuzzleElement
     value2: PuzzleElement
-    houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
+    houses: tuple[int, ...]
 
-    def as_cnf(self) -> list[tuple[str]]:
+    def as_cnf(self) -> ClueCNF:
         return sat_utils.from_dnf(
             [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[2:])]
             + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(self.houses, self.houses[2:])]
@@ -266,9 +260,9 @@ class two_between(Clue):  # noqa: N801
 
     value1: PuzzleElement
     value2: PuzzleElement
-    houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
+    houses: tuple[int, ...]
 
-    def as_cnf(self) -> list[tuple[str]]:
+    def as_cnf(self) -> ClueCNF:
         return sat_utils.from_dnf(
             [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[3:])]
             + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(self.houses, self.houses[3:])]
