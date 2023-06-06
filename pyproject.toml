@@ -12,7 +12,7 @@ pydantic = ">=2.0a2"
 python-sat = {extras = ["aiger", "pblib"], version = "^0.1.8.dev3"}
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.3.0"
+black = {git = "https://github.com/psf/black"}
 ruff = "^0.0.270"
 pyright = "^1.1.310"
 icecream = "^2.1.3"
