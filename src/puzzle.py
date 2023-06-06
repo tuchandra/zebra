@@ -12,7 +12,7 @@ from typing import Self
 
 from src.clues import Clue, ClueCNF, comb
 from src.elements import PuzzleElement
-from src.sat_utils import SATLiteral
+from src.sat_utils import Clause
 
 from . import sat_utils
 
@@ -62,13 +62,13 @@ class Puzzle:
 
         self.houses = tuple(range(1, n_houses + 1))
         self.clues: set[Clue] = set()
-        self.constraints: list[tuple[SATLiteral, ...]] = []
+        self.constraints: list[Clause] = []
 
-    def _add_constraint(self, constraints: list[tuple[SATLiteral, ...]]) -> Puzzle:
+    def _add_constraint(self, constraints: list[Clause]) -> Puzzle:
         self.constraints.extend(constraints)
         return self
 
-    def set_constraints(self) -> Puzzle:
+    def set_constraints(self) -> Self:
         # each house gets exactly one value from each set of literals
         for house in self.houses:
             for element_type in self.element_classes:
@@ -81,16 +81,16 @@ class Puzzle:
 
         return self
 
-    def add_clue(self, clue: Clue) -> Puzzle:
+    def add_clue(self, clue: Clue) -> Self:
         self.clues.add(clue)
         return self
 
-    def remove_clue(self, clue: Clue) -> Puzzle:
+    def remove_clue(self, clue: Clue) -> Self:
         self.clues.remove(clue)
         return self
 
     @contextmanager
-    def with_clues(self, clues: Iterable[Clue]) -> Generator[Puzzle, None, Self]:
+    def with_clues(self, clues: Iterable[Clue]) -> Generator[Self, None, Self]:
         """Create a context in which this Puzzle temporarily has clues added to it"""
 
         clues = list(clues)  # so we don't accidentally exhaust the iterable
@@ -106,7 +106,7 @@ class Puzzle:
     def as_cnf(self) -> ClueCNF:
         """Express puzzle as solvable CNF"""
 
-        cnf: list[tuple[SATLiteral, ...]] = []
+        cnf: list[Clause] = []
         for clue in self.clues:
             cnf.extend(clue.as_cnf())
 

@@ -11,7 +11,8 @@ import pycosat
 
 SATLiteral = NewType("SATLiteral", str)
 Element = str  # literal; any string, but here it's <element house#> e.g., "tushar 5" or "chai 2"
-ClueCNF = list[tuple[SATLiteral, ...]]
+Clause = tuple[SATLiteral, ...]
+ClueCNF = list[Clause]
 
 
 def make_translate(cnf: ClueCNF) -> tuple[dict[Element, int], dict[int, Element]]:
@@ -86,7 +87,7 @@ def neg(element: SATLiteral) -> SATLiteral:
     return SATLiteral(element[1:] if element.startswith("~") else "~" + element)
 
 
-def from_dnf(groups: Iterable[tuple[str, ...]]) -> ClueCNF:
+def from_dnf(groups: Iterable[Clause]) -> ClueCNF:
     """Convert from or-of-ands to and-of-ors
 
     >>> from_dnf([['~P'], ['Q', 'R']])
