@@ -12,6 +12,7 @@ from typing import Self
 
 from src.clues import Clue, ClueCNF, comb
 from src.elements import PuzzleElement
+from src.sat_utils import SATLiteral
 
 from . import sat_utils
 
@@ -61,9 +62,9 @@ class Puzzle:
 
         self.houses = tuple(range(1, n_houses + 1))
         self.clues: set[Clue] = set()
-        self.constraints: list[ClueCNF] = []
+        self.constraints: list[tuple[SATLiteral, ...]] = []
 
-    def _add_constraint(self, constraints: list[ClueCNF]) -> Puzzle:
+    def _add_constraint(self, constraints: list[tuple[SATLiteral, ...]]) -> Puzzle:
         self.constraints.extend(constraints)
         return self
 
@@ -102,10 +103,10 @@ class Puzzle:
 
         return self
 
-    def as_cnf(self) -> list[ClueCNF]:
+    def as_cnf(self) -> ClueCNF:
         """Express puzzle as solvable CNF"""
 
-        cnf: list[ClueCNF] = []
+        cnf: list[tuple[SATLiteral, ...]] = []
         for clue in self.clues:
             cnf.extend(clue.as_cnf())
 

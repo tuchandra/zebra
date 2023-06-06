@@ -2,7 +2,7 @@
 
 __author__ = "Raymond Hettinger"
 
-from collections.abc import Sequence
+from collections.abc import Iterable
 from functools import cache
 from itertools import combinations
 from typing import Any, NewType
@@ -73,10 +73,10 @@ def solve_one(symbolic_cnf: ClueCNF, include_neg: bool = False):
 ############### Support for Building CNFs ##########################
 
 
-def comb(value: Any, house: int) -> SATLiteral:
-    """Format how a value is shown at a given house"""
+def comb(value: Any, loc: int) -> SATLiteral:
+    """Format how a value is shown at a given location"""
 
-    return SATLiteral(f"{value} {house}")
+    return SATLiteral(f"{value} {loc}")
 
 
 @cache
@@ -86,7 +86,7 @@ def neg(element: SATLiteral) -> SATLiteral:
     return SATLiteral(element[1:] if element.startswith("~") else "~" + element)
 
 
-def from_dnf(groups: Sequence[tuple[str, ...]]) -> ClueCNF:
+def from_dnf(groups: Iterable[tuple[str, ...]]) -> ClueCNF:
     """Convert from or-of-ands to and-of-ors
 
     >>> from_dnf([['~P'], ['Q', 'R']])
@@ -117,7 +117,7 @@ class Q:
     ('~B', '~C')]
     """
 
-    def __init__(self, elements: Sequence[Element]):
+    def __init__(self, elements: Iterable[SATLiteral]):
         self.elements = tuple(elements)
 
     def __lt__(self, n: int) -> ClueCNF:
@@ -132,22 +132,22 @@ class Q:
     def __ge__(self, n: int) -> ClueCNF:
         return self > n - 1
 
-    def __eq__(self, n: int) -> ClueCNF:  # type:ignore
+    def __eq__(self, n: int) -> ClueCNF:  # pyright: ignore[reportIncompatibleMethodOverride]
         return (self <= n) + (self >= n)
 
-    def __ne__(self, n) -> ClueCNF:  # type:ignore
+    def __ne__(self, n: Any) -> ClueCNF:  # pyright: ignore[reportIncompatibleMethodOverride]
         raise NotImplementedError
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(elements={self.elements!r})"
 
 
-def all_of(elements: Sequence[Element]) -> ClueCNF:
+def all_of(elements: Iterable[SATLiteral]) -> ClueCNF:
     """Forces inclusion of matching rows on a truth table"""
     return Q(elements) == len(elements)
 
 
-def some_of(elements: Sequence[Element]) -> ClueCNF:
+def some_of(elements: Iterable[SATLiteral]) -> ClueCNF:
     """At least one of the elements must be true
 
     >>> some_of(['A', 'B', 'C'])
@@ -156,7 +156,7 @@ def some_of(elements: Sequence[Element]) -> ClueCNF:
     return Q(elements) >= 1
 
 
-def one_of(elements: Sequence[Element]) -> ClueCNF:
+def one_of(elements: Iterable[SATLiteral]) -> ClueCNF:
     """Exactly one of the elements is true
 
     >>> one_of(['A', 'B', 'C'])
@@ -168,11 +168,11 @@ def one_of(elements: Sequence[Element]) -> ClueCNF:
     return Q(elements) == 1
 
 
-def basic_fact(element: Element) -> ClueCNF:
+def basic_fact(element: SATLiteral) -> ClueCNF:
     """Assert that this one element always matches"""
     return Q([element]) == 1
 
 
-def none_of(elements: Sequence[Element]) -> ClueCNF:
+def none_of(elements: Iterable[SATLiteral]) -> ClueCNF:
     """Forces exclusion of matching rows on a truth table"""
     return Q(elements) == 0
