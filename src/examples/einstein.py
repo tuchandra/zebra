@@ -33,13 +33,14 @@ they smoke, and what pet they own.
 
 from __future__ import annotations
 
+from elements import PuzzleElement
+
 from src import sat_utils
 from src.clues import beside, consecutive, found_at, same_house
-from src.literals import SATLiteral
 from src.puzzle import Puzzle
 
 
-class Color(SATLiteral):
+class Color(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "Each person has a favorite color: yellow, red, white, green, or blue."
@@ -51,7 +52,7 @@ class Color(SATLiteral):
     blue = "the person who loves blue"
 
 
-class Nationality(SATLiteral):
+class Nationality(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "The people are of nationalities: Danish, British, Swedish, Norwegian, German."
@@ -63,7 +64,7 @@ class Nationality(SATLiteral):
     german = "the German"
 
 
-class Animal(SATLiteral):
+class Animal(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "The people keep different animals: horses, cats, birds, fish, and dogs."
@@ -75,7 +76,7 @@ class Animal(SATLiteral):
     dog = "the dog owner"
 
 
-class Drink(SATLiteral):
+class Drink(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "Each person has a favorite drink: water, tea, milk, coffee, and root beer."
@@ -87,7 +88,7 @@ class Drink(SATLiteral):
     root_beer = "the root beer lover"
 
 
-class Cigar(SATLiteral):
+class Cigar(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "Everyone has a different favorite cigar: Pall Mall, Prince, Blue Master, Dunhill, and blends."
@@ -100,8 +101,8 @@ class Cigar(SATLiteral):
 
 
 if __name__ == "__main__":
-    enum_classes: list[type[SATLiteral]] = [Color, Nationality, Animal, Drink, Cigar]
-    literals: list[SATLiteral] = [el for group in enum_classes for el in group]
+    enum_classes: list[type[PuzzleElement]] = [Color, Nationality, Animal, Drink, Cigar]
+    literals: list[PuzzleElement] = [el for group in enum_classes for el in group]
 
     # set up the puzzle with constraints and clues
     puzzle = Puzzle(element_types=[Color, Nationality, Drink, Cigar, Animal])

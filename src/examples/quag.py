@@ -26,11 +26,11 @@ from src.clues import (
     same_house,
     two_between,
 )
-from src.literals import SATLiteral
+from src.elements import PuzzleElement
 from src.puzzle import Puzzle
 
 
-class Children(SATLiteral):
+class Children(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "Each mother is accompanied by their child: Bella, Fred, Meredith, Samantha, Timothy."
@@ -42,7 +42,7 @@ class Children(SATLiteral):
     timothy = "the mother of Timothy"
 
 
-class Flower(SATLiteral):
+class Flower(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "They all have a different favorite flower: carnations, daffodils, lilies, roses, tulips."
@@ -54,7 +54,7 @@ class Flower(SATLiteral):
     tulips = "the vase of tulips"
 
 
-class Food(SATLiteral):
+class Food(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "Everyone has something different for lunch: grilled cheese, pizza, spaghetti, stew, stir fry."
@@ -66,7 +66,7 @@ class Food(SATLiteral):
     stir_fry = "the person with stir fry"
 
 
-class Mother(SATLiteral):
+class Mother(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "The mothers' names are Aniya, Holly, Janelle, Kaillyn, Penny."
@@ -79,7 +79,7 @@ class Mother(SATLiteral):
 
 
 if __name__ == "__main__":
-    enum_classes: list[type[SATLiteral]] = [Mother, Children, Flower, Food]
+    enum_classes: list[type[PuzzleElement]] = [Mother, Children, Flower, Food]
     literals = [el for group in enum_classes for el in group]
 
     # set up the puzzle with constraints and clues

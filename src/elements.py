@@ -16,7 +16,7 @@ just import Literal and implement a class like the ones here.
 from enum import Enum
 
 
-class SATLiteral(Enum):
+class PuzzleElement(Enum):
     """
     Common parent class for all puzzle elements (colors, occupations, pets, etc.).
 
@@ -29,7 +29,7 @@ class SATLiteral(Enum):
         return "".join(cls.__members__)  # type:ignore
 
 
-class Kiro(SATLiteral):
+class Kiro(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "Each house has a different type of Kiro"
@@ -51,7 +51,7 @@ class Kiro(SATLiteral):
     zaeris = "the Zaeris Kiro"
 
 
-class Smoothie(SATLiteral):
+class Smoothie(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "Everyone has a favorite smoothie"
@@ -77,7 +77,7 @@ class Smoothie(SATLiteral):
     earth = "the adoptable who likes Earth smoothies"
 
 
-class Bottlecap(SATLiteral):
+class Bottlecap(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "Everyone keeps a certain type of Bottlecap"
@@ -89,7 +89,7 @@ class Bottlecap(SATLiteral):
     silver = "the SBC winner"
 
 
-class RecolorMedal(SATLiteral):
+class RecolorMedal(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "Everyone has a recolor or medal"
@@ -101,7 +101,7 @@ class RecolorMedal(SATLiteral):
     gold = "the adoptable with a heart of gold"
 
 
-class NPC(SATLiteral):
+class NPC(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "Each is an NPC on the site"
@@ -115,7 +115,7 @@ class NPC(SATLiteral):
     jagger = "Jagger"
 
 
-class FavoriteGame(SATLiteral):
+class FavoriteGame(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "Everyone has a favorite game"
@@ -132,7 +132,7 @@ class FavoriteGame(SATLiteral):
     freedom_forest = "the one in Freedom Forest"
 
 
-class Tribe(SATLiteral):
+class Tribe(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "Everyone has an Altazan tribe"
@@ -144,7 +144,7 @@ class Tribe(SATLiteral):
     storm = "the adoptable in the Storm tribe"
 
 
-class Kaya(SATLiteral):
+class Kaya(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "They are five different types of Kaya"
@@ -156,7 +156,7 @@ class Kaya(SATLiteral):
     love = "the Kaya of Love"
 
 
-class TraptorPrimary(SATLiteral):
+class TraptorPrimary(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "They have different primary colors"
@@ -168,7 +168,7 @@ class TraptorPrimary(SATLiteral):
     heroic = "the Heroic Traptor"
 
 
-class TraptorSecondary(SATLiteral):
+class TraptorSecondary(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "They have different secondary colors"
@@ -180,7 +180,7 @@ class TraptorSecondary(SATLiteral):
     sand = "the Sand Traptor"
 
 
-class TraptorTertiary(SATLiteral):
+class TraptorTertiary(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "They have different tertiary colors"
@@ -192,7 +192,7 @@ class TraptorTertiary(SATLiteral):
     nurturer = "the Nurturer Traptor"
 
 
-class Egg(SATLiteral):
+class Egg(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "They are each giving out a type of egg"
@@ -205,7 +205,7 @@ class Egg(SATLiteral):
     marinodon = "the one giving out Marinodon Eggs"
 
 
-class Dinomon(SATLiteral):
+class Dinomon(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "Each is a different species of Dinomon"
@@ -217,7 +217,7 @@ class Dinomon(SATLiteral):
     traptor = "the Traptor"
 
 
-class UchiType(SATLiteral):
+class UchiType(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "Each is a different type of Uchi"
@@ -228,7 +228,7 @@ class UchiType(SATLiteral):
     mummy = "the Mummy Uchi"
 
 
-class UchiPrimary(SATLiteral):
+class UchiPrimary(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "Each Uchi has a different body color"
@@ -239,7 +239,7 @@ class UchiPrimary(SATLiteral):
     green = "the Uchi with a green body"
 
 
-class UchiSecondary(SATLiteral):
+class UchiSecondary(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "Each Uchi has a different secondary color (e.g., eyes, umbral, etc.)"
@@ -251,7 +251,7 @@ class UchiSecondary(SATLiteral):
 
 
 __all__ = [
-    "SATLiteral",
+    "PuzzleElement",
     "Smoothie",
     "Bottlecap",
     "RecolorMedal",

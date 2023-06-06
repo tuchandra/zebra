@@ -18,8 +18,9 @@ from functools import wraps
 from itertools import product
 from typing import NewType, ParamSpec
 
+from src.elements import PuzzleElement
+
 from . import sat_utils
-from .literals import SATLiteral
 
 # type ClueCNF = tuple[str, ...]  # Python 3.12 syntax, breaks black/ruff
 
@@ -54,7 +55,7 @@ class Clue(ABC):
         ...
 
 
-def comb(value: SATLiteral, house: int) -> str:
+def comb(value: PuzzleElement, house: int) -> str:
     """Format how a value is shown at a given house"""
 
     return f"{value} {house}"
@@ -70,7 +71,7 @@ class found_at(Clue):  # noqa: N801
      - the fourth house is red
     """
 
-    value: SATLiteral
+    value: PuzzleElement
     house: int
 
     def as_cnf(self) -> list[tuple[str]]:
@@ -92,7 +93,7 @@ class not_at(Clue):  # noqa: N801
      - the red house does not contain a cat
     """
 
-    value: SATLiteral
+    value: PuzzleElement
     house: int
 
     def as_cnf(self) -> list[tuple[str]]:
@@ -114,8 +115,8 @@ class same_house(Clue):  # noqa: N801
      - the red house contains a cat
     """
 
-    value1: SATLiteral
-    value2: SATLiteral
+    value1: PuzzleElement
+    value2: PuzzleElement
     houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
     def as_cnf(self) -> list[tuple[str]]:
@@ -138,8 +139,8 @@ class consecutive(Clue):  # noqa: N801
        (kittens in 2, tea in 1 OR kittens in 3, tea in 2 OR etc.)
     """
 
-    value1: SATLiteral
-    value2: SATLiteral
+    value1: PuzzleElement
+    value2: PuzzleElement
     houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
     def as_cnf(self) -> list[tuple[str]]:
@@ -162,8 +163,8 @@ class beside(Clue):  # noqa: N801
      - the cat owner is (left or right) of the green house
     """
 
-    value1: SATLiteral
-    value2: SATLiteral
+    value1: PuzzleElement
+    value2: PuzzleElement
     houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
     def as_cnf(self) -> list[tuple[str]]:
@@ -188,8 +189,8 @@ class left_of(Clue):  # noqa: N801
        OR the tea drinker in 3, musician in 4, 5; OR tea 4, musician 5.
     """
 
-    value1: SATLiteral
-    value2: SATLiteral
+    value1: PuzzleElement
+    value2: PuzzleElement
     houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
     def as_cnf(self) -> list[tuple[str]]:
@@ -213,8 +214,8 @@ class right_of(Clue):  # noqa: N801
        OR the coffee drinker in 3, artist in 1, 2; OR coffee 2, artist 1.
     """
 
-    value1: SATLiteral
-    value2: SATLiteral
+    value1: PuzzleElement
+    value2: PuzzleElement
     houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
     def as_cnf(self) -> list[tuple[str]]:
@@ -239,8 +240,8 @@ class one_between(Clue):  # noqa: N801
        OR green house 3, musician 5.
     """
 
-    value1: SATLiteral
-    value2: SATLiteral
+    value1: PuzzleElement
+    value2: PuzzleElement
     houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
     def as_cnf(self) -> list[tuple[str]]:
@@ -263,8 +264,8 @@ class two_between(Clue):  # noqa: N801
      - the dog is in house 1 and red house is #4; or dog 2, red house 5
     """
 
-    value1: SATLiteral
-    value2: SATLiteral
+    value1: PuzzleElement
+    value2: PuzzleElement
     houses: tuple[int, ...] = field(default_factory=lambda: (1, 2, 3, 4, 5))
 
     def as_cnf(self) -> list[tuple[str]]:

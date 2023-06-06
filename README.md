@@ -16,7 +16,7 @@ Using modern Python and constraint satisfaction (SAT) solvers, this project can 
 This project has five Python files in `src/`:
  * `sat_utils.py` is basic utilities for interacting with the SAT solver [pycosat](https://pypi.org/project/pycosat/); this code was almost entirely written by [Raymond Hettinger](https://rhettinger.github.io/einstein.html#essential-utilities-for-humanization)
  * `puzzle.py` contains the main `Puzzle` class and two sample puzzles that can be solved
- * `literals.py` contains the different puzzle elements via a base `Literal` and subclasses (people, favorite types of tea, most-played video games, etc.)
+ * `elements.py` (formerly `literals.py`) contains the different puzzle elements via a base `PuzzleElement` and subclasses (people, favorite types of tea, most-played video games, etc.)
  * `clues.py` contains the different classes of clues via a base `Clue` and subclasses ("x is at the same house as y", "x is somewhere to the left of z", etc.)
  * `generate.py` is the **main entry point** into this project, creating new puzzles.
 
@@ -30,8 +30,20 @@ This uses the SAT solver [pycosat](https://pypi.org/project/pycosat/), but PySAT
 
 Development uses *black*, *ruff*, and *pyright*, though we're not totally compliant yet; I created the repo in 2019, and have only made minor changes since adding the dev dependencies.
 
-
 ## Future work
+Some ideas for naming:
+- ✓ SATLiteral -> PuzzleElement (smoothie, cat, whatever ...)
+- Literal = comb(el: PuzzleElement, loc: int) ("lilac 2") or the negation ("~lilac 2")
+- Clause = OR of Literals
+
+Clarity between DNF & CNF ... consider using another logic programming language, like Answer Set Programming (Prolog-like)? See [HN thread](https://news.ycombinator.com/item?id=36087464).
+
+A CNF is an "∧ of ∨s," where the "∨" is over any Literal. Since an "∨ of Literals" is equivalently a Clause, a CNF is the "∧ of Clauses."
+
+A DNF is a "∨ of ∧s." The DNF is the *answer* to a SAT problem; a DNF of "A or B or C" reads that A, B, and C are all valid (satisfying) assignments. Converting a CNF to a DNF is therefore NP-hard, since from the DNF you can read off solutions to the CNF.
+
+> CNF is an ∧ of ∨s, where ∨ is over variables or their negations (literals); an ∨ of literals is also called a clause. DNF is an ∨ of ∧s; an ∧ of literals is called a term.
+
 There are a few things I still want to do:
 - configure random solution generation
 - try out creating a smaller size (e.g., 4 houses) with more categories; that sounds like a fun puzzle!

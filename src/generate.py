@@ -10,11 +10,7 @@ from itertools import product
 
 from icecream import ic  # pyright: ignore[reportMissingTypeStubs]
 
-from src.literals import SATLiteral, Smoothie, TraptorPrimary, TraptorSecondary, TraptorTertiary
-from src.puzzle import Puzzle
-from src.sat_utils import itersolve
-
-from .clues import (
+from src.clues import (
     Clue,
     beside,
     consecutive,
@@ -26,9 +22,12 @@ from .clues import (
     same_house,
     two_between,
 )
+from src.elements import PuzzleElement, Smoothie, TraptorPrimary, TraptorSecondary, TraptorTertiary
+from src.puzzle import Puzzle
+from src.sat_utils import itersolve
 
 
-def generate_found_at(puzzle: Puzzle, solution: dict[SATLiteral, int]) -> set[Clue]:
+def generate_found_at(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> set[Clue]:
     """Generate the `found_at` / `not_at` Clue instances"""
 
     clues: set[Clue] = set()
@@ -42,13 +41,13 @@ def generate_found_at(puzzle: Puzzle, solution: dict[SATLiteral, int]) -> set[Cl
     return clues
 
 
-def generate_same_house(puzzle: Puzzle, solution: dict[SATLiteral, int]) -> set[Clue]:
+def generate_same_house(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> set[Clue]:
     """Generate the `same_house` Clue instances"""
 
     clues: set[Clue] = set()
     for house in puzzle.houses:
         items_at_house = {item: loc for item, loc in solution.items() if loc == house}
-        pairs: set[tuple[SATLiteral, SATLiteral]] = {
+        pairs: set[tuple[PuzzleElement, PuzzleElement]] = {
             (item1, item2) for item1, item2 in product(items_at_house, repeat=2) if item1 != item2
         }
         for pair in pairs:
@@ -57,7 +56,7 @@ def generate_same_house(puzzle: Puzzle, solution: dict[SATLiteral, int]) -> set[
     return clues
 
 
-def generate_consecutive_beside(puzzle: Puzzle, solution: dict[SATLiteral, int]) -> set[Clue]:
+def generate_consecutive_beside(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> set[Clue]:
     """Generate the `consecutive` / `beside` Clue instances
 
     (Note that consecutive is just a more informative version of beside. Since they have the same
@@ -68,7 +67,7 @@ def generate_consecutive_beside(puzzle: Puzzle, solution: dict[SATLiteral, int])
     for left, right in zip(puzzle.houses, puzzle.houses[1:]):
         items_left = {item: loc for item, loc in solution.items() if loc == left}
         items_right = {item: loc for item, loc in solution.items() if loc == right}
-        pairs: set[tuple[SATLiteral, SATLiteral]] = {
+        pairs: set[tuple[PuzzleElement, PuzzleElement]] = {
             (item1, item2) for item1, item2 in product(items_left, items_right)
         }
         for pair in pairs:
@@ -82,7 +81,7 @@ def generate_consecutive_beside(puzzle: Puzzle, solution: dict[SATLiteral, int])
     return clues
 
 
-def generate_left_right_of(puzzle: Puzzle, solution: dict[SATLiteral, int]) -> set[Clue]:
+def generate_left_right_of(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> set[Clue]:
     """Generate the `left_of` / `right_of` Clue instances
 
     Note that since (x left-of y) is guaranteed to be redundant with (b right-of a), we only add
@@ -96,7 +95,7 @@ def generate_left_right_of(puzzle: Puzzle, solution: dict[SATLiteral, int]) -> s
 
         items_left = {item: loc for item, loc in solution.items() if loc == left}
         items_right = {item: loc for item, loc in solution.items() if loc == right}
-        pairs: set[tuple[SATLiteral, SATLiteral]] = {
+        pairs: set[tuple[PuzzleElement, PuzzleElement]] = {
             (item1, item2) for item1, item2 in product(items_left, items_right)
         }
         for pair in pairs:
@@ -108,14 +107,14 @@ def generate_left_right_of(puzzle: Puzzle, solution: dict[SATLiteral, int]) -> s
     return clues
 
 
-def generate_one_between(puzzle: Puzzle, solution: dict[SATLiteral, int]) -> set[Clue]:
+def generate_one_between(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> set[Clue]:
     """Generate the `one_between` Clue instances"""
 
     clues: set[Clue] = set()
     for left, right in zip(puzzle.houses, puzzle.houses[2:]):
         items_left = {item: loc for item, loc in solution.items() if loc == left}
         items_right = {item: loc for item, loc in solution.items() if loc == right}
-        pairs: set[tuple[SATLiteral, SATLiteral]] = {
+        pairs: set[tuple[PuzzleElement, PuzzleElement]] = {
             (item1, item2) for item1, item2 in product(items_left, items_right)
         }
         for pair in pairs:
@@ -124,14 +123,14 @@ def generate_one_between(puzzle: Puzzle, solution: dict[SATLiteral, int]) -> set
     return clues
 
 
-def generate_two_between(puzzle: Puzzle, solution: dict[SATLiteral, int]) -> set[Clue]:
+def generate_two_between(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> set[Clue]:
     """Generate the `two_between` Clue instances"""
 
     clues: set[Clue] = set()
     for left, right in zip(puzzle.houses, puzzle.houses[3:]):
         items_left = {item: loc for item, loc in solution.items() if loc == left}
         items_right = {item: loc for item, loc in solution.items() if loc == right}
-        pairs: set[tuple[SATLiteral, SATLiteral]] = {
+        pairs: set[tuple[PuzzleElement, PuzzleElement]] = {
             (item1, item2) for item1, item2 in product(items_left, items_right)
         }
         for pair in pairs:
@@ -285,7 +284,7 @@ if __name__ == "__main__":
 
     # Some elements have extra members, and we need to randomize the solution
     # random.sample takes N (puzzle_size) values without replacement
-    puzzle_elements: dict[type[SATLiteral], list[SATLiteral]] = {
+    puzzle_elements: dict[type[PuzzleElement], list[PuzzleElement]] = {
         # Smoothie: [Smoothie.lilac, Smoothie.earth, ...],
         # TraptorPrimary: [TraptorPrimary.marvellous, TraptorPrimary.heroic, ...]
         # etc ...
@@ -295,7 +294,7 @@ if __name__ == "__main__":
         puzzle_elements[element] = random.sample(members, puzzle_size)
 
     # Construct the solution now
-    solution: dict[SATLiteral, int] = {
+    solution: dict[PuzzleElement, int] = {
         # Smoothie.lilac: 1,
         # Smoothie.earth: 2,
         # ...,

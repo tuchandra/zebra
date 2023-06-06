@@ -10,9 +10,10 @@ from contextlib import contextmanager
 from random import shuffle
 from typing import Self
 
+from src.clues import Clue, ClueCNF, comb
+from src.elements import PuzzleElement
+
 from . import sat_utils
-from .clues import Clue, ClueCNF, comb
-from .literals import SATLiteral
 
 
 class Puzzle:
@@ -37,8 +38,8 @@ class Puzzle:
     def __init__(
         self,
         *,
-        element_types: Iterable[type[SATLiteral]],
-        elements: Iterable[SATLiteral] | None = None,
+        element_types: Iterable[type[PuzzleElement]],
+        elements: Iterable[PuzzleElement] | None = None,
         n_houses: int = 5,
     ) -> None:
         """
