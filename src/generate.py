@@ -16,7 +16,13 @@ from src.clues import (
     same_house,
     two_between,
 )
-from src.elements import PuzzleElement, Smoothie, TraptorPrimary, TraptorSecondary, TraptorTertiary
+from src.elements import (
+    MythicalTraptorPrimary,
+    MythicalTraptorSecondary,
+    MythicalTraptorTertiary,
+    PuzzleElement,
+    Smoothie,
+)
 from src.puzzle import Puzzle
 from src.sat_utils import itersolve
 
@@ -271,7 +277,7 @@ def reduce_clues(puzzle: Puzzle, clues: set[Clue]) -> tuple[set[Clue], set[Clue]
 
 if __name__ == "__main__":
     random.seed(12)
-    element_types = [TraptorPrimary, TraptorSecondary, TraptorTertiary, Smoothie]
+    element_types = [MythicalTraptorPrimary, MythicalTraptorSecondary, MythicalTraptorTertiary, Smoothie]
 
     # Size of puzzle = number of "houses" or whatever
     puzzle_size = 5

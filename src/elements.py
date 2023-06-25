@@ -156,7 +156,7 @@ class Kaya(PuzzleElement):
     love = "the Kaya of Love"
 
 
-class TraptorPrimary(PuzzleElement):
+class TropicalTraptorPrimary(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "They have different primary colors"
@@ -168,7 +168,7 @@ class TraptorPrimary(PuzzleElement):
     heroic = "the Heroic Traptor"
 
 
-class TraptorSecondary(PuzzleElement):
+class TropicalTraptorSecondary(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "They have different secondary colors"
@@ -180,7 +180,7 @@ class TraptorSecondary(PuzzleElement):
     sand = "the Sand Traptor"
 
 
-class TraptorTertiary(PuzzleElement):
+class TropicalTraptorTertiary(PuzzleElement):
     @classmethod
     def description(cls) -> str:
         return "They have different tertiary colors"
@@ -190,6 +190,42 @@ class TraptorTertiary(PuzzleElement):
     screecher = "the Screecher Traptor"
     hunter = "the Hunter Traptor"
     nurturer = "the Nurturer Traptor"
+
+
+class MythicalTraptorPrimary(PuzzleElement):
+    @classmethod
+    def description(cls) -> str:
+        return "They have different primary colors"
+
+    greater = "the Greater Traptor"
+    lesser = "the Lesser Traptor"
+    fierce = "the Fierce Traptor"
+    restless = "the Restless Traptor"
+    ancient = "the Ancient Traptor"
+
+
+class MythicalTraptorSecondary(PuzzleElement):
+    @classmethod
+    def description(cls) -> str:
+        return "They have different secondary colors"
+
+    lake = "the Lake Traptor"
+    swamp = "the Swamp Traptor"
+    cave = "the Cave Traptor"
+    volcano = "the Volcano Traptor"
+    mountain = "the Mountain Traptor"
+
+
+class MythicalTraptorTertiary(PuzzleElement):
+    @classmethod
+    def description(cls) -> str:
+        return "They have different tertiary colors"
+
+    dweller = "the Dweller Traptor"
+    crawler = "the Crawler Traptor"
+    stalker = "the Stalker Traptor"
+    hoarder = "the Hoarder Traptor"
+    snapper = "the Snapper Traptor"
 
 
 class Egg(PuzzleElement):
@@ -259,9 +295,9 @@ __all__ = [
     "FavoriteGame",
     "Tribe",
     "Kaya",
-    "TraptorPrimary",
-    "TraptorSecondary",
-    "TraptorTertiary",
+    "TropicalTraptorPrimary",
+    "TropicalTraptorSecondary",
+    "TropicalTraptorTertiary",
     "Egg",
     "Dinomon",
     "UchiType",
