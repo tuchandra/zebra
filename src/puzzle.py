@@ -67,7 +67,7 @@ class Puzzle:
         # each house gets exactly one value from each set of literals
         for house in self.houses:
             for element_type in self.element_classes:
-                literals_of_that_type = [l for l in self.literals if isinstance(l, element_type)]  # noqa: E741
+                literals_of_that_type = [lit for lit in self.literals if isinstance(lit, element_type)]
                 self._add_constraint(sat_utils.one_of(comb(value, house) for value in literals_of_that_type))
 
         # each value gets assigned to exactly one house
