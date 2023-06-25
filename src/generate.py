@@ -1,9 +1,3 @@
-"""
-puzzle_generator.py
-
-This is a driver script that can be used to generate new zebra puzzles.
-"""
-
 import random
 from collections.abc import Iterable
 from itertools import product

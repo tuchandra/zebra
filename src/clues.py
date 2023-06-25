@@ -7,7 +7,6 @@ green house" and "the cat owner lives left of the person who likes grilled chees
 There's a Clue ABC that requires you implement an `as_cnf` method, to convert the clue to an
 and-of-ors (probably using things defined in `sat_utils`), and a human-readable __repr__ that
 can be used in a puzzle description.
-
 """
 
 

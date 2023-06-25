@@ -1,8 +1,3 @@
-"""solver.py
-
-Solve the Einstein puzzle using Raymond Hettinger's approach.
-"""
-
 from __future__ import annotations
 
 from collections.abc import Generator, Iterable
