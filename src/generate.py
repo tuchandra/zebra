@@ -236,7 +236,6 @@ def reduce_clues(puzzle: Puzzle, clues: set[Clue]) -> tuple[set[Clue], set[Clue]
     algorithm returns a second set of clues that were removed during the secondary reduction
     process. These can be thought of as extra clues to add or hints to give to anyone solving the
     puzzle.
-
     """
 
     # this is a stupid way to shuffle the set of clues without modifying it

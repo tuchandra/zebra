@@ -9,8 +9,8 @@ Each class must provide (but we have no way of enforcing this) a description of 
 puzzle element. These get used to make human-readable clues. The classes must also provide
 a custom __repr__ method that gets used in the puzzle description.
 
-Included is a base Literal class from which all literals should inherit. To extend these,
-just import Literal and implement a class like the ones here.
+Included is a base PuzzleElement class from which all literals should inherit. To extend these,
+just import PuzzleElement and implement a class like the ones here.
 """
 
 from enum import Enum
