@@ -50,6 +50,18 @@ Add `Clause: tuple[SATLiteral, ...]` representing a "∨" (boolean OR; disjuncti
 
 Add `ClueCNF: list[Clause]`, representing a "∧" (boolean AND; conjunction) of `Clause`s. A puzzle in CNF is an "AND of ORs" ("∧ of ∨s" or "∧ of Clauses").
 
+### 2023-06-03: improve printed display
+Print the puzzle more clearly. Reduce verbosity of the clue reduction.
+
+### 2023-06-01: random generation
+Randomly generate the puzzle (with a seed) on each run.
+
+### 2023-05-25: cleanup
+Move examples into their own files. Update to Python 3.12 (beta). Add more lint rules. Clean up imports.
+
+### 2023-04-25: rise from the dead
+Add dev tools (black, ruff, pyright); run black & ruff in pre-commit. Update some types.
+
 ## Definitions
 A CNF is an "∧ of ∨s," where the "∨" is over any Literal. Since an "∨ of Literals" is equivalently a Clause, a CNF is the "∧ of Clauses."
 
