@@ -9,7 +9,6 @@ license = "MIT"
 python = "3.12.0"
 pycosat = "^0.6.3"
 pydantic = ">=2.0a2"
-python-sat = {extras = ["aiger", "pblib"], version = "^0.1.8.dev3"}
 
 [tool.poetry.group.dev.dependencies]
 black = {git = "https://github.com/psf/black"}
@@ -18,7 +17,7 @@ pyright = "^1.1.310"
 icecream = "^2.1.3"
 
 [build-system]
-requires = ["poetry>=0.12"]
+requires = ["poetry-core"]
 build-backend = "poetry.masonry.api"
 
 [tool.black]
