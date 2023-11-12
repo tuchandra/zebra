@@ -21,8 +21,6 @@ from src.sat_utils import ClueCNF, comb
 
 from . import sat_utils
 
-# type ClueCNF = tuple[str, ...]  # Python 3.12 syntax, breaks black/ruff
-
 P = ParamSpec("P")
 
 

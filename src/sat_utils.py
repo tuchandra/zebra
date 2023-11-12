@@ -2,7 +2,7 @@
 
 __author__ = "Raymond Hettinger"
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from functools import cache
 from itertools import combinations
 from typing import Any, NewType
@@ -10,9 +10,9 @@ from typing import Any, NewType
 import pycosat
 
 SATLiteral = NewType("SATLiteral", str)
-Element = str  # literal; any string, but here it's <element house#> e.g., "tushar 5" or "chai 2"
-Clause = tuple[SATLiteral, ...]
-ClueCNF = list[Clause]
+type Element = str  # literal; any string, but here it's <element house#> e.g., "tushar 5" or "chai 2"
+type Clause = tuple[SATLiteral, ...]
+type ClueCNF = list[Clause]
 
 
 def make_translate(cnf: ClueCNF) -> tuple[dict[Element, int], dict[int, Element]]:
@@ -59,8 +59,9 @@ def translate(cnf: ClueCNF, uniquify: bool = False) -> tuple[list[tuple[int, ...
 
 def itersolve(symbolic_cnf: ClueCNF, include_neg: bool = False):
     numbered_cnf, num2var = translate(symbolic_cnf)
-    for solution in pycosat.itersolve(numbered_cnf):
-        yield [num2var[n] for n in solution if include_neg or n > 0]
+
+    for solution in pycosat.itersolve(numbered_cnf):  # pyright: ignore[reportUnknownMemberType, reportUnknownVariableType]
+        yield [num2var[n] for n in solution if include_neg or n > 0]  # pyright: ignore[reportUnknownVariableType, reportUnknownArgumentType]
 
 
 def solve_all(symbolic_cnf: ClueCNF, include_neg: bool = False):
@@ -94,7 +95,7 @@ def from_dnf(groups: Iterable[Clause]) -> ClueCNF:
     [('~P', 'Q'), ('~P', 'R')]
     """
 
-    cnf: set[frozenset[str]] = {frozenset()}
+    cnf: set[frozenset[SATLiteral]] = {frozenset()}
     for group in groups:
         nl = {frozenset([literal]): neg(literal) for literal in group}
         # The "clause | literal" prevents dup lits: {x, x, y} -> {x, y}
@@ -118,7 +119,7 @@ class Q:
     ('~B', '~C')]
     """
 
-    def __init__(self, elements: Iterable[SATLiteral]):
+    def __init__(self, elements: Sequence[SATLiteral]):
         self.elements = tuple(elements)
 
     def __lt__(self, n: int) -> ClueCNF:
@@ -143,12 +144,12 @@ class Q:
         return f"{self.__class__.__name__}(elements={self.elements!r})"
 
 
-def all_of(elements: Iterable[SATLiteral]) -> ClueCNF:
+def all_of(elements: Sequence[SATLiteral]) -> ClueCNF:
     """Forces inclusion of matching rows on a truth table"""
     return Q(elements) == len(elements)
 
 
-def some_of(elements: Iterable[SATLiteral]) -> ClueCNF:
+def some_of(elements: Sequence[SATLiteral]) -> ClueCNF:
     """At least one of the elements must be true
 
     >>> some_of(['A', 'B', 'C'])
@@ -157,7 +158,7 @@ def some_of(elements: Iterable[SATLiteral]) -> ClueCNF:
     return Q(elements) >= 1
 
 
-def one_of(elements: Iterable[SATLiteral]) -> ClueCNF:
+def one_of(elements: Sequence[SATLiteral]) -> ClueCNF:
     """Exactly one of the elements is true
 
     >>> one_of(['A', 'B', 'C'])
@@ -174,6 +175,6 @@ def basic_fact(element: SATLiteral) -> ClueCNF:
     return Q([element]) == 1
 
 
-def none_of(elements: Iterable[SATLiteral]) -> ClueCNF:
+def none_of(elements: Sequence[SATLiteral]) -> ClueCNF:
     """Forces exclusion of matching rows on a truth table"""
     return Q(elements) == 0
