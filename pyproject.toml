@@ -8,42 +8,37 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "3.12.0"
 pycosat = "^0.6.3"
-pydantic = ">=2.0a2"
+pydantic = "^2.4.2"
 
 [tool.poetry.group.dev.dependencies]
-black = {git = "https://github.com/psf/black"}
-ruff = "^0.0.270"
-pyright = "^1.1.310"
+ruff = "^0.1.5"
+pyright = "^1.1.335"
 icecream = "^2.1.3"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.masonry.api"
 
-[tool.black]
-line-length = 120
-target-version = ["py311"]
-
 [tool.ruff]
 line-length = 120
-target-version = "py311"
+target-version = "py312"
 
 ignore = [
-  "E501",  # line length
+  "E501", # line length
 ]
 select = [
   "F",
   "E",
   "W",
-  "RUF100",  # unused-noqa
-  "I",  # isort
-  "N",  # pep8-naming
-  "C4",  # flake8-comprehensions
-  "PT",  # flake8-pytest-style
-  "PTH",  # flake8-use-pathlib
-  "SIM",  # flake8-simplify
-  "TID252",  # tidy imports
-  "UP",  # pyupgrade
+  "RUF100", # unused-noqa
+  "I",      # isort
+  "N",      # pep8-naming
+  "C4",     # flake8-comprehensions
+  "PT",     # flake8-pytest-style
+  "PTH",    # flake8-use-pathlib
+  "SIM",    # flake8-simplify
+  "TID252", # tidy imports
+  "UP",     # pyupgrade
 ]
 
 [tool.pyright]

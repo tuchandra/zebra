@@ -67,9 +67,7 @@ def generate_consecutive_beside(puzzle: Puzzle, solution: dict[PuzzleElement, in
     for left, right in zip(puzzle.houses, puzzle.houses[1:]):
         items_left = {item: loc for item, loc in solution.items() if loc == left}
         items_right = {item: loc for item, loc in solution.items() if loc == right}
-        pairs: set[tuple[PuzzleElement, PuzzleElement]] = {
-            (item1, item2) for item1, item2 in product(items_left, items_right)
-        }
+        pairs: set[tuple[PuzzleElement, PuzzleElement]] = set(product(items_left, items_right))
         for pair in pairs:
             # consecutive is just a more informative version of beside, but they have same structure
             # because of this, don't include both
@@ -95,9 +93,7 @@ def generate_left_right_of(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -
 
         items_left = {item: loc for item, loc in solution.items() if loc == left}
         items_right = {item: loc for item, loc in solution.items() if loc == right}
-        pairs: set[tuple[PuzzleElement, PuzzleElement]] = {
-            (item1, item2) for item1, item2 in product(items_left, items_right)
-        }
+        pairs: set[tuple[PuzzleElement, PuzzleElement]] = set(product(items_left, items_right))
         for pair in pairs:
             if random.randint(0, 1) == 0:
                 clues.add(left_of(pair[0], pair[1], puzzle.houses))
@@ -114,9 +110,7 @@ def generate_one_between(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> 
     for left, right in zip(puzzle.houses, puzzle.houses[2:]):
         items_left = {item: loc for item, loc in solution.items() if loc == left}
         items_right = {item: loc for item, loc in solution.items() if loc == right}
-        pairs: set[tuple[PuzzleElement, PuzzleElement]] = {
-            (item1, item2) for item1, item2 in product(items_left, items_right)
-        }
+        pairs: set[tuple[PuzzleElement, PuzzleElement]] = set(product(items_left, items_right))
         for pair in pairs:
             clues.add(one_between(pair[0], pair[1], puzzle.houses))
 
@@ -130,9 +124,7 @@ def generate_two_between(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> 
     for left, right in zip(puzzle.houses, puzzle.houses[3:]):
         items_left = {item: loc for item, loc in solution.items() if loc == left}
         items_right = {item: loc for item, loc in solution.items() if loc == right}
-        pairs: set[tuple[PuzzleElement, PuzzleElement]] = {
-            (item1, item2) for item1, item2 in product(items_left, items_right)
-        }
+        pairs: set[tuple[PuzzleElement, PuzzleElement]] = set(product(items_left, items_right))
         for pair in pairs:
             clues.add(two_between(pair[0], pair[1], puzzle.houses))
 
