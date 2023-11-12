@@ -2,7 +2,7 @@ import random
 from collections.abc import Iterable
 from itertools import product
 
-from icecream import ic  # pyright: ignore[reportMissingTypeStubs]
+from rich import print
 
 from src.clues import (
     Clue,
@@ -236,8 +236,6 @@ def reduce_clues(puzzle: Puzzle, clues: set[Clue]) -> tuple[set[Clue], set[Clue]
     while True:
         print(f"There are {len(minimal_clues)} clues in ba sing se")
 
-        # Walrus time!
-        #
         # If the size of minimal_clues before we try to remove some clues is greater than the size
         # after, then those clues were fine to remove. Go back to the top of the loop and keep
         # removing more. But if the size is the same, we needed some of those clues. Try to remove
@@ -304,7 +302,7 @@ if __name__ == "__main__":
     ).set_constraints()
 
     print(f"\nOriginal puzzle\n{'-' * 30}")
-    ic(puzzle)
+    print(puzzle)
 
     # generate all the clues
     clues: set[Clue] = set()
@@ -324,7 +322,7 @@ if __name__ == "__main__":
         puzzle.add_clue(clue)
 
     print(f"\nNarrowed puzzle\n{'-' * 15}")
-    ic(puzzle)
+    print(puzzle)
 
     print(f"\nSupplemental clues\n{'-' * 18}")
     for clue in extras:

@@ -7,7 +7,7 @@ from functools import cache
 from itertools import combinations
 from typing import Any, NewType
 
-import pycosat
+import pycosat  # pyright: ignore[reportMissingImports]
 
 SATLiteral = NewType("SATLiteral", str)
 type Element = str  # literal; any string, but here it's <element house#> e.g., "tushar 5" or "chai 2"
