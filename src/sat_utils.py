@@ -71,7 +71,7 @@ def solve_one(symbolic_cnf: ClueCNF, include_neg: bool = False):
     return next(itersolve(symbolic_cnf, include_neg))
 
 
-############### Support for Building CNFs ##########################
+# Support for Building CNFs
 
 
 def comb(value: Any, loc: int) -> SATLiteral:

@@ -22,6 +22,7 @@ build-backend = "poetry.masonry.api"
 [tool.ruff]
 line-length = 120
 target-version = "py312"
+preview = true
 
 ignore = [
   "E501", # line length

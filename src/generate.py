@@ -334,6 +334,9 @@ if __name__ == "__main__":
     print(f"\nSolution\n{'-' * 8}")
 
     for index in range(puzzle_size):
-        print(f"({index+1}) |>")
-        print(*[f"- {elements[index]}" for _, elements in puzzle_elements.items()], sep="\n")
+        print(f"({index + 1}) |>")
+        print(
+            *[f"- {elements[index]}" for _, elements in puzzle_elements.items()],
+            sep="\n",
+        )
         print()

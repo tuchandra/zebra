@@ -9,7 +9,6 @@ and-of-ors (probably using things defined in `sat_utils`), and a human-readable 
 can be used in a puzzle description.
 """
 
-
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -46,12 +45,10 @@ class Clue(ABC):
     """Base class for the types of clues that we allow."""
 
     @abstractmethod
-    def as_cnf(self) -> ClueCNF:
-        ...
+    def as_cnf(self) -> ClueCNF: ...
 
     @abstractmethod
-    def __repr__(self) -> str:
-        ...
+    def __repr__(self) -> str: ...
 
 
 @dataclass(eq=True, frozen=True)
