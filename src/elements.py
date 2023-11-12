@@ -1,5 +1,5 @@
 """
-literals.py
+elements.py
 
 This is a collection of "puzzle elements"---categories, literals, whatever you want to call
 them---which are used as the building blocks of zebra puzzles. Examples include people's
@@ -51,44 +51,6 @@ class Kiro(PuzzleElement):
     zaeris = "the Zaeris Kiro"
 
 
-class Smoothie(PuzzleElement):
-    @classmethod
-    def description(cls) -> str:
-        return "Everyone has a favorite smoothie"
-
-    cherry = "the adoptable who likes Cherry smoothies"
-    desert = "the Desert smoothie lover"
-    watermelon = "the Watermelon smoothie lover"
-    dragonfruit = "the Dragonfruit smoothie lover"
-    lime = "the adoptable who drinks Lime smoothies"
-    blueberry = "the adoptable who drinks Blueberry smoothies"
-    lemon = "the Lemon smoothie lover"
-    dusk = "the adoptable whose favorite smoothie is Dusk"
-    dawn = "the adoptable who likes Dawn smoothies"
-    spring = "the adoptable who likes Spring smoothies"
-    seafoam = "the adoptable who likes Seafoam smoothies"
-    phantom_spring = "the adoptable who likes Phantom Spring smoothies"
-    abyss = "the adoptable whose favorite smoothie is Abyss"
-    butterscotch = "the Butterscotch smoothie drinker"
-    lilac = "the Lilac smoothie drinker"
-    sakura = "the adoptable whose favorite smoothie is Sakura"
-    life = "the Life smoothie drinker"
-    darkness = "the Darkness smoothie drinker"
-    earth = "the adoptable who likes Earth smoothies"
-
-
-class Bottlecap(PuzzleElement):
-    @classmethod
-    def description(cls) -> str:
-        return "Everyone keeps a certain type of Bottlecap"
-
-    red = "the adoptable who has red bottlecaps"
-    yellow = "the adoptable who likes YBC"
-    green = "the GBC keeper"
-    blue = "the blue bottlecap hoarder"
-    silver = "the SBC winner"
-
-
 class RecolorMedal(PuzzleElement):
     @classmethod
     def description(cls) -> str:
@@ -132,18 +94,6 @@ class FavoriteGame(PuzzleElement):
     freedom_forest = "the one in Freedom Forest"
 
 
-class Tribe(PuzzleElement):
-    @classmethod
-    def description(cls) -> str:
-        return "Everyone has an Altazan tribe"
-
-    quake = "the one in the Quake tribe"
-    cursed = "the Cursed tribe member"
-    forest = "the Forest tribe member"
-    volcano = "the adoptable in the Volcano tribe"
-    storm = "the adoptable in the Storm tribe"
-
-
 class Kaya(PuzzleElement):
     @classmethod
     def description(cls) -> str:
@@ -154,78 +104,6 @@ class Kaya(PuzzleElement):
     harmony = "the Kaya of Harmony"
     wisdom = "the Kaya of Wisdom"
     love = "the Kaya of Love"
-
-
-class TropicalTraptorPrimary(PuzzleElement):
-    @classmethod
-    def description(cls) -> str:
-        return "They have different primary colors"
-
-    majestic = "the Majestic Traptor"
-    grand = "the Grand Traptor"
-    stunning = "the Stunning Traptor"
-    marvellous = "the Marvellous Traptor"
-    heroic = "the Heroic Traptor"
-
-
-class TropicalTraptorSecondary(PuzzleElement):
-    @classmethod
-    def description(cls) -> str:
-        return "They have different secondary colors"
-
-    sky = "the Sky Traptor"
-    forest = "the Forest Traptor"
-    night = "the Night Traptor"
-    sun = "the Sun Traptor"
-    sand = "the Sand Traptor"
-
-
-class TropicalTraptorTertiary(PuzzleElement):
-    @classmethod
-    def description(cls) -> str:
-        return "They have different tertiary colors"
-
-    soarer = "the Soarer Traptor"
-    diver = "the Diver Traptor"
-    screecher = "the Screecher Traptor"
-    hunter = "the Hunter Traptor"
-    nurturer = "the Nurturer Traptor"
-
-
-class MythicalTraptorPrimary(PuzzleElement):
-    @classmethod
-    def description(cls) -> str:
-        return "They have different primary colors"
-
-    greater = "the Greater Traptor"
-    lesser = "the Lesser Traptor"
-    fierce = "the Fierce Traptor"
-    restless = "the Restless Traptor"
-    ancient = "the Ancient Traptor"
-
-
-class MythicalTraptorSecondary(PuzzleElement):
-    @classmethod
-    def description(cls) -> str:
-        return "They have different secondary colors"
-
-    lake = "the Lake Traptor"
-    swamp = "the Swamp Traptor"
-    cave = "the Cave Traptor"
-    volcano = "the Volcano Traptor"
-    mountain = "the Mountain Traptor"
-
-
-class MythicalTraptorTertiary(PuzzleElement):
-    @classmethod
-    def description(cls) -> str:
-        return "They have different tertiary colors"
-
-    dweller = "the Dweller Traptor"
-    crawler = "the Crawler Traptor"
-    stalker = "the Stalker Traptor"
-    hoarder = "the Hoarder Traptor"
-    snapper = "the Snapper Traptor"
 
 
 class Egg(PuzzleElement):
@@ -288,16 +166,10 @@ class UchiSecondary(PuzzleElement):
 
 __all__ = [
     "PuzzleElement",
-    "Smoothie",
-    "Bottlecap",
     "RecolorMedal",
     "NPC",
     "FavoriteGame",
-    "Tribe",
     "Kaya",
-    "TropicalTraptorPrimary",
-    "TropicalTraptorSecondary",
-    "TropicalTraptorTertiary",
     "Egg",
     "Dinomon",
     "UchiType",

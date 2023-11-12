@@ -16,15 +16,15 @@ from src.clues import (
     same_house,
     two_between,
 )
-from src.elements import (
+from src.elements import PuzzleElement
+from src.puzzle import Puzzle
+from src.sat_utils import itersolve
+from src.traptor_elements import (
     MythicalTraptorPrimary,
     MythicalTraptorSecondary,
     MythicalTraptorTertiary,
-    PuzzleElement,
     Smoothie,
 )
-from src.puzzle import Puzzle
-from src.sat_utils import itersolve
 
 
 def generate_found_at(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> set[Clue]:
