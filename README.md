@@ -39,6 +39,9 @@ Development uses *black*, *ruff*, and *pyright*, though we're not totally compli
 These may happen. But the project is finally at a place that I'm happy with, and so I'm excited to share and write about it.
 
 ## Incomplete changelog
+### 2023-11-12: updates to tools
+Remove black and use ruff for formatting. Update dependencies.
+
 ### 2023-06-05: typing improvements
 Rename `SATLiteral` -> `PuzzleElement` (smoothie, cat, etc.); this clarifies that it's not a Literal in the boolean sense and is instead a name for e.g., characters in a puzzle.
 
