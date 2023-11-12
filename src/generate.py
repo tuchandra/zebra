@@ -1,5 +1,5 @@
 import random
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping, Sequence
 from itertools import product
 
 from rich import print
@@ -264,6 +264,30 @@ def reduce_clues(puzzle: Puzzle, clues: set[Clue]) -> tuple[set[Clue], set[Clue]
     return minimal_clues, removed_clues
 
 
+def print_puzzle(
+    puzzle_elements: Mapping[type[PuzzleElement], Sequence[PuzzleElement]],
+    puzzle: Puzzle,
+    extras: Iterable[Clue],
+):
+    print(f"\nNarrowed puzzle\n{'-' * 15}")
+    print(puzzle)
+
+    print(f"\nSupplemental clues\n{'-' * 18}")
+    for clue in extras:
+        print(f" - {clue}")
+
+    print()
+    print(f"\nSolution\n{'-' * 8}")
+
+    for index in range(puzzle.size):
+        print(f"({index + 1}) |>")
+        print(
+            *[f"- {elements[index]}" for _, elements in puzzle_elements.items()],
+            sep="\n",
+        )
+        print()
+
+
 if __name__ == "__main__":
     random.seed(12)
     element_types = [MythicalTraptorPrimary, MythicalTraptorSecondary, MythicalTraptorTertiary, Smoothie]
@@ -321,20 +345,4 @@ if __name__ == "__main__":
     for clue in reduced:
         puzzle.add_clue(clue)
 
-    print(f"\nNarrowed puzzle\n{'-' * 15}")
-    print(puzzle)
-
-    print(f"\nSupplemental clues\n{'-' * 18}")
-    for clue in extras:
-        print(f" - {clue}")
-
-    print()
-    print(f"\nSolution\n{'-' * 8}")
-
-    for index in range(puzzle_size):
-        print(f"({index + 1}) |>")
-        print(
-            *[f"- {elements[index]}" for _, elements in puzzle_elements.items()],
-            sep="\n",
-        )
-        print()
+    print_puzzle(puzzle_elements, puzzle, extras)

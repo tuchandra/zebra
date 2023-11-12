@@ -59,6 +59,8 @@ class Puzzle:
         self.clues: set[Clue] = set()
         self.constraints: list[Clause] = []
 
+        self.size = n_houses
+
     def _add_constraint(self, constraints: list[Clause]) -> Puzzle:
         self.constraints.extend(constraints)
         return self
