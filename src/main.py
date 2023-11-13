@@ -12,18 +12,8 @@ from dataclasses import dataclass
 import questionary
 from rich import print
 
-from src.clues import Clue
 from src.elements import PuzzleElement
-from src.generate import (
-    generate_consecutive_beside,
-    generate_found_at,
-    generate_left_right_of,
-    generate_one_between,
-    generate_same_house,
-    generate_two_between,
-    print_puzzle,
-    reduce_clues,
-)
+from src.generate import generate_all_clues, print_puzzle, reduce_clues
 from src.puzzle import Puzzle
 from src.traptor_elements import (
     Bottlecap,
@@ -125,17 +115,7 @@ if __name__ == "__main__":
 
     print(puzzle)
 
-    # generate all the clues
-    clues: set[Clue] = set()
-    for generate_function in (
-        generate_found_at,
-        generate_same_house,
-        generate_consecutive_beside,
-        generate_left_right_of,
-        generate_one_between,
-        generate_two_between,
-    ):
-        clues = clues.union(generate_function(puzzle, solution))
+    clues = generate_all_clues(puzzle, solution)
 
     print(f"\nStarting puzzle reduction ...\n{'-' * 30}")
     reduced, extras = reduce_clues(puzzle, clues)

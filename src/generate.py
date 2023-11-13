@@ -125,6 +125,23 @@ def generate_two_between(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> 
     return clues
 
 
+def generate_all_clues(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> set[Clue]:
+    """Generate all clues by invoking all of the `generate_x` functions."""
+
+    clues: set[Clue] = set()
+    for generate_function in (
+        generate_found_at,
+        generate_same_house,
+        generate_consecutive_beside,
+        generate_left_right_of,
+        generate_one_between,
+        generate_two_between,
+    ):
+        clues = clues.union(generate_function(puzzle, solution))
+
+    return clues
+
+
 def has_unique_solution(puzzle: Puzzle, clues: Iterable[Clue]) -> bool:
     """Test if a puzzle has a unique solution under a given set of clues."""
 
