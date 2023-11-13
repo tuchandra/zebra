@@ -57,22 +57,24 @@ class Puzzle:
 
         self.houses = tuple(range(1, n_houses + 1))
         self.clues: set[Clue] = set()
-        self.constraints: list[Clause] = []
 
         self.size = n_houses
+        self.constraints = self.get_constraints()
 
-    def set_constraints(self) -> Self:
+    def get_constraints(self) -> list[Clause]:
+        constraints: list[Clause] = []
+
         # each house gets exactly one value from each set of literals
         for house in self.houses:
             for element_type in self.element_classes:
                 literals_of_that_type = [lit for lit in self.literals if isinstance(lit, element_type)]
-                self.constraints.extend(sat_utils.one_of([comb(value, house) for value in literals_of_that_type]))
+                constraints.extend(sat_utils.one_of([comb(value, house) for value in literals_of_that_type]))
 
         # each value gets assigned to exactly one house
         for literal in self.literals:
-            self.constraints.extend(sat_utils.one_of([comb(literal, house) for house in self.houses]))
+            constraints.extend(sat_utils.one_of([comb(literal, house) for house in self.houses]))
 
-        return self
+        return constraints
 
     def add_clue(self, clue: Clue) -> Self:
         self.clues.add(clue)

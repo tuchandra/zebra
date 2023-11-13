@@ -129,7 +129,7 @@ if __name__ == "__main__":
         element_types=puzzle_elements.keys(),
         elements=[e for els in puzzle_elements.values() for e in els],
         n_houses=5,
-    ).set_constraints()
+    )
 
     print(puzzle)
 
