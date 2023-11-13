@@ -18,12 +18,13 @@ This project has five Python files in `src/`:
  * `puzzle.py` contains the main `Puzzle` class and two sample puzzles that can be solved
  * `elements.py` (formerly `literals.py`) contains the different puzzle elements via a base `PuzzleElement` and subclasses (people, favorite types of tea, most-played video games, etc.)
  * `clues.py` contains the different classes of clues via a base `Clue` and subclasses ("x is at the same house as y", "x is somewhere to the left of z", etc.)
- * `generate.py` is the **main entry point** into this project, creating new puzzles.
+ * `generate.py` containas utilities to create new `Clue`s.
+ * `main.py` is the **main entry point** into this project, creating new puzzles.
 
 There's a currently empty `tests/` dir.
 
 ## Requirements
-- Python 3.12 (beta)
+- Python 3.12
 - Poetry
 
 This uses the SAT solver [pycosat](https://pypi.org/project/pycosat/), but PySAT is listed as a dependency, too.)
@@ -41,6 +42,8 @@ These may happen. But the project is finally at a place that I'm happy with, and
 ## Incomplete changelog
 ### 2023-11-12: updates to tools
 Remove black and use ruff for formatting. Update dependencies.
+
+Add new CLI with simpler, clearer usage; `python -m src.main`. 
 
 ### 2023-06-05: typing improvements
 Rename `SATLiteral` -> `PuzzleElement` (smoothie, cat, etc.); this clarifies that it's not a Literal in the boolean sense and is instead a name for e.g., characters in a puzzle.
