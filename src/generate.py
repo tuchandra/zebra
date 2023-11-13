@@ -20,8 +20,10 @@ from src.elements import PuzzleElement
 from src.puzzle import Puzzle
 from src.sat_utils import itersolve
 
+type Solution = Mapping[PuzzleElement, int]
 
-def _generate_found_at(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> set[Clue]:
+
+def _generate_found_at(puzzle: Puzzle, solution: Solution) -> set[Clue]:
     """Generate the `found_at` / `not_at` Clue instances"""
 
     clues: set[Clue] = set()
@@ -35,7 +37,7 @@ def _generate_found_at(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> se
     return clues
 
 
-def _generate_same_house(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> set[Clue]:
+def _generate_same_house(puzzle: Puzzle, solution: Solution) -> set[Clue]:
     """Generate the `same_house` Clue instances"""
 
     clues: set[Clue] = set()
@@ -50,7 +52,7 @@ def _generate_same_house(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> 
     return clues
 
 
-def _generate_consecutive_beside(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> set[Clue]:
+def _generate_consecutive_beside(puzzle: Puzzle, solution: Solution) -> set[Clue]:
     """Generate the `consecutive` / `beside` Clue instances
 
     (Note that consecutive is just a more informative version of beside. Since they have the same
@@ -73,7 +75,7 @@ def _generate_consecutive_beside(puzzle: Puzzle, solution: dict[PuzzleElement, i
     return clues
 
 
-def _generate_left_right_of(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> set[Clue]:
+def _generate_left_right_of(puzzle: Puzzle, solution: Solution) -> set[Clue]:
     """Generate the `left_of` / `right_of` Clue instances
 
     Note that since (x left-of y) is guaranteed to be redundant with (b right-of a), we only add
@@ -97,7 +99,7 @@ def _generate_left_right_of(puzzle: Puzzle, solution: dict[PuzzleElement, int]) 
     return clues
 
 
-def _generate_one_between(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> set[Clue]:
+def _generate_one_between(puzzle: Puzzle, solution: Solution) -> set[Clue]:
     """Generate the `one_between` Clue instances"""
 
     clues: set[Clue] = set()
@@ -111,7 +113,7 @@ def _generate_one_between(puzzle: Puzzle, solution: dict[PuzzleElement, int]) ->
     return clues
 
 
-def _generate_two_between(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> set[Clue]:
+def _generate_two_between(puzzle: Puzzle, solution: Solution) -> set[Clue]:
     """Generate the `two_between` Clue instances"""
 
     clues: set[Clue] = set()
@@ -125,7 +127,7 @@ def _generate_two_between(puzzle: Puzzle, solution: dict[PuzzleElement, int]) ->
     return clues
 
 
-def generate_all_clues(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> set[Clue]:
+def generate_all_clues(puzzle: Puzzle, solution: Solution) -> set[Clue]:
     """Generate all clues by invoking all of the `generate_x` functions."""
 
     clues: set[Clue] = set()

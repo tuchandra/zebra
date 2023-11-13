@@ -85,7 +85,7 @@ class not_at(Clue):  # noqa: N801
     house: int
 
     def as_cnf(self) -> ClueCNF:
-        return [(sat_utils.neg(comb(self.value, self.house)),)]
+        return [(sat_utils.negate(comb(self.value, self.house)),)]
 
     @_capitalize_first
     def __repr__(self) -> str:

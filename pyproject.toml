@@ -16,6 +16,8 @@ questionary = "^2.0.1"
 ruff = "^0.1.5"
 pyright = "^1.1.335"
 icecream = "^2.1.3"
+pytest = "^7.4.3"
+pytest-pretty = "^1.2.0"
 
 [build-system]
 requires = ["poetry-core"]

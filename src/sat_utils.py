@@ -1,6 +1,10 @@
-"""Utility functions to humanize interaction with pycosat"""
+"""
+Utility functions that humanize interaction wtih pycosat. Originally written by Raymond Hettinger.
 
-__author__ = "Raymond Hettinger"
+My modifications include adding type hints, renaming variables and methods, and removing unused code.
+Other parts of the codebase shouldn't need to interact with pycosat directly, and instead should use
+this module as an interface; this also lets us localize the `pyright: ignore` comments in one place.
+"""
 
 from collections.abc import Iterable, Sequence
 from functools import cache
@@ -14,28 +18,37 @@ type Clause = tuple[SATLiteral, ...]
 type ClueCNF = list[Clause]
 
 
-def make_translate(cnf: ClueCNF) -> tuple[dict[str, int], dict[int, str]]:
-    """Make a translator from symbolic CNF to pycosat's numbered clauses.
+@cache
+def negate(element: SATLiteral) -> SATLiteral:
+    """Negate a literal; that is, X -> not X, not X -> X. Represented as X and ~X, respectively."""
 
-    Return literal to number dictionary and reverse lookup dict.
+    return SATLiteral(element[1:] if element.startswith("~") else "~" + element)
+
+
+def make_translate(cnf: ClueCNF) -> tuple[dict[str, int], dict[int, str]]:
+    """
+    Create translation tables between symbolic CNF and pycosat's numbered clauses, since pycosat's
+    solver expects literals as numbers. Return two lookup dictionaries.
 
     >>> make_translate([['~a', 'b', '~c'], ['a', '~c']])
-    ({'a': 1, 'c': 3, 'b': 2, '~a': -1, '~b': -2, '~c': -3},
-     {1: 'a', 2: 'b', 3: 'c', -1: '~a', -3: '~c', -2: '~b'})
+    => (
+      {'a': 1, 'c': 3, 'b': 2, '~a': -1, '~b': -2, '~c': -3},
+      {1: 'a', 2: 'b', 3: 'c', -1: '~a', -3: '~c', -2: '~b'},
+    )
     """
 
-    lit2num: dict[str, int] = {}
+    literals_to_numbers: dict[str, int] = {}
     for clause in cnf:
         for literal in clause:
-            if literal not in lit2num:
+            if literal not in literals_to_numbers:
                 var = literal[1:] if literal[0] == "~" else literal
-                num = len(lit2num) // 2 + 1
-                lit2num[var] = num
-                lit2num["~" + var] = -num
+                num = len(literals_to_numbers) // 2 + 1
+                literals_to_numbers[var] = num
+                literals_to_numbers["~" + var] = -num
 
-    num2var = {num: lit for lit, num in lit2num.items()}
+    num2var = {num: lit for lit, num in literals_to_numbers.items()}
 
-    return lit2num, num2var
+    return literals_to_numbers, num2var
 
 
 def translate(cnf: ClueCNF, uniquify: bool = False) -> tuple[list[tuple[int, ...]], dict[int, str]]:
@@ -56,19 +69,11 @@ def translate(cnf: ClueCNF, uniquify: bool = False) -> tuple[list[tuple[int, ...
     return numbered_cnf, num2var
 
 
-def itersolve(symbolic_cnf: ClueCNF, include_neg: bool = False):
+def itersolve(symbolic_cnf: ClueCNF):
     numbered_cnf, num2var = translate(symbolic_cnf)
 
     for solution in pycosat.itersolve(numbered_cnf):  # pyright: ignore[reportUnknownMemberType, reportUnknownVariableType]
-        yield [num2var[n] for n in solution if include_neg or n > 0]  # pyright: ignore[reportUnknownVariableType, reportUnknownArgumentType]
-
-
-def solve_all(symbolic_cnf: ClueCNF, include_neg: bool = False):
-    return list(itersolve(symbolic_cnf, include_neg))
-
-
-def solve_one(symbolic_cnf: ClueCNF, include_neg: bool = False):
-    return next(itersolve(symbolic_cnf, include_neg))
+        yield [num2var[n] for n in solution if n > 0]  # pyright: ignore[reportUnknownVariableType, reportUnknownArgumentType]
 
 
 # Support for Building CNFs
@@ -80,13 +85,6 @@ def comb(value: Any, loc: int) -> SATLiteral:
     return SATLiteral(f"{value} {loc}")
 
 
-@cache
-def neg(element: SATLiteral) -> SATLiteral:
-    """Negate a single element"""
-
-    return SATLiteral(element[1:] if element.startswith("~") else "~" + element)
-
-
 def from_dnf(groups: Iterable[Clause]) -> ClueCNF:
     """Convert from or-of-ands to and-of-ors
 
@@ -96,7 +94,7 @@ def from_dnf(groups: Iterable[Clause]) -> ClueCNF:
 
     cnf: set[frozenset[SATLiteral]] = {frozenset()}
     for group in groups:
-        nl = {frozenset([literal]): neg(literal) for literal in group}
+        nl = {frozenset([literal]): negate(literal) for literal in group}
         # The "clause | literal" prevents dup lits: {x, x, y} -> {x, y}
         # The nl check skips over identities: {x, ~x, y} -> True
         cnf = {clause | literal for literal in nl for clause in cnf if nl[literal] not in clause}
@@ -122,7 +120,7 @@ class Q:
         self.elements = tuple(elements)
 
     def __lt__(self, n: int) -> ClueCNF:
-        return list(combinations(map(neg, self.elements), n))
+        return list(combinations(map(negate, self.elements), n))
 
     def __le__(self, n: int) -> ClueCNF:
         return self < n + 1
