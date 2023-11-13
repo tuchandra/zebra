@@ -33,9 +33,10 @@ select = [
   "F",
   "E",
   "W",
-  "RUF100", # unused-noqa
   "I",      # isort
+  "RUF",    # ruff rules
   "N",      # pep8-naming
+  "B",      # flake8-bugbear
   "C4",     # flake8-comprehensions
   "PT",     # flake8-pytest-style
   "PTH",    # flake8-use-pathlib

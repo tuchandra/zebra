@@ -133,7 +133,7 @@ class consecutive(Clue):  # noqa: N801
 
     def as_cnf(self) -> ClueCNF:
         return sat_utils.from_dnf(
-            (comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[1:])
+            (comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[1:], strict=False)
         )
 
     @_capitalize_first
@@ -157,8 +157,8 @@ class beside(Clue):  # noqa: N801
 
     def as_cnf(self) -> ClueCNF:
         return sat_utils.from_dnf(
-            [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[1:])]
-            + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(self.houses, self.houses[1:])]
+            [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[1:], strict=False)]
+            + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(self.houses, self.houses[1:], strict=False)]
         )
 
     @_capitalize_first
@@ -234,8 +234,8 @@ class one_between(Clue):  # noqa: N801
 
     def as_cnf(self) -> ClueCNF:
         return sat_utils.from_dnf(
-            [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[2:])]
-            + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(self.houses, self.houses[2:])]
+            [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[2:], strict=False)]
+            + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(self.houses, self.houses[2:], strict=False)]
         )
 
     def __repr__(self) -> str:
@@ -258,8 +258,8 @@ class two_between(Clue):  # noqa: N801
 
     def as_cnf(self) -> ClueCNF:
         return sat_utils.from_dnf(
-            [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[3:])]
-            + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(self.houses, self.houses[3:])]
+            [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[3:], strict=False)]
+            + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(self.houses, self.houses[3:], strict=False)]
         )
 
     def __repr__(self) -> str:
