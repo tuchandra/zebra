@@ -59,8 +59,8 @@ def checkbox[T](question: str, choices: Sequence[Choice[T]]) -> list[T]:
     return [c.value for c in choices if c.label in answers]
 
 
-def sort_randomly[T](seq: Sequence[T]) -> Sequence[T]:
-    """Shuffle a list in place."""
+def shuffle[T](seq: Sequence[T]) -> Sequence[T]:
+    """Shuffle a list and return the result."""
 
     return random.sample(seq, len(seq))
 
@@ -75,39 +75,32 @@ if __name__ == "__main__":
     )
     if traptor_type == TropicalTraptorPrimary:
         puzzle_elements = puzzle_elements | {
-            TropicalTraptorPrimary: sort_randomly(list(TropicalTraptorPrimary.__members__.values())),
-            TropicalTraptorSecondary: sort_randomly(list(TropicalTraptorSecondary.__members__.values())),
-            TropicalTraptorTertiary: sort_randomly(list(TropicalTraptorTertiary.__members__.values())),
+            TropicalTraptorPrimary: shuffle(list(TropicalTraptorPrimary.__members__.values())),
+            TropicalTraptorSecondary: shuffle(list(TropicalTraptorSecondary.__members__.values())),
+            TropicalTraptorTertiary: shuffle(list(TropicalTraptorTertiary.__members__.values())),
         }
     elif traptor_type == MythicalTraptorPrimary:
         puzzle_elements = puzzle_elements | {
-            MythicalTraptorPrimary: sort_randomly(list(MythicalTraptorPrimary.__members__.values())),
-            MythicalTraptorSecondary: sort_randomly(list(MythicalTraptorSecondary.__members__.values())),
-            MythicalTraptorTertiary: sort_randomly(list(MythicalTraptorTertiary.__members__.values())),
+            MythicalTraptorPrimary: shuffle(list(MythicalTraptorPrimary.__members__.values())),
+            MythicalTraptorSecondary: shuffle(list(MythicalTraptorSecondary.__members__.values())),
+            MythicalTraptorTertiary: shuffle(list(MythicalTraptorTertiary.__members__.values())),
         }
     else:
         raise ValueError("Invalid choice - what?")
 
-    print(traptor_type)
-
-    # add smoothies?
+    # Add smoothies? which ones?
     use_smoothies = select("Should the puzzle include smoothies?", [Choice("Yes", True), Choice("No", False)])
-    print(use_smoothies)
-
-    # Which smoothies?
     if use_smoothies:
         smoothies = checkbox(
             "Which smoothies should be included? (Choose 5)",
             [Choice(smoothie.value, smoothie) for smoothie in Smoothie],
         )
-        print(smoothies)
+        puzzle_elements[Smoothie] = shuffle(smoothies)
 
-        puzzle_elements[Smoothie] = sort_randomly(smoothies)
-
-    # add bottlecaps? (there are only 5, so no need to choose which colors)
+    # Add bottlecaps? (There are only 5, so no need to choose which colors)
     use_bottlecaps = select("Should the puzzle include bottlecaps?", [Choice("Yes", True), Choice("No", False)])
     if use_bottlecaps:
-        puzzle_elements[Bottlecap] = sort_randomly(list(Bottlecap.__members__.values()))
+        puzzle_elements[Bottlecap] = shuffle(list(Bottlecap.__members__.values()))
 
     print(puzzle_elements)
 
