@@ -66,6 +66,8 @@ def sort_randomly[T](seq: Sequence[T]) -> Sequence[T]:
 
 
 if __name__ == "__main__":
+    random.seed(20231112)
+
     puzzle_elements: dict[type[PuzzleElement], Sequence[PuzzleElement]] = {}
     traptor_type = select(
         "Choose a Traptor type",
@@ -111,7 +113,15 @@ if __name__ == "__main__":
 
     # Construct solution; positions already randomized
     solution: dict[PuzzleElement, int] = {
-        el: house for el_class in puzzle_elements for house, el in enumerate(puzzle_elements[el_class], 1)
+        # Smoothie.lilac: 1,
+        # Smoothie.earth: 2,
+        # ...,
+        # TraptorPrimary.marvellous: 1,
+        # TraptorPrimary.heroic: 2,
+        # ...,
+        el: house
+        for el_class in puzzle_elements
+        for house, el in enumerate(puzzle_elements[el_class], 1)
     }
 
     # Construct the puzzle

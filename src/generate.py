@@ -19,12 +19,6 @@ from src.clues import (
 from src.elements import PuzzleElement
 from src.puzzle import Puzzle
 from src.sat_utils import itersolve
-from src.traptor_elements import (
-    MythicalTraptorPrimary,
-    MythicalTraptorSecondary,
-    MythicalTraptorTertiary,
-    Smoothie,
-)
 
 
 def generate_found_at(puzzle: Puzzle, solution: dict[PuzzleElement, int]) -> set[Clue]:
@@ -289,60 +283,4 @@ def print_puzzle(
 
 
 if __name__ == "__main__":
-    random.seed(12)
-    element_types = [MythicalTraptorPrimary, MythicalTraptorSecondary, MythicalTraptorTertiary, Smoothie]
-
-    # Size of puzzle = number of "houses" or whatever
-    puzzle_size = 5
-
-    # Some elements have extra members, and we need to randomize the solution
-    # random.sample takes N (puzzle_size) values without replacement
-    puzzle_elements: dict[type[PuzzleElement], list[PuzzleElement]] = {
-        # Smoothie: [Smoothie.lilac, Smoothie.earth, ...],
-        # TraptorPrimary: [TraptorPrimary.marvellous, TraptorPrimary.heroic, ...]
-        # etc ...
-    }
-    for element in element_types:
-        members = list(element.__members__.values())
-        puzzle_elements[element] = random.sample(members, puzzle_size)
-
-    # Construct the solution now
-    solution: dict[PuzzleElement, int] = {
-        # Smoothie.lilac: 1,
-        # Smoothie.earth: 2,
-        # ...,
-        # TraptorPrimary.marvellous: 1,
-        # TraptorPrimary.heroic: 2,
-        # ...,
-    }
-    for element, members in puzzle_elements.items():
-        solution |= {el: pos + 1 for pos, el in enumerate(members)}
-
-    # set up the puzzle with default constraints
-    puzzle = Puzzle(
-        element_types=element_types,
-        elements=solution.keys(),
-        n_houses=puzzle_size,
-    ).set_constraints()
-
-    print(f"\nOriginal puzzle\n{'-' * 30}")
-    print(puzzle)
-
-    # generate all the clues
-    clues: set[Clue] = set()
-    for generate_function in (
-        generate_found_at,
-        generate_same_house,
-        generate_consecutive_beside,
-        generate_left_right_of,
-        generate_one_between,
-        generate_two_between,
-    ):
-        clues = clues.union(generate_function(puzzle, solution))
-
-    print(f"\nStarting puzzle reduction ...\n{'-' * 30}")
-    reduced, extras = reduce_clues(puzzle, clues)
-    for clue in reduced:
-        puzzle.add_clue(clue)
-
-    print_puzzle(puzzle_elements, puzzle, extras)
+    print("Use `python -m src.main` instead.")
