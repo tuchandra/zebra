@@ -67,7 +67,7 @@ def make_translate(cnf: ClueCNF) -> tuple[dict[SATLiteral, int], dict[int, SATLi
     return literals_to_numbers, numbers_to_literals
 
 
-def translate(cnf: ClueCNF, uniquify: bool = False) -> tuple[list[tuple[int, ...]], dict[int, str]]:
+def translate(cnf: ClueCNF, uniquify: bool = False) -> tuple[list[tuple[int, ...]], dict[int, SATLiteral]]:
     """Translate a symbolic CNF to a numbered CNF and return reverse mapping.
 
     >>> translate([['~P', 'Q'],['~P', 'R']])
@@ -155,6 +155,23 @@ class Q:
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(elements={self.elements!r})"
+
+
+def parse_cnf_description(input: str) -> ClueCNF:
+    """
+    Parse a CNF description into a list of clauses.
+
+    a and b -> [("a",), ("b",)]
+    ~a and ~b -> [("~a",), ("~b",)]
+    a and b | c -> [("a",), ("b", "c")]
+    a and b | ~c -> [("a",), ("b", "~c")]
+
+    We accomplish this by splitting on " and " to get the clauses, then splitting on " | " to get
+    the literals in each clause.
+    """
+
+    literals = [x.split(" | ") for x in input.split(" and ")]
+    return [tuple(SATLiteral(x) for x in clause) for clause in literals]
 
 
 def all_of(elements: Sequence[SATLiteral]) -> ClueCNF:
