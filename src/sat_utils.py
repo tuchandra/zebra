@@ -10,12 +10,11 @@ from typing import Any, NewType
 import pycosat  # pyright: ignore[reportMissingImports]
 
 SATLiteral = NewType("SATLiteral", str)
-type Element = str  # literal; any string, but here it's <element house#> e.g., "tushar 5" or "chai 2"
 type Clause = tuple[SATLiteral, ...]
 type ClueCNF = list[Clause]
 
 
-def make_translate(cnf: ClueCNF) -> tuple[dict[Element, int], dict[int, Element]]:
+def make_translate(cnf: ClueCNF) -> tuple[dict[str, int], dict[int, str]]:
     """Make a translator from symbolic CNF to pycosat's numbered clauses.
 
     Return literal to number dictionary and reverse lookup dict.
@@ -25,7 +24,7 @@ def make_translate(cnf: ClueCNF) -> tuple[dict[Element, int], dict[int, Element]
      {1: 'a', 2: 'b', 3: 'c', -1: '~a', -3: '~c', -2: '~b'})
     """
 
-    lit2num: dict[Element, int] = {}
+    lit2num: dict[str, int] = {}
     for clause in cnf:
         for literal in clause:
             if literal not in lit2num:
@@ -39,7 +38,7 @@ def make_translate(cnf: ClueCNF) -> tuple[dict[Element, int], dict[int, Element]
     return lit2num, num2var
 
 
-def translate(cnf: ClueCNF, uniquify: bool = False) -> tuple[list[tuple[int, ...]], dict[int, Element]]:
+def translate(cnf: ClueCNF, uniquify: bool = False) -> tuple[list[tuple[int, ...]], dict[int, str]]:
     """Translate a symbolic CNF to a numbered CNF and return reverse mapping.
 
     >>> translate([['~P', 'Q'],['~P', 'R']])
