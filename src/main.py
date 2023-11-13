@@ -128,7 +128,6 @@ if __name__ == "__main__":
     puzzle = Puzzle(
         element_types=puzzle_elements.keys(),
         elements=[e for els in puzzle_elements.values() for e in els],
-        n_houses=5,
     )
 
     print(puzzle)

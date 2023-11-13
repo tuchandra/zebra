@@ -14,7 +14,7 @@ from . import sat_utils
 
 class Puzzle:
     """
-    A Puzzle is defined as a collection of constraints and clues.
+    A Puzzle is defined as a collection of constraints and clues. A Puzzle has a solution.
 
     Clues are subclassess of Clue. They represent information about the puzzle that can be used by
     a human to solve it, like "the man who drinks tea owns a cat." Clues aren't converted to CNF
@@ -35,30 +35,26 @@ class Puzzle:
         self,
         *,
         element_types: Iterable[type[PuzzleElement]],
-        elements: Iterable[PuzzleElement] | None = None,
-        n_houses: int = 5,
+        elements: Iterable[PuzzleElement],
     ) -> None:
         """
-        Initialize a puzzle with different kinds of elements. The `element_types` is a list of the
-        *kinds* of literals we're using, i.e., Smoothie, FavoriteFood, FavoriteColor, etc. The
-        `elements` is a list of the literals themselves, since some of the literal types have more
-        than `n_houses` elements.
+        Initialize a puzzle with different kinds of elements. The puzzle is initialized with two
+        lists:
+        - `element_types`, which describes the kinds of literals we're using (Smoothie, FavoriteFood, ...)
+        - `elements`, which describes -- for each element type -- the literals themselves (Lilac, Earth, ...)
 
-        If `elements` is not provided, we assume that every member of each of `element_types` is
-        part of the puzzle. This is the case in example puzzles, but rarely the case for generated
-        ones.
+        We compute the puzzle _size_ from total number of elements divided by the number of element types;
+        this tells us how many of each element type there are, and since each must be in a different location,
+        that's exactly the number of houses.
         """
 
         self.element_classes = list(element_types)
-        if elements is None:
-            self.literals = [el for el_class in self.element_classes for el in el_class]
-        else:
-            self.literals = list(elements)
+        self.elements = list(elements)
 
-        self.houses = tuple(range(1, n_houses + 1))
+        self.size = len(self.elements) // len(self.element_classes)
+        self.houses = tuple(range(1, self.size + 1))
+
         self.clues: set[Clue] = set()
-
-        self.size = n_houses
         self.constraints = self.get_constraints()
 
     def get_constraints(self) -> list[Clause]:
@@ -67,11 +63,11 @@ class Puzzle:
         # each house gets exactly one value from each set of literals
         for house in self.houses:
             for element_type in self.element_classes:
-                literals_of_that_type = [lit for lit in self.literals if isinstance(lit, element_type)]
+                literals_of_that_type = [lit for lit in self.elements if isinstance(lit, element_type)]
                 constraints.extend(sat_utils.one_of([comb(value, house) for value in literals_of_that_type]))
 
         # each value gets assigned to exactly one house
-        for literal in self.literals:
+        for literal in self.elements:
             constraints.extend(sat_utils.one_of([comb(literal, house) for house in self.houses]))
 
         return constraints
@@ -115,7 +111,7 @@ class Puzzle:
         s += "the street from them. Each has a different person in them. "
         s += "They have different characteristics:\n"
         for element_type in self.element_classes:
-            literals = [l for l in self.literals if isinstance(l, element_type)]  # noqa: E741
+            literals = [l for l in self.elements if isinstance(l, element_type)]  # noqa: E741
             shuffle(literals)
             s += f" - {element_type.description()}: " + ", ".join(e.name for e in literals) + "\n"
 
