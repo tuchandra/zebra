@@ -22,8 +22,8 @@ class Puzzle:
 
     Constraints are structural properties of the puzzle, given to us in CNF to start. They're
     things like "each house gets exactly one type of flower" and "each flower must be assigned
-    to one house." These will be the same for every Puzzle, so we have a default `set_constraints`
-    method that takes care of them.
+    to one house." These will be the same for every Puzzle, so we initialize the puzzle with the
+    constraints appropriate to its structure.
 
     We can add clues with `add_clue`. This returns the instance, so they can be chained together.
 
@@ -61,20 +61,16 @@ class Puzzle:
 
         self.size = n_houses
 
-    def _add_constraint(self, constraints: list[Clause]) -> Puzzle:
-        self.constraints.extend(constraints)
-        return self
-
     def set_constraints(self) -> Self:
         # each house gets exactly one value from each set of literals
         for house in self.houses:
             for element_type in self.element_classes:
                 literals_of_that_type = [lit for lit in self.literals if isinstance(lit, element_type)]
-                self._add_constraint(sat_utils.one_of([comb(value, house) for value in literals_of_that_type]))
+                self.constraints.extend(sat_utils.one_of([comb(value, house) for value in literals_of_that_type]))
 
         # each value gets assigned to exactly one house
         for literal in self.literals:
-            self._add_constraint(sat_utils.one_of([comb(literal, house) for house in self.houses]))
+            self.constraints.extend(sat_utils.one_of([comb(literal, house) for house in self.houses]))
 
         return self
 
