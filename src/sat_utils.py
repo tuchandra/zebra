@@ -14,8 +14,8 @@ from typing import Any, NewType
 import pycosat  # pyright: ignore[reportMissingImports]
 
 SATLiteral = NewType("SATLiteral", str)
-type Clause = tuple[SATLiteral, ...]
-type ClueCNF = list[Clause]
+type Clause = Sequence[SATLiteral]
+type ClueCNF = Sequence[Clause]
 
 
 @cache
@@ -25,30 +25,46 @@ def negate(element: SATLiteral) -> SATLiteral:
     return SATLiteral(element[1:] if element.startswith("~") else "~" + element)
 
 
-def make_translate(cnf: ClueCNF) -> tuple[dict[str, int], dict[int, str]]:
+def make_translate(cnf: ClueCNF) -> tuple[dict[SATLiteral, int], dict[int, SATLiteral]]:
     """
-    Create translation tables between symbolic CNF and pycosat's numbered clauses, since pycosat's
-    solver expects literals as numbers. Return two lookup dictionaries.
+    Create translation tables between symbolic CNF literals and pycosat's numeric literals, since
+    the pycosat solver expects literals as numbers. Return two lookup dictionaries.
 
     >>> make_translate([['~a', 'b', '~c'], ['a', '~c']])
     => (
       {'a': 1, 'c': 3, 'b': 2, '~a': -1, '~b': -2, '~c': -3},
       {1: 'a', 2: 'b', 3: 'c', -1: '~a', -3: '~c', -2: '~b'},
     )
+
+    Here, we distinguish between literals (a, ~a, b, ~b, ...) and variables (a, b, c, ...); each
+    variable `x` can be either true or false, and we express these as the literals `x` and `~x`.
+
+    This function iterates over the CNF (containing literals like `a` and `~b`) and, for each
+    variable, adds the literal and its negation to the translation tables. We keep track of 'true'
+    variables with positive integers and 'false' variables with negative ones.
     """
 
-    literals_to_numbers: dict[str, int] = {}
+    literals_to_numbers: dict[SATLiteral, int] = {}
     for clause in cnf:
         for literal in clause:
-            if literal not in literals_to_numbers:
-                var = literal[1:] if literal[0] == "~" else literal
-                num = len(literals_to_numbers) // 2 + 1
-                literals_to_numbers[var] = num
-                literals_to_numbers["~" + var] = -num
+            # Skip literals that we've seen (or whose negation we've seen)
+            if literal in literals_to_numbers:
+                continue
 
-    num2var = {num: lit for lit, num in literals_to_numbers.items()}
+            num = max(literals_to_numbers.values(), default=0) + 1
 
-    return literals_to_numbers, num2var
+            # Get the 'true' and 'false' literals from the input, which could be either
+            if literal.startswith("~"):
+                true_literal, false_literal = negate(literal), literal
+            else:
+                true_literal, false_literal = literal, negate(literal)
+
+            literals_to_numbers[true_literal] = num
+            literals_to_numbers[false_literal] = -num
+
+    numbers_to_literals = {num: lit for lit, num in literals_to_numbers.items()}
+
+    return literals_to_numbers, numbers_to_literals
 
 
 def translate(cnf: ClueCNF, uniquify: bool = False) -> tuple[list[tuple[int, ...]], dict[int, str]]:
