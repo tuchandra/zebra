@@ -6,6 +6,7 @@ from src.sat_utils import (
     SATLiteral,
     all_of,
     basic_fact,
+    compare_cnfs,
     make_translate,
     negate,
     none_of,
@@ -99,7 +100,7 @@ def test_all_of(input: list[SATLiteral], output: str):
     a and b and ~c -> (a) and (b) and (~c)
     """
 
-    assert all_of(input) == parse_cnf_description(output)
+    assert compare_cnfs(all_of(input), parse_cnf_description(output))
 
 
 @pytest.mark.parametrize(
@@ -115,7 +116,7 @@ def test_all_of(input: list[SATLiteral], output: str):
     ],
 )
 def test_some_of(input: list[SATLiteral], output: str):
-    assert some_of(input) == parse_cnf_description(output)
+    assert compare_cnfs(some_of(input), parse_cnf_description(output))
 
 
 @pytest.mark.parametrize(
@@ -155,7 +156,7 @@ def test_one_of(input: list[SATLiteral], output: ClueCNF):
     ],
 )
 def test_none_of(input: list[SATLiteral], output: str):
-    assert set(none_of(input)) == set(parse_cnf_description(output))
+    assert compare_cnfs(none_of(input), parse_cnf_description(output))
 
 
 @pytest.mark.parametrize(
