@@ -1,6 +1,18 @@
 import pytest
 
-from src.sat_utils import ClueCNF, Q, SATLiteral, all_of, make_translate, negate, parse_cnf_description, some_of
+from src.sat_utils import (
+    ClueCNF,
+    Q,
+    SATLiteral,
+    all_of,
+    basic_fact,
+    make_translate,
+    negate,
+    none_of,
+    one_of,
+    parse_cnf_description,
+    some_of,
+)
 
 
 @pytest.mark.parametrize(
@@ -104,3 +116,56 @@ def test_all_of(input: list[SATLiteral], output: str):
 )
 def test_some_of(input: list[SATLiteral], output: str):
     assert some_of(input) == parse_cnf_description(output)
+
+
+@pytest.mark.parametrize(
+    ("input", "output"),
+    [
+        (
+            ["a", "b", "~c"],
+            [
+                ("a", "b", "~c"),
+                ("~a", "~b"),
+                ("~a", "c"),
+                ("~b", "c"),
+            ],
+        ),
+        (
+            ["a", "b", "c"],
+            [
+                ("a", "b", "c"),
+                ("~a", "~b"),
+                ("~a", "~c"),
+                ("~b", "~c"),
+            ],
+        ),
+    ],
+)
+def test_one_of(input: list[SATLiteral], output: ClueCNF):
+    assert set(one_of(input)) == set(output)  # order doesn't matter
+
+
+@pytest.mark.parametrize(
+    ("input", "output"),
+    [
+        (["a"], "~a"),
+        (["~a"], "a"),
+        (["a", "b", "~c"], "~a and ~b and c"),
+        (["a", "b", "c"], "~a and ~b and ~c"),
+    ],
+)
+def test_none_of(input: list[SATLiteral], output: str):
+    assert set(none_of(input)) == set(parse_cnf_description(output))
+
+
+@pytest.mark.parametrize(
+    ("input", "output"),
+    [
+        ("a", "a"),
+        ("~a", "~a"),
+        ("b", "b"),
+        ("~b", "~b"),
+    ],
+)
+def test_basic_fact(input: SATLiteral, output: str):
+    assert basic_fact(input) == parse_cnf_description(output)

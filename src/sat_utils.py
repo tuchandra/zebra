@@ -175,36 +175,21 @@ def parse_cnf_description(input: str) -> ClueCNF:
 
 
 def all_of(elements: Sequence[SATLiteral]) -> ClueCNF:
-    """Forces inclusion of matching rows on a truth table"""
     return Q(elements) == len(elements)
 
 
 def some_of(elements: Sequence[SATLiteral]) -> ClueCNF:
-    """At least one of the elements must be true
-
-    >>> some_of(['A', 'B', 'C'])
-    [['A', 'B', 'C']]
-    """
     return Q(elements) >= 1
 
 
 def one_of(elements: Sequence[SATLiteral]) -> ClueCNF:
-    """Exactly one of the elements is true
-
-    >>> one_of(['A', 'B', 'C'])
-    [('A', 'B', 'C'),
-    ('~A', '~B'),
-    ('~A', '~C'),
-    ('~B', '~C')]
-    """
     return Q(elements) == 1
+
+
+def none_of(elements: Sequence[SATLiteral]) -> ClueCNF:
+    return Q(elements) == 0
 
 
 def basic_fact(element: SATLiteral) -> ClueCNF:
     """Assert that this one element always matches"""
     return Q([element]) == 1
-
-
-def none_of(elements: Sequence[SATLiteral]) -> ClueCNF:
-    """Forces exclusion of matching rows on a truth table"""
-    return Q(elements) == 0
