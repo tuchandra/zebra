@@ -109,7 +109,6 @@ class same_house(Clue):  # noqa: N801
 
     def as_cnf(self) -> ClueCNF:
         dnf = [(comb(self.value1, i), comb(self.value2, i)) for i in self.houses]
-        print(dnf)
         return sat_utils.from_dnf(dnf)
 
     @_capitalize_first
@@ -134,9 +133,8 @@ class consecutive(Clue):  # noqa: N801
     houses: tuple[int, ...]
 
     def as_cnf(self) -> ClueCNF:
-        return sat_utils.from_dnf(
-            (comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[1:], strict=False)
-        )
+        dnf = [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[1:], strict=False)]
+        return sat_utils.from_dnf(dnf)
 
     @_capitalize_first
     def __repr__(self) -> str:
@@ -158,10 +156,11 @@ class beside(Clue):  # noqa: N801
     houses: tuple[int, ...]
 
     def as_cnf(self) -> ClueCNF:
-        return sat_utils.from_dnf(
-            [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[1:], strict=False)]
-            + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(self.houses, self.houses[1:], strict=False)]
-        )
+        pairs = list(zip(self.houses, self.houses[1:], strict=False))
+        dnf = [(comb(self.value1, i), comb(self.value2, j)) for i, j in pairs] + [
+            (comb(self.value2, i), comb(self.value1, j)) for i, j in pairs
+        ]
+        return sat_utils.from_dnf(dnf)
 
     @_capitalize_first
     def __repr__(self) -> str:
@@ -184,9 +183,8 @@ class left_of(Clue):  # noqa: N801
     houses: tuple[int, ...]
 
     def as_cnf(self) -> ClueCNF:
-        return sat_utils.from_dnf(
-            (comb(self.value1, i), comb(self.value2, j)) for i, j in product(self.houses, self.houses) if i < j
-        )
+        dnf = [(comb(self.value1, i), comb(self.value2, j)) for i, j in product(self.houses, self.houses) if i < j]
+        return sat_utils.from_dnf(dnf)
 
     @_capitalize_first
     def __repr__(self) -> str:
@@ -209,9 +207,8 @@ class right_of(Clue):  # noqa: N801
     houses: tuple[int, ...]
 
     def as_cnf(self) -> ClueCNF:
-        return sat_utils.from_dnf(
-            (comb(self.value1, i), comb(self.value2, j)) for i, j in product(self.houses, self.houses) if i > j
-        )
+        dnf = [(comb(self.value1, i), comb(self.value2, j)) for i, j in product(self.houses, self.houses) if i > j]
+        return sat_utils.from_dnf(dnf)
 
     @_capitalize_first
     def __repr__(self) -> str:
@@ -235,10 +232,11 @@ class one_between(Clue):  # noqa: N801
     houses: tuple[int, ...]
 
     def as_cnf(self) -> ClueCNF:
-        return sat_utils.from_dnf(
-            [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[2:], strict=False)]
-            + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(self.houses, self.houses[2:], strict=False)]
-        )
+        pairs = list(zip(self.houses, self.houses[2:], strict=False))
+        dnf = [(comb(self.value1, i), comb(self.value2, j)) for i, j in pairs] + [
+            (comb(self.value2, i), comb(self.value1, j)) for i, j in pairs
+        ]
+        return sat_utils.from_dnf(dnf)
 
     def __repr__(self) -> str:
         return f"There is one house between {self.value1.value} and {self.value2.value}."
@@ -259,10 +257,11 @@ class two_between(Clue):  # noqa: N801
     houses: tuple[int, ...]
 
     def as_cnf(self) -> ClueCNF:
-        return sat_utils.from_dnf(
-            [(comb(self.value1, i), comb(self.value2, j)) for i, j in zip(self.houses, self.houses[3:], strict=False)]
-            + [(comb(self.value2, i), comb(self.value1, j)) for i, j in zip(self.houses, self.houses[3:], strict=False)]
-        )
+        pairs = list(zip(self.houses, self.houses[2:], strict=False))
+        dnf = [(comb(self.value1, i), comb(self.value2, j)) for i, j in pairs] + [
+            (comb(self.value2, i), comb(self.value1, j)) for i, j in pairs
+        ]
+        return sat_utils.from_dnf(dnf)
 
     def __repr__(self) -> str:
         return f"There are two houses between {self.value1.value} and {self.value2.value}."
