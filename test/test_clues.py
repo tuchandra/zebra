@@ -62,3 +62,6 @@ def test_not_at(element: PuzzleElement, house: int, expected: str):
 def test_same_house(element1: PuzzleElement, element2: PuzzleElement, size: int, expected: ClueCNF):
     clue = same_house(element1, element2, tuple(range(1, size + 1)))
     assert compare_cnfs(clue.as_cnf(), expected)
+
+
+# the rest of these are very hard to test, so ... oh well
