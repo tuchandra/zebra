@@ -92,7 +92,10 @@ def itersolve(symbolic_cnf: ClueCNF):
         yield [num2var[n] for n in solution if n > 0]  # pyright: ignore[reportUnknownVariableType, reportUnknownArgumentType]
 
 
-# Support for Building CNFs
+def compare_cnfs(cnf1: ClueCNF, cnf2: ClueCNF) -> bool:
+    """Helper to compare two CNFs, since the clauses are unordered."""
+
+    return set(map(frozenset, cnf1)) == set(map(frozenset, cnf2))
 
 
 def comb(value: Any, loc: int) -> SATLiteral:

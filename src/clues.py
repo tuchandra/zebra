@@ -108,7 +108,9 @@ class same_house(Clue):  # noqa: N801
     houses: tuple[int, ...]
 
     def as_cnf(self) -> ClueCNF:
-        return sat_utils.from_dnf((comb(self.value1, i), comb(self.value2, i)) for i in self.houses)
+        dnf = [(comb(self.value1, i), comb(self.value2, i)) for i in self.houses]
+        print(dnf)
+        return sat_utils.from_dnf(dnf)
 
     @_capitalize_first
     def __repr__(self) -> str:

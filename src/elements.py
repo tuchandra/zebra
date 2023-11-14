@@ -13,10 +13,10 @@ Included is a base PuzzleElement class from which all literals should inherit. T
 just import PuzzleElement and implement a class like the ones here.
 """
 
-from enum import Enum
+from enum import StrEnum
 
 
-class PuzzleElement(Enum):
+class PuzzleElement(StrEnum):
     """
     Common parent class for all puzzle elements (colors, occupations, pets, etc.).
 
