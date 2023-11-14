@@ -40,10 +40,13 @@ Development uses *black*, *ruff*, and *pyright*, though we're not totally compli
 These may happen. But the project is finally at a place that I'm happy with, and so I'm excited to share and write about it.
 
 ## Incomplete changelog
-### 2023-11-12: updates to tools
-Remove black and use ruff for formatting. Update dependencies.
+### 2023-11-13: continue tests and refactor
+Continue adding tests. Finish up the unit tests for `sat_utils.py` and start a couple for `clues.py`, though that file is very hard to test because of the difficulty of hand-computing DNF-to-CNF conversions.
 
-Add new CLI with simpler, clearer usage; `python -m src.main`. 
+Next steps are unifying the puzzle and solution, creating a better `__repr__`, and simplifying how we represent puzzle size (attribute on `Puzzle`, tuple of ints 1 to N, just the number `n_houses`, etc.).
+
+### 2023-11-12: updates to tools
+Remove black and use ruff for formatting. Update dependencies. Add new CLI with simpler, clearer usage; `python -m src.main`. 
 
 ### 2023-06-05: typing improvements
 Rename `SATLiteral` -> `PuzzleElement` (smoothie, cat, etc.); this clarifies that it's not a Literal in the boolean sense and is instead a name for e.g., characters in a puzzle.
