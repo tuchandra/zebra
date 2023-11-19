@@ -72,8 +72,11 @@ Move examples into their own files. Update to Python 3.12 (beta). Add more lint 
 Add dev tools (black, ruff, pyright); run black & ruff in pre-commit. Update some types.
 
 ## Definitions
-A CNF is an "∧ of ∨s," where the "∨" is over any Literal. Since an "∨ of Literals" is equivalently a Clause, a CNF is the "∧ of Clauses."
+- "∧" is the boolean AND
+- "∨" is the boolean OR
+- a Clause is an "∨ of Literals"
+- a CNF is an "∧ of Clauses," or equivalently an "∧ of ∨s" ("AND of ORs")
 
-A DNF is a "∨ of ∧s." The DNF is the *answer* to a SAT problem; a DNF of "A or B or C" reads that A, B, and C are all valid (satisfying) assignments. Converting a CNF to a DNF is therefore NP-hard, since from the DNF you can read off solutions to the CNF.
+A DNF, in contrast, is a "∨ of ∧s." The DNF is the *answer* to a SAT problem; a DNF of "A or B or C" reads that A, B, and C are all valid (satisfying) assignments. Converting a CNF to a DNF is therefore NP-hard, since from the DNF you can read off solutions to the CNF.
 
 > CNF is an ∧ of ∨s, where ∨ is over variables or their negations (literals); an ∨ of literals is also called a clause. DNF is an ∨ of ∧s; an ∧ of literals is called a term.
