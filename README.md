@@ -41,7 +41,13 @@ These may happen. But the project is finally at a place that I'm happy with, and
 
 ## Incomplete changelog
 ## 2023-11-19: continue tests
-Add tests for clue types within `generate.py`.
+Add tests for clue types within `generate.py`. 
+
+Fix a bug that I introduced in `clues.py`. That file is so hard to understand, but it's also hard to write unit tests for; converting boolean expressions to CNF by hand is no fun.
+
+Tune the weights of clues in the solution. Prepare to integrate the puzzle and solution classes.
+
+Remove the checkbox-esque Smoothie selection, because it just gets in the way when trying to make puzzles quickly. 
 
 ### 2023-11-13: continue tests and refactor
 Continue adding tests. Finish up the unit tests for `sat_utils.py` and start a couple for `clues.py`, though that file is very hard to test because of the difficulty of hand-computing DNF-to-CNF conversions.

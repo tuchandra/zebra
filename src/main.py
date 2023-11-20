@@ -65,32 +65,32 @@ if __name__ == "__main__":
     )
     if traptor_type == TropicalTraptorPrimary:
         puzzle_elements = puzzle_elements | {
-            TropicalTraptorPrimary: shuffle(list(TropicalTraptorPrimary.__members__.values())),
-            TropicalTraptorSecondary: shuffle(list(TropicalTraptorSecondary.__members__.values())),
-            TropicalTraptorTertiary: shuffle(list(TropicalTraptorTertiary.__members__.values())),
+            TropicalTraptorPrimary: list(TropicalTraptorPrimary.__members__.values()),
+            TropicalTraptorSecondary: list(TropicalTraptorSecondary.__members__.values()),
+            TropicalTraptorTertiary: list(TropicalTraptorTertiary.__members__.values()),
         }
     elif traptor_type == MythicalTraptorPrimary:
         puzzle_elements = puzzle_elements | {
-            MythicalTraptorPrimary: shuffle(list(MythicalTraptorPrimary.__members__.values())),
-            MythicalTraptorSecondary: shuffle(list(MythicalTraptorSecondary.__members__.values())),
-            MythicalTraptorTertiary: shuffle(list(MythicalTraptorTertiary.__members__.values())),
+            MythicalTraptorPrimary: list(MythicalTraptorPrimary.__members__.values()),
+            MythicalTraptorSecondary: list(MythicalTraptorSecondary.__members__.values()),
+            MythicalTraptorTertiary: list(MythicalTraptorTertiary.__members__.values()),
         }
     else:
         raise ValueError("Invalid choice - what?")
 
-    # Add smoothies? which ones?
-    use_smoothies = select("Should the puzzle include smoothies?", [Choice("Yes", True), Choice("No", False)])
+    # Add smoothies? Which ones?
+    use_smoothies = select("🥤 Should the puzzle include smoothies?", [Choice("Yes", True), Choice("No", False)])
     if use_smoothies:
-        smoothies = checkbox(
-            "Which smoothies should be included? (Choose 5)",
-            [Choice(smoothie.value, smoothie) for smoothie in Smoothie],
-        )
-        puzzle_elements[Smoothie] = shuffle(smoothies)
+        # smoothies = checkbox(
+        #     "Which smoothies should be included? (Choose 5)",
+        #     [Choice(smoothie.value, smoothie) for smoothie in Smoothie],
+        # )
+        puzzle_elements[Smoothie] = shuffle(list(Smoothie.__members__.values()))[:5]
 
     # Add bottlecaps? (There are only 5, so no need to choose which colors)
-    use_bottlecaps = select("Should the puzzle include bottlecaps?", [Choice("Yes", True), Choice("No", False)])
+    use_bottlecaps = select("🔵 Should the puzzle include bottlecaps?", [Choice("Yes", True), Choice("No", False)])
     if use_bottlecaps:
-        puzzle_elements[Bottlecap] = shuffle(list(Bottlecap.__members__.values()))
+        puzzle_elements[Bottlecap] = list(Bottlecap.__members__.values())
 
     print(puzzle_elements)
 

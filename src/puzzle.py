@@ -36,6 +36,7 @@ class Puzzle:
         *,
         element_types: Iterable[type[PuzzleElement]],
         elements: Iterable[PuzzleElement],
+        # solution: Mapping[PuzzleElement, int],
     ) -> None:
         """
         Initialize a puzzle with different kinds of elements. The puzzle is initialized with two lists:

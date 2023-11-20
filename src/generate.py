@@ -62,7 +62,7 @@ def _generate_consecutive_beside(puzzle: Puzzle, solution: Solution) -> set[Clue
     """Generate the `consecutive` / `beside` Clue instances
 
     (Note that consecutive is just a more informative version of beside. Since they have the same
-    structure, for every possible combination we'll just keep one.
+    structure, for every possible combination we'll just keep one.)
     """
 
     clues: set[Clue] = set()
@@ -71,9 +71,8 @@ def _generate_consecutive_beside(puzzle: Puzzle, solution: Solution) -> set[Clue
         items_right = {item: loc for item, loc in solution.items() if loc == right}
         pairs: set[tuple[PuzzleElement, PuzzleElement]] = set(product(items_left, items_right))
         for pair in pairs:
-            # consecutive is just a more informative version of beside, but they have same structure
-            # because of this, don't include both
-            if random.randint(0, 1) == 0:
+            # Prefer beside over consecutive
+            if random.random() > 0.8:
                 clues.add(consecutive(pair[0], pair[1], puzzle.houses))
             else:
                 clues.add(beside(pair[0], pair[1], puzzle.houses))
@@ -176,13 +175,13 @@ def reduce_batch(puzzle: Puzzle, clues: set[Clue], n: int) -> set[Clue]:
 
         weights: dict[type[Clue], float] = {
             not_at: 1,
-            found_at: 1,
-            same_house: 1,
-            left_of: 2,
-            right_of: 2,
-            beside: 2,
-            one_between: 4,
-            two_between: 4,
+            same_house: 2,
+            two_between: 3,
+            one_between: 3,
+            beside: 4,
+            found_at: 4,
+            left_of: 5,
+            right_of: 5,
         }
 
         return weights.get(type(clue), 1)

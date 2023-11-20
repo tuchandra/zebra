@@ -25,11 +25,11 @@ class Bottlecap(PuzzleElement):
     def description(cls) -> str:
         return "Each nest has a different bottlecap in it."
 
-    red = "the nest with red bottlecaps"
-    yellow = "the nest with yellow bottlecaps"
-    green = "the nest with green bottlecaps"
-    blue = "the nest with blue bottlecaps"
-    black = "the nest with black bottlecaps"
+    red = "Red bottlecaps"
+    yellow = "Yellow bottlecaps"
+    green = "Green bottlecaps"
+    blue = "Blue bottlecaps"
+    black = "Black bottlecaps"
 
 
 class Smoothie(PuzzleElement):
