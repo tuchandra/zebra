@@ -257,7 +257,7 @@ class two_between(Clue):  # noqa: N801
     houses: tuple[int, ...]
 
     def as_cnf(self) -> ClueCNF:
-        pairs = list(zip(self.houses, self.houses[2:], strict=False))
+        pairs = list(zip(self.houses, self.houses[3:], strict=False))
         dnf = [(comb(self.value1, i), comb(self.value2, j)) for i, j in pairs] + [
             (comb(self.value2, i), comb(self.value1, j)) for i, j in pairs
         ]
