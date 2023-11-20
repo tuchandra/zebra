@@ -9,6 +9,7 @@ from src.clues import (
     one_between,
     right_of,
     same_house,
+    two_between,
 )
 from src.elements import PuzzleElement
 from src.generate import (
@@ -30,7 +31,7 @@ class Cat(PuzzleElement):
 
 
 class OtherCat(PuzzleElement):
-    maxwell = "Max"
+    maxwell = "Maxwell"
     maui = "Maui"
     stranger = "Stranger"
 
@@ -213,3 +214,40 @@ def test_generate_two_between_empty(puzzle: SolvedPuzzle):
     """Test that generate_two_between returns the empty set, because this puzzle only has 3 items."""
 
     assert _generate_two_between(puzzle[0], puzzle[1]) == set()
+
+
+def test_generate_two_between():
+    """Test that generate_two_between returns the correct clues for a puzzle of 4 elements."""
+
+    class X(PuzzleElement):
+        one = "one"
+        two = "two"
+        three = "three"
+        four = "four"
+
+    class Y(PuzzleElement):
+        a = "a"
+        b = "b"
+        c = "c"
+        d = "d"
+
+    puzzle = Puzzle(element_types=[X, Y], elements=[X.one, X.two, X.three, X.four, Y.a, Y.b, Y.c, Y.d])
+    solution: dict[PuzzleElement, int] = {
+        X.one: 1,
+        X.two: 2,
+        X.three: 3,
+        X.four: 4,
+        Y.a: 1,
+        Y.b: 2,
+        Y.c: 3,
+        Y.d: 4,
+    }
+
+    houses = (1, 2, 3, 4)
+    assert _generate_two_between(puzzle, solution) == {
+        # the only possible clues are house 1 & house 4
+        two_between(X.one, X.four, houses),
+        two_between(X.one, Y.d, houses),
+        two_between(Y.a, X.four, houses),
+        two_between(Y.a, Y.d, houses),
+    }
