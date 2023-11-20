@@ -40,6 +40,9 @@ Development uses *black*, *ruff*, and *pyright*, though we're not totally compli
 These may happen. But the project is finally at a place that I'm happy with, and so I'm excited to share and write about it.
 
 ## Incomplete changelog
+## 2023-11-19: continue tests
+Add tests for clue types within `generate.py`.
+
 ### 2023-11-13: continue tests and refactor
 Continue adding tests. Finish up the unit tests for `sat_utils.py` and start a couple for `clues.py`, though that file is very hard to test because of the difficulty of hand-computing DNF-to-CNF conversions.
 

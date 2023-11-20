@@ -38,8 +38,7 @@ class Puzzle:
         elements: Iterable[PuzzleElement],
     ) -> None:
         """
-        Initialize a puzzle with different kinds of elements. The puzzle is initialized with two
-        lists:
+        Initialize a puzzle with different kinds of elements. The puzzle is initialized with two lists:
         - `element_types`, which describes the kinds of literals we're using (Smoothie, FavoriteFood, ...)
         - `elements`, which describes -- for each element type -- the literals themselves (Lilac, Earth, ...)
 
@@ -55,9 +54,9 @@ class Puzzle:
         self.houses = tuple(range(1, self.size + 1))
 
         self.clues: set[Clue] = set()
-        self.constraints = self.get_constraints()
+        self.constraints = self._get_constraints()
 
-    def get_constraints(self) -> list[Clause]:
+    def _get_constraints(self) -> list[Clause]:
         constraints: list[Clause] = []
 
         # each house gets exactly one value from each set of literals
