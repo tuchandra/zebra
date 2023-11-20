@@ -23,6 +23,12 @@ from src.sat_utils import itersolve
 type Solution = Mapping[PuzzleElement, int]
 
 
+class UnsolvablePuzzleError(Exception):
+    """Raised when a puzzle has no solutions."""
+
+    ...
+
+
 def _generate_found_at(puzzle: Puzzle, solution: Solution) -> set[Clue]:
     """Generate the `found_at` / `not_at` Clue instances"""
 
@@ -145,47 +151,55 @@ def generate_all_clues(puzzle: Puzzle, solution: Solution) -> set[Clue]:
 
 
 def has_unique_solution(puzzle: Puzzle, clues: Iterable[Clue]) -> bool:
-    """Test if a puzzle has a unique solution under a given set of clues."""
+    """Test if a puzzle has a unique solution under a given set of clues; return bool or raise UnsolvablePuzzleError."""
 
     with puzzle.with_clues(clues):
         print(f"Testing puzzle with {len(puzzle.clues)} clues")
         solutions = itersolve(puzzle.as_cnf())
-        _first_solution = next(solutions)
+        try:
+            next(solutions)
+        except StopIteration:
+            raise UnsolvablePuzzleError("Puzzle has no solutions!") from None
 
         # test if second solution exists or not; if it doesn't, uniquely solvable
         return next(solutions, None) is None
 
 
-def try_to_remove(puzzle: Puzzle, clues: set[Clue], n: int) -> set[Clue]:
+def reduce_batch(puzzle: Puzzle, clues: set[Clue], n: int) -> set[Clue]:
     """
-    Attempt to remove n clues from a set of candidate clues; if we are able to, return the new,
-    smaller set of clues. If not, return the original set.
+    Attempt to remove `n` clues from a set of candidate clues. If so, return the new, smaller set
+    of clues. If not, return the original set.
     """
 
     def weight(clue: Clue) -> float:
-        # relative probabilities of each type of clue being selected for removal
+        """Relative probabilities of each type of clue being selected for removal; lower = more likely to be in the puzzle."""
+
         weights: dict[type[Clue], float] = {
-            not_at: 0.75,
-            found_at: 0.75,
-            same_house: 0.75,
-            left_of: 1.2,
-            right_of: 1.2,
-            beside: 1.2,
-            one_between: 1.5,
-            two_between: 1.5,
+            not_at: 1,
+            found_at: 1,
+            same_house: 1,
+            left_of: 2,
+            right_of: 2,
+            beside: 2,
+            one_between: 4,
+            two_between: 4,
         }
 
         return weights.get(type(clue), 1)
 
-    weights = [weight(clue) for clue in clues]
-    candidates: set[Clue] = set(random.choices(list(clues), weights, k=n))
+    candidates: set[Clue] = set(random.choices(list(clues), [weight(clue) for clue in clues], k=n))
 
     clues = clues.difference(candidates)
-    if has_unique_solution(puzzle, clues):
+    try:
+        uniquely_solvable = has_unique_solution(puzzle, clues)
+    except UnsolvablePuzzleError:
+        uniquely_solvable = False
+
+    if uniquely_solvable:
         print(f"Removed {len(candidates)} clues.")
         return clues
 
-    # we needed at least one of those, add them all back
+    # We removed too many clues; add them back and let the caller take care of it.
     clues = clues | candidates
     return clues
 
@@ -201,7 +215,12 @@ def reduce_individually(puzzle: Puzzle, clues: set[Clue], removed: set[Clue]) ->
     candidates = random.sample(tuple(clues), len(clues))
     for clue in candidates:
         clues.remove(clue)
-        if has_unique_solution(puzzle, clues):
+        try:
+            uniquely_solvable = has_unique_solution(puzzle, clues)
+        except UnsolvablePuzzleError:
+            uniquely_solvable = False
+
+        if uniquely_solvable:
             print(f"Removed {clue=}")
             removed.add(clue)
             continue  # we were fine to remove this clue
@@ -256,13 +275,13 @@ def reduce_clues(puzzle: Puzzle, clues: set[Clue]) -> tuple[set[Clue], set[Clue]
         #
         # We use the walrus operator to update minimal_clues in place during the comparison. It'll
         # either be a reduced set of clues or the original set of clues.
-        if len(minimal_clues) > len(minimal_clues := try_to_remove(puzzle, minimal_clues, len(minimal_clues) // 10)):
+        if len(minimal_clues) > len(minimal_clues := reduce_batch(puzzle, minimal_clues, len(minimal_clues) // 10)):
             continue
 
-        if len(minimal_clues) != len(minimal_clues := try_to_remove(puzzle, minimal_clues, len(minimal_clues) // 20)):
+        if len(minimal_clues) != len(minimal_clues := reduce_batch(puzzle, minimal_clues, len(minimal_clues) // 20)):
             continue
 
-        if len(minimal_clues) == len(minimal_clues := try_to_remove(puzzle, minimal_clues, 1)):
+        if len(minimal_clues) == len(minimal_clues := reduce_batch(puzzle, minimal_clues, 1)):
             break
 
     # secondary reduction time! While we can still remove clues, do so; then we're done.
