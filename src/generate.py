@@ -1,3 +1,4 @@
+import logging
 import random
 from collections.abc import Iterable, Mapping, Sequence
 from itertools import product
@@ -23,6 +24,9 @@ from src.sat_utils import itersolve
 type Clues = set[Clue]
 type ElementPairs = set[tuple[PuzzleElement, PuzzleElement]]
 type Solution = Mapping[PuzzleElement, int]
+
+
+logger = logging.getLogger(__name__)
 
 
 class UnsolvablePuzzleError(Exception):
@@ -153,15 +157,18 @@ def has_unique_solution(puzzle: Puzzle, clues: Iterable[Clue]) -> bool:
     """Test if a puzzle has a unique solution under a given set of clues; return bool or raise UnsolvablePuzzleError."""
 
     with puzzle.with_clues(clues):
-        print(f"Testing puzzle with {len(puzzle.clues)} clues")
+        logger.debug(f"Testing puzzle with {len(puzzle.clues)} clues")
         solutions = itersolve(puzzle.as_cnf())
         try:
             next(solutions)
         except StopIteration:
+            logger.debug("Puzzle has no solutions at all.")
             raise UnsolvablePuzzleError("Puzzle has no solutions!") from None
 
-        # test if second solution exists or not; if it doesn't, uniquely solvable
-        return next(solutions, None) is None
+    # test if second solution exists or not; if it doesn't, uniquely solvable
+    has_another = next(solutions, None) is None
+    logger.debug(f"Puzzle has another solution: {has_another}")
+    return has_another
 
 
 def reduce_batch(puzzle: Puzzle, clues: Clues, n: int) -> Clues:
@@ -174,10 +181,10 @@ def reduce_batch(puzzle: Puzzle, clues: Clues, n: int) -> Clues:
         """Relative probabilities of each type of clue being selected for removal; lower = more likely to be in the puzzle."""
 
         weights: dict[type[Clue], float] = {
-            not_at: 1,
             same_house: 2,
-            two_between: 3,
-            one_between: 3,
+            one_between: 2,
+            two_between: 2,
+            not_at: 3,
             beside: 4,
             found_at: 4,
             left_of: 5,
@@ -195,7 +202,7 @@ def reduce_batch(puzzle: Puzzle, clues: Clues, n: int) -> Clues:
         uniquely_solvable = False
 
     if uniquely_solvable:
-        print(f"Removed {len(candidates)} clues.")
+        logger.debug(f"Removed {len(candidates)} clues.")
         return clues
 
     # We removed too many clues; add them back and let the caller take care of it.
@@ -220,7 +227,7 @@ def reduce_individually(puzzle: Puzzle, clues: Clues, removed: Clues) -> tuple[C
             uniquely_solvable = False
 
         if uniquely_solvable:
-            print(f"Removed {clue=}")
+            logger.info(f"Removed {clue=}; {len(clues)} remaining")
             removed.add(clue)
             continue  # we were fine to remove this clue
         clues.add(clue)
@@ -265,7 +272,7 @@ def reduce_clues(puzzle: Puzzle, clues: Clues) -> tuple[Clues, Clues]:
     minimal_clues = set(random.sample(tuple(clues), k=len(clues)))
 
     while True:
-        print(f"There are {len(minimal_clues)} clues in ba sing se")
+        logger.info(f"Testing puzzle with {len(minimal_clues)} clues ...")
 
         # If the size of minimal_clues before we try to remove some clues is greater than the size
         # after, then those clues were fine to remove. Go back to the top of the loop and keep
@@ -284,7 +291,7 @@ def reduce_clues(puzzle: Puzzle, clues: Clues) -> tuple[Clues, Clues]:
             break
 
     # secondary reduction time! While we can still remove clues, do so; then we're done.
-    print("Starting the secondary reduction.")
+    logger.info("Starting the secondary reduction.")
     removed_clues: Clues = set()
     while True:
         minimal_clues_size = len(minimal_clues)

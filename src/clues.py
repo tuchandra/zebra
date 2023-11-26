@@ -90,7 +90,7 @@ class not_at(Clue):  # noqa: N801
     @_capitalize_first
     def __repr__(self) -> str:
         houses = [None, "first", "second", "third", "fourth", "fifth", "sixth"]
-        return f"{self.value.value} is not in the {houses[self.house]} house."
+        return f"The {houses[self.house]} house does not have {self.value.value}."
 
 
 @dataclass(eq=True, frozen=True)

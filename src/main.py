@@ -5,12 +5,14 @@ CLI for the puzzle generator. This is intended to supersede generate.py, but
 we'll see.
 """
 
+import logging
 import random
 from collections.abc import Sequence
 from dataclasses import dataclass
 
 import questionary
 from rich import print
+from rich.logging import RichHandler
 
 from src.elements import PuzzleElement
 from src.generate import generate_all_clues, print_puzzle, reduce_clues
@@ -25,6 +27,9 @@ from src.traptor_elements import (
     TropicalTraptorSecondary,
     TropicalTraptorTertiary,
 )
+
+logging.basicConfig(level=logging.DEBUG, format="%(message)s", handlers=[RichHandler(level=logging.INFO)])
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -117,7 +122,7 @@ if __name__ == "__main__":
 
     clues = generate_all_clues(puzzle, solution)
 
-    print(f"\nStarting puzzle reduction ...\n{'-' * 30}")
+    logger.info("Starting puzzle reduction!")
     reduced, extras = reduce_clues(puzzle, clues)
     for clue in reduced:
         puzzle.add_clue(clue)
