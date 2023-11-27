@@ -40,6 +40,11 @@ Development uses *black*, *ruff*, and *pyright*, though we're not totally compli
 These may happen. But the project is finally at a place that I'm happy with, and so I'm excited to share and write about it.
 
 ## Incomplete changelog
+## 2023-11-25 & 2023-11-26: simplify
+11/26: Clean up the puzzle/solution generation logic. Let the user choose the puzzle size.
+
+11/25: Name some common types as type aliases (thanks, Python 3.12). Use logging instead of prints.
+
 ## 2023-11-19: continue tests
 Add tests for clue types within `generate.py`. 
 
