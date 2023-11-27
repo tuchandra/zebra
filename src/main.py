@@ -53,14 +53,15 @@ def checkbox[T](question: str, choices: Sequence[Choice[T]]) -> list[T]:
     return [c.value for c in choices if c.label in answers]
 
 
-def shuffle[T](seq: Sequence[T]) -> Sequence[T]:
-    """Shuffle a list and return the result."""
+def shuffle[T](seq: Sequence[T], n: int | None = None) -> Sequence[T]:
+    """Shuffle a list, optionally sample, and return the result."""
 
-    return random.sample(seq, len(seq))
+    return random.sample(seq, n or len(seq))
 
 
 if __name__ == "__main__":
     random.seed(20231112)
+    puzzle_size: int = 5
 
     element_types: set[type[PuzzleElement]]
     traptor_type = select(
@@ -86,30 +87,26 @@ if __name__ == "__main__":
 
     logger.info(f"Puzzle element types: {element_types}")
 
-    # Choose elements for each type randomly
-    puzzle_elements: dict[type[PuzzleElement], Sequence[PuzzleElement]] = {}
+    # Choose elements for each type
+    puzzle_elements: dict[type[PuzzleElement], list[PuzzleElement]] = {}
     for el_type in element_types:
-        puzzle_elements[el_type] = shuffle(list(el_type.__members__.values()))[:5]
+        puzzle_elements[el_type] = random.sample(list(el_type.__members__.values()), 5)
+        # solution.update({el: i for i, el in enumerate(elements_to_include, 1)})
+
+    # Construct solution (shuffle again)
+    solution = {
+        element: loc
+        for _eltype, elements in puzzle_elements.items()
+        for loc, element in enumerate(shuffle(elements), 1)
+    }
 
     # Construct the puzzle
     puzzle = Puzzle(
-        size=5,
+        size=puzzle_size,
         element_types=element_types,
         elements=[e for els in puzzle_elements.values() for e in els],
+        solution=solution,
     )
-
-    # Construct solution randomly
-    solution: dict[PuzzleElement, int] = {
-        # Smoothie.lilac: 1,
-        # Smoothie.earth: 2,
-        # ...,
-        # TraptorPrimary.marvellous: 1,
-        # TraptorPrimary.heroic: 2,
-        # ...,
-        el: house
-        for _, elements in puzzle_elements.items()
-        for house, el in enumerate(elements, 1)
-    }
 
     clues = generate_all_clues(puzzle, solution)
 

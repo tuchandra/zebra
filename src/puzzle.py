@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Generator, Iterable
+from collections.abc import Generator, Iterable, Mapping
 from contextlib import contextmanager
 from random import shuffle
 from typing import Self
@@ -40,7 +40,7 @@ class Puzzle:
         size: int = 5,
         element_types: Iterable[type[PuzzleElement]],
         elements: Iterable[PuzzleElement],
-        # solution: Mapping[PuzzleElement, int],
+        solution: Mapping[PuzzleElement, int],
     ) -> None:
         """
         Initialize a puzzle with different kinds of elements. The puzzle is initialized with two lists:
@@ -57,6 +57,7 @@ class Puzzle:
 
         self.element_classes = list(element_types)
         self.elements = list(elements)
+        self.solution = solution
 
         self.clues: set[Clue] = set()
         self.constraints = self._get_constraints()
