@@ -63,6 +63,8 @@ if __name__ == "__main__":
     random.seed(20231112)
     puzzle_size: int = 5
 
+    puzzle_size = select("How large is the puzzle?", choices=[Choice(str(i), i) for i in (5, 4, 3)])
+
     element_types: set[type[PuzzleElement]]
     traptor_type = select(
         "Choose a Traptor type",
@@ -90,8 +92,7 @@ if __name__ == "__main__":
     # Choose elements for each type
     puzzle_elements: dict[type[PuzzleElement], list[PuzzleElement]] = {}
     for el_type in element_types:
-        puzzle_elements[el_type] = random.sample(list(el_type.__members__.values()), 5)
-        # solution.update({el: i for i, el in enumerate(elements_to_include, 1)})
+        puzzle_elements[el_type] = random.sample(list(el_type.__members__.values()), puzzle_size)
 
     # Construct solution (shuffle again)
     solution = {
@@ -102,7 +103,6 @@ if __name__ == "__main__":
 
     # Construct the puzzle
     puzzle = Puzzle(
-        size=puzzle_size,
         element_types=element_types,
         elements=[e for els in puzzle_elements.values() for e in els],
         solution=solution,

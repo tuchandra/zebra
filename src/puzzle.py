@@ -37,7 +37,6 @@ class Puzzle:
     def __init__(
         self,
         *,
-        size: int = 5,
         element_types: Iterable[type[PuzzleElement]],
         elements: Iterable[PuzzleElement],
         solution: Mapping[PuzzleElement, int],
@@ -52,11 +51,12 @@ class Puzzle:
         that's exactly the number of houses.
         """
 
-        self.size = size
+        self.elements = list(elements)
+        self.element_classes = list(element_types)
+
+        self.size = len(self.elements) // len(self.element_classes)
         self.houses = tuple(range(1, self.size + 1))
 
-        self.element_classes = list(element_types)
-        self.elements = list(elements)
         self.solution = solution
 
         self.clues: set[Clue] = set()
