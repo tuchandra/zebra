@@ -11,7 +11,6 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 
 import questionary
-from rich import print
 from rich.logging import RichHandler
 
 from src.elements import PuzzleElement
@@ -63,43 +62,43 @@ def shuffle[T](seq: Sequence[T]) -> Sequence[T]:
 if __name__ == "__main__":
     random.seed(20231112)
 
-    puzzle_elements: dict[type[PuzzleElement], Sequence[PuzzleElement]] = {}
+    element_types: set[type[PuzzleElement]]
     traptor_type = select(
         "Choose a Traptor type",
         [Choice("🌴 Tropical", TropicalTraptorPrimary), Choice("🏰 Mythical", MythicalTraptorPrimary)],
     )
     if traptor_type == TropicalTraptorPrimary:
-        puzzle_elements = puzzle_elements | {
-            TropicalTraptorPrimary: list(TropicalTraptorPrimary.__members__.values()),
-            TropicalTraptorSecondary: list(TropicalTraptorSecondary.__members__.values()),
-            TropicalTraptorTertiary: list(TropicalTraptorTertiary.__members__.values()),
-        }
+        element_types = {TropicalTraptorPrimary, TropicalTraptorSecondary, TropicalTraptorTertiary}
     elif traptor_type == MythicalTraptorPrimary:
-        puzzle_elements = puzzle_elements | {
-            MythicalTraptorPrimary: list(MythicalTraptorPrimary.__members__.values()),
-            MythicalTraptorSecondary: list(MythicalTraptorSecondary.__members__.values()),
-            MythicalTraptorTertiary: list(MythicalTraptorTertiary.__members__.values()),
-        }
+        element_types = {MythicalTraptorPrimary, MythicalTraptorSecondary, MythicalTraptorTertiary}
     else:
         raise ValueError("Invalid choice - what?")
 
-    # Add smoothies? Which ones?
+    # Add smoothies?
     use_smoothies = select("🥤 Should the puzzle include smoothies?", [Choice("Yes", True), Choice("No", False)])
     if use_smoothies:
-        # smoothies = checkbox(
-        #     "Which smoothies should be included? (Choose 5)",
-        #     [Choice(smoothie.value, smoothie) for smoothie in Smoothie],
-        # )
-        puzzle_elements[Smoothie] = shuffle(list(Smoothie.__members__.values()))[:5]
+        element_types = element_types | {Smoothie}
 
-    # Add bottlecaps? (There are only 5, so no need to choose which colors)
+    # Add bottlecaps?
     use_bottlecaps = select("🔵 Should the puzzle include bottlecaps?", [Choice("Yes", True), Choice("No", False)])
     if use_bottlecaps:
-        puzzle_elements[Bottlecap] = list(Bottlecap.__members__.values())
+        element_types = element_types | {Bottlecap}
 
-    print(puzzle_elements)
+    logger.info(f"Puzzle element types: {element_types}")
 
-    # Construct solution; positions already randomized
+    # Choose elements for each type randomly
+    puzzle_elements: dict[type[PuzzleElement], Sequence[PuzzleElement]] = {}
+    for el_type in element_types:
+        puzzle_elements[el_type] = shuffle(list(el_type.__members__.values()))[:5]
+
+    # Construct the puzzle
+    puzzle = Puzzle(
+        size=5,
+        element_types=element_types,
+        elements=[e for els in puzzle_elements.values() for e in els],
+    )
+
+    # Construct solution randomly
     solution: dict[PuzzleElement, int] = {
         # Smoothie.lilac: 1,
         # Smoothie.earth: 2,
@@ -108,17 +107,9 @@ if __name__ == "__main__":
         # TraptorPrimary.heroic: 2,
         # ...,
         el: house
-        for el_class in puzzle_elements
-        for house, el in enumerate(puzzle_elements[el_class], 1)
+        for _, elements in puzzle_elements.items()
+        for house, el in enumerate(elements, 1)
     }
-
-    # Construct the puzzle
-    puzzle = Puzzle(
-        element_types=puzzle_elements.keys(),
-        elements=[e for els in puzzle_elements.values() for e in els],
-    )
-
-    print(puzzle)
 
     clues = generate_all_clues(puzzle, solution)
 

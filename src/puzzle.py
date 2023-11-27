@@ -14,26 +14,30 @@ from . import sat_utils
 
 class Puzzle:
     """
-    A Puzzle is defined as a collection of constraints and clues. A Puzzle has a solution.
+    A Puzzle is defined in terms of:
+    - its size, the element types, and elements
+    - a *solution*, which is a mapping between each location & the puzzle elements at that location
+    - a collection of *constraints*
+    - a collection of *clues*
 
-    Clues are subclassess of Clue. They represent information about the puzzle that can be used by
-    a human to solve it, like "the man who drinks tea owns a cat." Clues aren't converted to CNF
-    until the `as_cnf` method is called.
+    A puzzle may or may not be solvable under a given set of clues.
 
-    Constraints are structural properties of the puzzle, given to us in CNF to start. They're
-    things like "each house gets exactly one type of flower" and "each flower must be assigned
-    to one house." These will be the same for every Puzzle, so we initialize the puzzle with the
-    constraints appropriate to its structure.
+    clues vs. constraints
+    ---------------------
+    Both of these are boolean clauses. We express both as CNFs. The difference is a domain question,
+    not a mathematical one.
 
-    We can add clues with `add_clue`. This returns the instance, so they can be chained together.
+    Constraints are structural properties of the puzzle. They do not depend on the solution. We can
+    describe the constraints, and express them as CNFs, when creating the puzzle.
 
-    Since in constraint satisfaction land, clues and constraints are the same thing (they're just
-    logical clauses), we lump them all together at solve time.
+    A `Clue` contains information about the puzzle's soultion. It's a description, yes, but it also
+    depends on the puzzle having a solution in the first place.
     """
 
     def __init__(
         self,
         *,
+        size: int = 5,
         element_types: Iterable[type[PuzzleElement]],
         elements: Iterable[PuzzleElement],
         # solution: Mapping[PuzzleElement, int],
@@ -48,11 +52,11 @@ class Puzzle:
         that's exactly the number of houses.
         """
 
+        self.size = size
+        self.houses = tuple(range(1, self.size + 1))
+
         self.element_classes = list(element_types)
         self.elements = list(elements)
-
-        self.size = len(self.elements) // len(self.element_classes)
-        self.houses = tuple(range(1, self.size + 1))
 
         self.clues: set[Clue] = set()
         self.constraints = self._get_constraints()
