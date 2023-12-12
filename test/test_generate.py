@@ -54,6 +54,7 @@ def puzzle() -> SolvedPuzzle:
     puzzle = Puzzle(
         element_types=[Cat, OtherCat],
         elements=[Cat.luna, Cat.ruby, Cat.acorn, OtherCat.maxwell, OtherCat.maui, OtherCat.stranger],
+        solution=solution,
     )
 
     return puzzle, solution
@@ -231,7 +232,6 @@ def test_generate_two_between():
         c = "c"
         d = "d"
 
-    puzzle = Puzzle(element_types=[X, Y], elements=[X.one, X.two, X.three, X.four, Y.a, Y.b, Y.c, Y.d])
     solution: dict[PuzzleElement, int] = {
         X.one: 1,
         X.two: 2,
@@ -242,6 +242,12 @@ def test_generate_two_between():
         Y.c: 3,
         Y.d: 4,
     }
+
+    puzzle = Puzzle(
+        element_types=[X, Y],
+        elements=[X.one, X.two, X.three, X.four, Y.a, Y.b, Y.c, Y.d],
+        solution=solution,
+    )
 
     houses = (1, 2, 3, 4)
     assert _generate_two_between(puzzle, solution) == {
