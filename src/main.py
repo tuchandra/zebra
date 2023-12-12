@@ -1,8 +1,5 @@
 """
-main.py
-
-CLI for the puzzle generator. This is intended to supersede generate.py, but
-we'll see.
+main.py - CLI for the puzzle generator superseding the previous generate.py.
 """
 
 import logging
