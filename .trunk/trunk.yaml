@@ -9,6 +9,22 @@ plugins:
     - id: trunk
       ref: v1.4.0
       uri: https://github.com/trunk-io/plugins
+
+# Attempting to add custom download for py3.12
+# https://github.com/trunk-io/plugins/blob/main/runtimes/python/plugin.yaml
+# https://github.com/indygreg/python-build-standalone/releases/
+downloads:
+  - name: python
+    downloads:
+      - os:
+          linux: unknown-linux-gnu
+          macos: apple-darwin
+        cpu:
+          x86_64: x86_64
+          arm_64: aarch64
+        version: <=3.12.0
+        url: https://github.com/indygreg/python-build-standalone/releases/download/20231002/cpython-${version}+20231002-${cpu}-${os}-install_only.tar.gz
+        strip_components: 1
 # Many linters and tools depend on runtimes - configure them here. (https://docs.trunk.io/runtimes)
 runtimes:
   enabled:
@@ -16,8 +32,13 @@ runtimes:
     - python@3.12.0
 # This is the section where you manage your linters. (https://docs.trunk.io/check/configuration)
 lint:
+  disabled:
+    - isort
+    - yamllint
+    - bandit
+    - black
+    - checkov
   enabled:
-    - checkov@3.1.9
     - git-diff-check
     - markdownlint@0.37.0
     - osv-scanner@1.5.0
