@@ -34,11 +34,11 @@ runtimes:
 lint:
   disabled:
     - isort
-    - yamllint
     - bandit
     - black
     - checkov
   enabled:
+    - yamllint@1.33.0
     - git-diff-check
     - markdownlint@0.37.0
     - osv-scanner@1.5.0
