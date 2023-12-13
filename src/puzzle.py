@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Generator, Iterable, Mapping
+from collections.abc import Generator, Iterable, Mapping, Sequence
 from contextlib import contextmanager
 from random import shuffle
 from typing import Self
@@ -52,8 +52,8 @@ class Puzzle:
         """
 
         self.solution = solution
-        self.elements = list(solution.keys())
-        self.element_classes = list({type(e) for e in self.elements})
+        self.elements: Sequence[PuzzleElement] = list(solution.keys())
+        self.element_classes: Sequence[type[PuzzleElement]] = list({type(e) for e in self.elements})
 
         self.size = len(self.elements) // len(self.element_classes)
         self.houses = tuple(range(1, self.size + 1))
