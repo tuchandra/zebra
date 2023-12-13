@@ -51,3 +51,4 @@ select = [
 typeCheckingMode = "strict"
 pythonVersion = "3.12"
 ignore = ["src/examples/"]
+executionEnvironments = [{ root = "." }]

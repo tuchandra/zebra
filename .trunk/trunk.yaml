@@ -32,6 +32,13 @@ runtimes:
     - python@3.12.0
 # This is the section where you manage your linters. (https://docs.trunk.io/check/configuration)
 lint:
+  definitions:
+    # I think we have to add pyproject.toml to direct_configs because the plugin doesn't define it
+    # https://github.com/trunk-io/plugins/blob/main/linters/pyright/plugin.yaml#L26
+    - name: pyright
+      direct_configs:
+        - pyproject.toml
+        - pyrightconfig.json
   disabled:
     - isort
     - bandit
