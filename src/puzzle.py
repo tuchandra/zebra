@@ -110,9 +110,9 @@ class Puzzle:
 
     def __repr__(self) -> str:
         s = "This is a logic puzzle. "
-        s += f"There are {len(self.houses)} houses (numbered {self.houses[0]} on the left, "
+        s += f"There are {len(self.houses)} nests (numbered {self.houses[0]} on the left, "
         s += f"{self.houses[-1]} on the right), from the perspective of someone standing across "
-        s += "the street from them. Each has a different person in them. "
+        s += "the street from them. Each has a different Traptor in them. "
         s += "They have different characteristics:\n"
         for element_type in self.element_classes:
             literals = [l for l in self.elements if isinstance(l, element_type)]  # noqa: E741

@@ -337,7 +337,7 @@ def _print_puzzle_grid(puzzle: Puzzle, extras: Iterable[Clue]):
     """
 
     console = Console()
-    table = Table(title="Traptop's Scramble")
+    table = Table(title="Solution")
 
     table.add_column("Nest", justify="right", style="cyan", no_wrap=True)
     for element_type in puzzle.element_classes:
@@ -354,7 +354,7 @@ def _print_puzzle_grid(puzzle: Puzzle, extras: Iterable[Clue]):
 
 
 def print_puzzle(puzzle: Puzzle, extras: Iterable[Clue]):
-    print(f"\nClues\n{"-" * 15}")
+    print(f"\nClues\n{"-" * 5}")
     print(puzzle)
 
     print(f"\nSupplemental clues\n{"-" * 18}")
