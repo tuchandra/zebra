@@ -1,6 +1,6 @@
 # Zebra Puzzles
 
-_Today, in 2023, project is largely unmaintained. I'm using it as a playground for some things I want to try out, but I don't recommend anyone build off this._
+_Today, in 2024, project is largely unmaintained. I'm using it as a playground for some things I want to try out, but I don't recommend anyone build off this._
 
 ![Example puzzle](sample_grid.png)
 
@@ -16,18 +16,57 @@ Using modern Python and constraint satisfaction (SAT) solvers, this project can 
 
 ## Structure
 
-This project has five Python files in `src/`:
+This project uses Python 3.12 and Poetry.
 
-- `sat_utils.py` is basic utilities for interacting with the SAT solver [pycosat](https://pypi.org/project/pycosat/); this code was almost entirely written by [Raymond Hettinger](https://rhettinger.github.io/einstein.html#essential-utilities-for-humanization)
-- `puzzle.py` contains the main `Puzzle` class and two sample puzzles that can be solved
-- `elements.py` (formerly `literals.py`) contains the different puzzle elements via a base `PuzzleElement` and subclasses (people, favorite types of tea, most-played video games, etc.)
-- `clues.py` contains the different classes of clues via a base `Clue` and subclasses ("x is at the same house as y", "x is somewhere to the left of z", etc.)
-- `generate.py` containas utilities to create new `Clue`s.
-- `main.py` is the **main entry point** into this project, creating new puzzles.
+The entrypoint to this project is `src/main.py`; accordingly, run it with `[poetry run] python -m src.main`.
+We use [questionary](https://github.com/tmbo/questionary/) to create a CLI with simple interactivity.
 
-## Example output
+Other important files are:
+
+- `puzzle.py` contains the main Puzzle class, which is mostly glue around clues and puzzle elements
+- `clues.py` defines a clue (a higher-level statement that we can convert to a CNF) and several factories, like `found_at` or `same_house`; `generate.py` has utilities to create clues
+- `elements.py` and `traptor_elements.py` have various puzzle elements
+
+Finally, `sat_utils.py` contains the basic utilities for interacting with the SAT solver [pycosat](https://pypi.org/project/pycosat/). This code was almost entirely written by [Raymond Hettinger](https://rhettinger.github.io/einstein.html#essential-utilities-for-humanization) for his 2019 talk (thank you!).
+
+## Example
 
 ```sh
+❯ poetry run python -m src.main
+? How large is the puzzle? (Use arrow keys)
+ » 5
+   4
+   3
+? Choose a Traptor type (Use arrow keys)
+   🌴 Tropical
+ » 🏰 Mythical
+? 🥤 Should the puzzle include smoothies? (Use arrow keys)
+ » Yes
+   No
+? 🔵 Should the puzzle include bottlecaps? (Use arrow keys)
+ » Yes
+   No
+
+Clues
+-----
+# ... Some flavor text omitted ...
+
+1. The Lesser Traptor and the Swamp Traptor are in the same house.
+2. The Ancient Traptor is directly left of the Chocolate smoothie.
+3. The Ancient Traptor and the Lemon smoothie are in the same house.
+4. The Volcano Traptor is directly left of the Restless Traptor.
+5. The Cave Traptor and Green bottlecaps are in the same house.
+6. There are two houses between the Lake Traptor and the Snapper Traptor.
+7. Green bottlecaps and the Fierce Traptor are in the same house.
+8. There is one house between Black bottlecaps and the Coconut smoothie.
+9. There is one house between the Lesser Traptor and the Kiwi smoothie.
+10. The Dweller Traptor and the Chocolate smoothie are in the same house.
+11. Red bottlecaps and the Dweller Traptor are in the same house.
+12. Red bottlecaps is directly left of the Hoarder Traptor.
+13. There are two houses between the Starfruit smoothie and Yellow bottlecaps.
+14. The Lake Traptor and Black bottlecaps are in the same house.
+15. The Stalker Traptor and the Fierce Traptor are in the same house.
+
                                                              Solution
 ┏━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
 ┃ Nest ┃ MythicalTraptorPrimary ┃ MythicalTraptorSecondary ┃ MythicalTraptorTertiary ┃        Smoothie        ┃     Bottlecap     ┃
@@ -40,18 +79,8 @@ This project has five Python files in `src/`:
 └──────┴────────────────────────┴──────────────────────────┴─────────────────────────┴────────────────────────┴───────────────────┘
 ```
 
-## Requirements
-
-- Python 3.12
-- Poetry
-
-This uses the SAT solver [pycosat](https://pypi.org/project/pycosat/).
-
-Development uses _ruff_ and _pyright_.
-
 ## Future work
 
-- Try creating smaller size (4 houses) with, say, 6 categories; is that easier or harder?
 - Consider web interface?
 - Consider using another logic programming interface; PySAT, answer set programming, more discussion in this [HN thread](https://news.ycombinator.com/item?id=36087464) ...
 
