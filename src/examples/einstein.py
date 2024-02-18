@@ -33,11 +33,15 @@ they smoke, and what pet they own.
 
 from __future__ import annotations
 
+from logging import getLogger
+
 from elements import PuzzleElement
 
 from src import sat_utils
 from src.clues import beside, consecutive, found_at, same_house
 from src.puzzle import Puzzle
+
+logger = getLogger(__name__)
 
 
 class Color(PuzzleElement):
@@ -126,9 +130,9 @@ if __name__ == "__main__":
         .add_clue(beside(Cigar.blends, Drink.water, puzzle.houses))
     )
 
-    print(puzzle)
+    logger.info(puzzle)
 
     sols = sat_utils.solve_all(puzzle.as_cnf())
-    print(f"{len(sols)} solutions found")
+    logger.info(f"{len(sols)} solutions found")
     for sol in sols:
-        print(sol)
+        logger.info(sol)

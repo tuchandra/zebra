@@ -165,14 +165,14 @@ class UchiSecondary(PuzzleElement):
 
 
 __all__ = [
-    "PuzzleElement",
-    "RecolorMedal",
     "NPC",
+    "Dinomon",
+    "Egg",
     "FavoriteGame",
     "Kaya",
-    "Egg",
-    "Dinomon",
-    "UchiType",
+    "PuzzleElement",
+    "RecolorMedal",
     "UchiPrimary",
     "UchiSecondary",
+    "UchiType",
 ]

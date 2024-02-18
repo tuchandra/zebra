@@ -17,6 +17,8 @@ in between them that neither is sitting in).
 
 from __future__ import annotations
 
+from logging import getLogger
+
 from src import sat_utils
 from src.clues import (
     found_at,
@@ -28,6 +30,8 @@ from src.clues import (
 )
 from src.elements import PuzzleElement
 from src.puzzle import Puzzle
+
+logger = getLogger(__name__)
 
 
 class Children(PuzzleElement):
@@ -117,7 +121,7 @@ if __name__ == "__main__":
         .add_clue(right_of(Mother.holly, Food.pizza, puzzle.houses))
     )
 
-    print(puzzle)
+    logger.info(puzzle)
     all_solutions = sat_utils.solve_all(puzzle.as_cnf())
-    print(f"{len(all_solutions)} solutions found")
-    print(all_solutions)
+    logger.info(f"{len(all_solutions)} solutions found")
+    logger.info(all_solutions)

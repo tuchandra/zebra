@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Generator, Iterable, Mapping
+from collections.abc import Generator, Iterable, Mapping, Sequence
 from contextlib import contextmanager
 from random import shuffle
 from typing import Self
@@ -51,13 +51,12 @@ class Puzzle:
         that's exactly the number of houses.
         """
 
-        self.elements = list(elements)
-        self.element_classes = list(element_types)
+        self.solution = solution
+        self.elements: Sequence[PuzzleElement] = list(solution.keys())
+        self.element_classes: Sequence[type[PuzzleElement]] = list({type(e) for e in self.elements})
 
         self.size = len(self.elements) // len(self.element_classes)
         self.houses = tuple(range(1, self.size + 1))
-
-        self.solution = solution
 
         self.clues: set[Clue] = set()
         self.constraints = self._get_constraints()

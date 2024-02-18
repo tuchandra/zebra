@@ -307,15 +307,15 @@ def print_puzzle(
     puzzle: Puzzle,
     extras: Iterable[Clue],
 ):
-    print(f"\nNarrowed puzzle\n{'-' * 15}")
+    print(f"\nNarrowed puzzle\n{"-" * 15}")
     print(puzzle)
 
-    print(f"\nSupplemental clues\n{'-' * 18}")
+    print(f"\nSupplemental clues\n{"-" * 18}")
     for clue in extras:
         print(f" - {clue}")
 
     print()
-    print(f"\nSolution\n{'-' * 8}")
+    print(f"\nSolution\n{"-" * 8}")
 
     for index in range(puzzle.size):
         print(f"({index + 1}) |>")
