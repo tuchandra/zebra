@@ -111,4 +111,4 @@ if __name__ == "__main__":
     for clue in reduced:
         puzzle.add_clue(clue)
 
-    print_puzzle(puzzle_elements, puzzle, extras)
+    print_puzzle(puzzle, extras)

@@ -1,6 +1,6 @@
 import logging
 import random
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Iterable, Mapping
 from itertools import product
 
 from rich import print
@@ -305,57 +305,63 @@ def reduce_clues(puzzle: Puzzle, clues: Clues) -> tuple[Clues, Clues]:
     return minimal_clues, removed_clues
 
 
-def _grid(
-    puzzle_elements: Mapping[type[PuzzleElement], Sequence[PuzzleElement]],
-    puzzle: Puzzle,
-    extras: Iterable[Clue],
-):
-    """Use rich to print a table representation of the puzzle's solution."""
+def _print_puzzle_grid(puzzle: Puzzle, extras: Iterable[Clue]):
+    """
+    Print a tabular representation of the puzzle solution.
+
+    ┏━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━┓
+    ┃ Nest ┃ TropicalTraptorPrimary ┃ TropicalTraptorSecondary ┃ TropicalTraptorTertiary ┃
+    ┡━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━┩
+    │    1 │  the Majestic Traptor  │     the Sun Traptor      │  the Nurturer Traptor   │
+    │    2 │   the Heroic Traptor   │     the Sky Traptor      │   the Soarer Traptor    │
+    │    3 │ the Marvellous Traptor │    the Night Traptor     │    the Diver Traptor    │
+    │    4 │  the Stunning Traptor  │     the Sand Traptor     │   the Hunter Traptor    │
+    │    5 │   the Grand Traptor    │    the Forest Traptor    │  the Screecher Traptor  │
+    └──────┴────────────────────────┴──────────────────────────┴─────────────────────────┘
+
+    Using Rich, we define the columns up front (easy; that's just an attribute of Puzzle)
+    and define the rows as we go.
+
+    Each row is a list of puzzle elements at some nest where:
+    - the length is the number of element classes in the puzzle
+    - item `i` has the element of type `puzzle.element_classes[i]`
+    - every element's location is that same nest
+
+    To do this, we can use a list comprehension with a generator expression inside it (Copilot).
+    - The list comprehension is over `puzzle.element_classes`, which guarantees the order
+    - The generator expression pulls out the correct element from the solution, checking both
+      the element type and the location
+
+    This is "inefficient" big-O wise, but this isn't an interview and practicality matters -- the
+    puzzle is small enough that this is plenty good.
+    """
 
     console = Console()
-
     table = Table(title="Traptop's Scramble")
+
     table.add_column("Nest", justify="right", style="cyan", no_wrap=True)
-    for element_type in puzzle_elements:
+    for element_type in puzzle.element_classes:
         table.add_column(element_type.__name__, justify="center", style="magenta", no_wrap=True)
 
     for house in puzzle.houses:
-        table.add_row(
-            str(house),
-            *[str(puzzle_elements[element_type][house - 1]) for element_type in puzzle_elements],
-        )
+        elements_at_house = [
+            next((el for el, loc in puzzle.solution.items() if isinstance(el, element_type) and loc == house), None)
+            for element_type in puzzle.element_classes
+        ]
+        table.add_row(str(house), *elements_at_house)
 
     console.print(table)
 
-    console.print("\nSupplemental clues")
-    for clue in extras:
-        console.print(f" - {clue}")
 
-
-def print_puzzle(
-    puzzle_elements: Mapping[type[PuzzleElement], Sequence[PuzzleElement]],
-    puzzle: Puzzle,
-    extras: Iterable[Clue],
-):
-    _grid(puzzle_elements, puzzle, extras)
-
-    print(f"\nNarrowed puzzle\n{"-" * 15}")
+def print_puzzle(puzzle: Puzzle, extras: Iterable[Clue]):
+    print(f"\nClues\n{"-" * 15}")
     print(puzzle)
 
     print(f"\nSupplemental clues\n{"-" * 18}")
     for clue in extras:
         print(f" - {clue}")
 
-    print()
-    print(f"\nSolution\n{"-" * 8}")
-
-    for index in range(puzzle.size):
-        print(f"({index + 1}) |>")
-        print(
-            *[f"- {elements[index]}" for _, elements in puzzle_elements.items()],
-            sep="\n",
-        )
-        print()
+    _print_puzzle_grid(puzzle, extras)
 
 
 if __name__ == "__main__":
