@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "zebra"
-version = "0.1.0"
+version = "0.2.0"
 description = "Generator and solver for zebra puzzles"
 authors = ["Tushar Chandra <me@tusharc.dev>"]
 license = "MIT"
