@@ -81,8 +81,15 @@ Clues
 
 ## Future work
 
-- Consider web interface?
-- Consider using another logic programming interface; PySAT, answer set programming, more discussion in this [HN thread](https://news.ycombinator.com/item?id=36087464) ...
+In February 2024, what do I need to consider this "done"?
+
+- Add HTML templating, because the site that I build these for requires that I include things like BR tags.
+- Improve the grammar nits in the output, like capitalization in the flavor text.
+- Add the header/footer resources that I copy/paste into the submission.
+
+Maybe, someday, I will consider a web interface.
+Could I lift the project using pyodide, or would the C-based pycosat cause problems?
+What about another logic programming interface, like PySAT, answer set programming, or others from this [HN thread](https://news.ycombinator.com/item?id=36087464)?
 
 These may happen. But the project is finally at a place that I'm happy with, and so I'm excited to share and write about it.
 
