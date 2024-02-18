@@ -107,7 +107,6 @@ if __name__ == "__main__":
 
     clues = generate_all_clues(puzzle, solution)
 
-    logger.info("Starting puzzle reduction!")
     reduced, extras = reduce_clues(puzzle, clues)
     for clue in reduced:
         puzzle.add_clue(clue)

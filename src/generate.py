@@ -273,8 +273,9 @@ def reduce_clues(puzzle: Puzzle, clues: Clues) -> tuple[Clues, Clues]:
     # this is a stupid way to shuffle the set of clues without modifying it
     minimal_clues = set(random.sample(tuple(clues), k=len(clues)))
 
+    logger.info(f"Starting to reduce clues from maximal set of {len(clues)}.")
     while True:
-        logger.info(f"Testing puzzle with {len(minimal_clues)} clues ...")
+        logger.debug(f"Testing puzzle with {len(minimal_clues)} clues.")
 
         # If the size of minimal_clues before we try to remove some clues is greater than the size
         # after, then those clues were fine to remove. Go back to the top of the loop and keep
@@ -293,7 +294,7 @@ def reduce_clues(puzzle: Puzzle, clues: Clues) -> tuple[Clues, Clues]:
             break
 
     # secondary reduction time! While we can still remove clues, do so; then we're done.
-    logger.info("Starting the secondary reduction.")
+    logger.info(f"Reached {len(minimal_clues)} clues; attempting to reduce further.")
     removed_clues: Clues = set()
     while True:
         minimal_clues_size = len(minimal_clues)
