@@ -4,6 +4,8 @@ from collections.abc import Iterable, Mapping, Sequence
 from itertools import product
 
 from rich import print
+from rich.console import Console
+from rich.table import Table
 
 from src.clues import (
     Clue,
@@ -302,11 +304,40 @@ def reduce_clues(puzzle: Puzzle, clues: Clues) -> tuple[Clues, Clues]:
     return minimal_clues, removed_clues
 
 
+def _grid(
+    puzzle_elements: Mapping[type[PuzzleElement], Sequence[PuzzleElement]],
+    puzzle: Puzzle,
+    extras: Iterable[Clue],
+):
+    """Use rich to print a table representation of the puzzle's solution."""
+
+    console = Console()
+
+    table = Table(title="Traptop's Scramble")
+    table.add_column("Nest", justify="right", style="cyan", no_wrap=True)
+    for element_type in puzzle_elements:
+        table.add_column(element_type.__name__, justify="center", style="magenta", no_wrap=True)
+
+    for house in puzzle.houses:
+        table.add_row(
+            str(house),
+            *[str(puzzle_elements[element_type][house - 1]) for element_type in puzzle_elements],
+        )
+
+    console.print(table)
+
+    console.print("\nSupplemental clues")
+    for clue in extras:
+        console.print(f" - {clue}")
+
+
 def print_puzzle(
     puzzle_elements: Mapping[type[PuzzleElement], Sequence[PuzzleElement]],
     puzzle: Puzzle,
     extras: Iterable[Clue],
 ):
+    _grid(puzzle_elements, puzzle, extras)
+
     print(f"\nNarrowed puzzle\n{"-" * 15}")
     print(puzzle)
 
