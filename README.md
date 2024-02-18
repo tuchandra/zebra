@@ -25,7 +25,20 @@ This project has five Python files in `src/`:
 - `generate.py` containas utilities to create new `Clue`s.
 - `main.py` is the **main entry point** into this project, creating new puzzles.
 
-There's a currently empty `tests/` dir.
+## Example output
+
+```sh
+                                                             Solution
+┏━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃ Nest ┃ MythicalTraptorPrimary ┃ MythicalTraptorSecondary ┃ MythicalTraptorTertiary ┃        Smoothie        ┃     Bottlecap     ┃
+┡━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│    1 │   the Fierce Traptor   │     the Cave Traptor     │   the Stalker Traptor   │ the Starfruit smoothie │ Green bottlecaps  │
+│    2 │  the Ancient Traptor   │     the Lake Traptor     │   the Crawler Traptor   │   the Lemon smoothie   │ Black bottlecaps  │
+│    3 │   the Lesser Traptor   │    the Swamp Traptor     │   the Dweller Traptor   │ the Chocolate smoothie │  Red bottlecaps   │
+│    4 │  the Greater Traptor   │   the Volcano Traptor    │   the Hoarder Traptor   │  the Coconut smoothie  │ Yellow bottlecaps │
+│    5 │  the Restless Traptor  │   the Mountain Traptor   │   the Snapper Traptor   │   the Kiwi smoothie    │  Blue bottlecaps  │
+└──────┴────────────────────────┴──────────────────────────┴─────────────────────────┴────────────────────────┴───────────────────┘
+```
 
 ## Requirements
 
