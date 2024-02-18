@@ -165,3 +165,14 @@ Add dev tools (black, ruff, pyright); run black & ruff in pre-commit. Update som
 A DNF, in contrast, is a "∨ of ∧s." The DNF is the _answer_ to a SAT problem; a DNF of "A or B or C" reads that A, B, and C are all valid (satisfying) assignments. Converting a CNF to a DNF is therefore NP-hard, since from the DNF you can read off solutions to the CNF.
 
 > CNF is an ∧ of ∨s, where ∨ is over variables or their negations (literals); an ∨ of literals is also called a clause. DNF is an ∨ of ∧s; an ∧ of literals is called a term.
+
+### SAT
+
+The core of this project is in expressing the zebra puzzle as a _Boolean satisfiability_ (SAT) problem ([Wikipedia](<(https://en.wikipedia.org/wiki/Boolean_satisfiability_problem)>).
+
+The 3-SAT problem is known to be _NP-complete_.
+That is, there is probably no polynomial-time algorithm to solve it.
+This only describes the general case, though.
+
+Our problem is small and well-specified (after all, we are creating these specifically for humans!).
+This makes it an excellent fit for modern SAT solvers, and Hettinger's talk (and [notes](https://rhettinger.github.io/einstein.html)) demonstrates this beautifully.
