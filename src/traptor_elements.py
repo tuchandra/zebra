@@ -25,11 +25,11 @@ class Bottlecap(PuzzleElement):
     def description(cls) -> str:
         return "Each nest has a different bottlecap in it."
 
-    red = "the red bottlecaps"
-    yellow = "the yellow bottlecaps"
-    green = "the green bottlecaps"
-    blue = "the blue bottlecaps"
-    black = "the black bottlecaps"
+    red = "Red bottlecaps"
+    yellow = "Yellow bottlecaps"
+    green = "Green bottlecaps"
+    blue = "Blue bottlecaps"
+    black = "Black bottlecaps"
 
 
 class Smoothie(PuzzleElement):
@@ -56,8 +56,6 @@ class Smoothie(PuzzleElement):
     starfruit = "the Starfruit smoothie"
     watermelon = "the Watermelon smoothie"
 
-    # pastels - excluded
-
     desert = "the Desert smoothie"
     jungle = "the Jungle smoothie"
     glacier = "the Glacier smoothie"
@@ -66,7 +64,7 @@ class Smoothie(PuzzleElement):
 class TropicalTraptorPrimary(PuzzleElement):
     @classmethod
     def description(cls) -> str:
-        return "They have different primary colors"
+        return "They have different primary colors."
 
     majestic = "the Majestic Traptor"
     grand = "the Grand Traptor"
@@ -78,7 +76,7 @@ class TropicalTraptorPrimary(PuzzleElement):
 class TropicalTraptorSecondary(PuzzleElement):
     @classmethod
     def description(cls) -> str:
-        return "They have different secondary colors"
+        return "They have different secondary colors."
 
     sky = "the Sky Traptor"
     forest = "the Forest Traptor"
@@ -90,7 +88,7 @@ class TropicalTraptorSecondary(PuzzleElement):
 class TropicalTraptorTertiary(PuzzleElement):
     @classmethod
     def description(cls) -> str:
-        return "They have different tertiary colors"
+        return "They have different tertiary colors."
 
     soarer = "the Soarer Traptor"
     diver = "the Diver Traptor"
@@ -102,7 +100,7 @@ class TropicalTraptorTertiary(PuzzleElement):
 class MythicalTraptorPrimary(PuzzleElement):
     @classmethod
     def description(cls) -> str:
-        return "They have different primary colors"
+        return "They have different primary colors."
 
     greater = "the Greater Traptor"
     lesser = "the Lesser Traptor"
@@ -114,7 +112,7 @@ class MythicalTraptorPrimary(PuzzleElement):
 class MythicalTraptorSecondary(PuzzleElement):
     @classmethod
     def description(cls) -> str:
-        return "They have different secondary colors"
+        return "They have different secondary colors."
 
     lake = "the Lake Traptor"
     swamp = "the Swamp Traptor"
@@ -126,7 +124,7 @@ class MythicalTraptorSecondary(PuzzleElement):
 class MythicalTraptorTertiary(PuzzleElement):
     @classmethod
     def description(cls) -> str:
-        return "They have different tertiary colors"
+        return "They have different tertiary colors."
 
     dweller = "the Dweller Traptor"
     crawler = "the Crawler Traptor"

@@ -52,8 +52,8 @@ class Puzzle:
         """
 
         self.solution = solution
-        self.elements: Sequence[PuzzleElement] = list(solution.keys())
-        self.element_classes: Sequence[type[PuzzleElement]] = list({type(e) for e in self.elements})
+        self.element_classes: Sequence[type[PuzzleElement]] = list(element_types)
+        self.elements: Sequence[PuzzleElement] = list(elements)
 
         self.size = len(self.elements) // len(self.element_classes)
         self.houses = tuple(range(1, self.size + 1))

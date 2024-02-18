@@ -62,27 +62,27 @@ if __name__ == "__main__":
 
     puzzle_size = select("How large is the puzzle?", choices=[Choice(str(i), i) for i in (5, 4, 3)])
 
-    element_types: set[type[PuzzleElement]]
+    element_types: list[type[PuzzleElement]]
     traptor_type = select(
         "Choose a Traptor type",
         [Choice("🌴 Tropical", TropicalTraptorPrimary), Choice("🏰 Mythical", MythicalTraptorPrimary)],
     )
     if traptor_type == TropicalTraptorPrimary:
-        element_types = {TropicalTraptorPrimary, TropicalTraptorSecondary, TropicalTraptorTertiary}
+        element_types = [TropicalTraptorPrimary, TropicalTraptorSecondary, TropicalTraptorTertiary]
     elif traptor_type == MythicalTraptorPrimary:
-        element_types = {MythicalTraptorPrimary, MythicalTraptorSecondary, MythicalTraptorTertiary}
+        element_types = [MythicalTraptorPrimary, MythicalTraptorSecondary, MythicalTraptorTertiary]
     else:
         raise ValueError("Invalid choice - what?")
 
     # Add smoothies?
     use_smoothies = select("🥤 Should the puzzle include smoothies?", [Choice("Yes", True), Choice("No", False)])
     if use_smoothies:
-        element_types = element_types | {Smoothie}
+        element_types += [Smoothie]
 
     # Add bottlecaps?
     use_bottlecaps = select("🔵 Should the puzzle include bottlecaps?", [Choice("Yes", True), Choice("No", False)])
     if use_bottlecaps:
-        element_types = element_types | {Bottlecap}
+        element_types += [Bottlecap]
 
     logger.info(f"Puzzle element types: {element_types}")
 
