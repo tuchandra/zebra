@@ -136,13 +136,13 @@ class MythicalTraptorTertiary(PuzzleElement):
 
 
 __all__ = [
-    "Tribe",
-    "Smoothie",
     "Bottlecap",
-    "TropicalTraptorPrimary",
-    "TropicalTraptorSecondary",
-    "TropicalTraptorTertiary",
     "MythicalTraptorPrimary",
     "MythicalTraptorSecondary",
     "MythicalTraptorTertiary",
+    "Smoothie",
+    "Tribe",
+    "TropicalTraptorPrimary",
+    "TropicalTraptorSecondary",
+    "TropicalTraptorTertiary",
 ]

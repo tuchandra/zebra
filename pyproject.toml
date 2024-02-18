@@ -45,6 +45,7 @@ select = [
   "SIM",    # flake8-simplify
   "TID252", # tidy imports
   "UP",     # pyupgrade
+  "T201",   # no print statements
 ]
 
 [tool.pyright]
@@ -52,3 +53,7 @@ typeCheckingMode = "strict"
 pythonVersion = "3.12"
 ignore = ["src/examples/"]
 executionEnvironments = [{ root = "." }]
+
+[tool.pytest.ini_options]
+# addopts = ["--pdbcls=pdbr:RichPdb"]
+addopts = "--pdbcls=IPython.terminal.debugger:Pdb"
