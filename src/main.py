@@ -6,6 +6,7 @@ import logging
 import random
 from collections.abc import Sequence
 from dataclasses import dataclass
+from datetime import date
 
 import questionary
 from rich.logging import RichHandler
@@ -56,9 +57,19 @@ def shuffle[T](seq: Sequence[T], n: int | None = None) -> Sequence[T]:
     return random.sample(seq, n or len(seq))
 
 
+def integer_input(x: str) -> bool:
+    """Validate that a string is a positive integer."""
+
+    return x.isdigit()
+
+
 if __name__ == "__main__":
-    random.seed(20231112)
-    puzzle_size: int = 5
+    seed = questionary.text(
+        "Choose a seed (to regenerate this puzzle later)",
+        default=date.today().isoformat().replace("-", ""),
+        validate=integer_input,
+    ).ask()
+    random.seed(seed)
 
     puzzle_size = select("How large is the puzzle?", choices=[Choice(str(i), i) for i in (5, 4, 3)])
 
