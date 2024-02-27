@@ -26,7 +26,7 @@ P = ParamSpec("P")
 
 def _capitalize_first(repr_func: Callable[P, str]) -> Callable[P, str]:
     """
-    Decorator for a __repr__ function that capitalizes the first letter without chagning the rest
+    Decorator for a __repr__ function that capitalizes the first letter without changing the rest
 
     (in contrast to str.capitalize(), which capitalizes the first letter and makes the rest lower)
     """

@@ -183,12 +183,12 @@ def reduce_batch(puzzle: Puzzle, clues: Clues, n: int) -> Clues:
         """Relative probabilities of each type of clue being selected for removal; lower = more likely to be in the puzzle."""
 
         weights: dict[type[Clue], float] = {
+            not_at: 1,
             same_house: 2,
             one_between: 2,
-            two_between: 2,
-            not_at: 3,
-            beside: 4,
+            beside: 3,
             found_at: 4,
+            two_between: 5,
             left_of: 5,
             right_of: 5,
         }
@@ -298,7 +298,7 @@ def reduce_clues(puzzle: Puzzle, clues: Clues) -> tuple[Clues, Clues]:
     removed_clues: Clues = set()
     while True:
         minimal_clues_size = len(minimal_clues)
-        minimal_clues, removed_clues = reduce_individually(puzzle, minimal_clues, removed_clues)
+        # minimal_clues, removed_clues = reduce_individually(puzzle, minimal_clues, removed_clues)
         if len(minimal_clues) == minimal_clues_size:
             break
 
