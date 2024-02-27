@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections.abc import Generator, Iterable, Mapping, Sequence
 from contextlib import contextmanager
-from random import shuffle
 from typing import Self
 
 from src.clues import Clue, ClueCNF, comb
@@ -109,18 +108,9 @@ class Puzzle:
         return cnf
 
     def __repr__(self) -> str:
-        s = "This is a logic puzzle. "
-        s += f"There are {len(self.houses)} nests (numbered {self.houses[0]} on the left, "
-        s += f"{self.houses[-1]} on the right), from the perspective of someone standing across "
-        s += "the street from them. Each has a different Traptor in them. "
-        s += "They have different characteristics:\n"
-        for element_type in self.element_classes:
-            literals = [l for l in self.elements if isinstance(l, element_type)]  # noqa: E741
-            shuffle(literals)
-            s += f" - {element_type.description()}: " + ", ".join(e.name for e in literals) + "\n"
-
-        s += "\n"
+        s = "<u>Clues</u> <br>\n"
         for i, clue in enumerate(self.clues):
-            s += f"{i + 1}. {clue}\n"
+            clue_str = clue.__repr__().replace("house", "nest") + " <br>"
+            s += f"{i + 1}. {clue_str}\n"
 
         return s

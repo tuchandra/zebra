@@ -354,14 +354,9 @@ def _print_puzzle_grid(puzzle: Puzzle, extras: Iterable[Clue]):
 
 
 def print_puzzle(puzzle: Puzzle, extras: Iterable[Clue]):
-    print(f"\nClues\n{"-" * 5}")
-    print(puzzle)
-
-    print(f"\nSupplemental clues\n{"-" * 18}")
-    for clue in extras:
-        print(f" - {clue}")
-
     _print_puzzle_grid(puzzle, extras)
+    print()
+    print(puzzle)
 
 
 if __name__ == "__main__":
