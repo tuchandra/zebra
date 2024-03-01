@@ -22,6 +22,7 @@ from src.clues import (
     two_between,
 )
 from src.elements import PuzzleElement
+from src.printers import format_clues, format_elements
 from src.puzzle import Puzzle
 from src.sat_utils import itersolve
 
@@ -373,8 +374,8 @@ def print_puzzle(puzzle: Puzzle, extras: Iterable[Clue]):
         Rule(),
         """<div style="max-width:800px; margin-left:auto; margin-right:auto width:60% text-align:left">""",
         (templates_path / "preamble.html").read_text(),
-        puzzle.format_elements(),
-        puzzle.format_clues(),
+        format_elements(puzzle),
+        format_clues(puzzle),
         (templates_path / "answer_format.html").read_text(),
         "</div>",
         Rule(),
