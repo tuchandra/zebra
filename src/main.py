@@ -12,7 +12,8 @@ import questionary
 from rich.logging import RichHandler
 
 from src.elements import PuzzleElement
-from src.generate import generate_all_clues, print_puzzle, reduce_clues
+from src.generate import generate_all_clues, reduce_clues
+from src.printers import print_puzzle
 from src.puzzle import Puzzle
 from src.traptor_elements import (
     Bottlecap,
