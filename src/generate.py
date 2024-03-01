@@ -3,8 +3,6 @@ import random
 from collections.abc import Iterable, Mapping
 from itertools import product
 
-from rich import print
-
 from src.clues import (
     Clue,
     beside,
@@ -301,7 +299,3 @@ def reduce_clues(puzzle: Puzzle, clues: Clues) -> tuple[Clues, Clues]:
             break
 
     return minimal_clues, removed_clues
-
-
-if __name__ == "__main__":
-    print("Use `python -m src.main` instead.")

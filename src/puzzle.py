@@ -10,6 +10,8 @@ from src.sat_utils import Clause
 
 from . import sat_utils
 
+type ElementType = type[PuzzleElement]
+
 
 class Puzzle:
     """
@@ -36,7 +38,7 @@ class Puzzle:
     def __init__(
         self,
         *,
-        element_types: Iterable[type[PuzzleElement]],
+        element_types: Iterable[ElementType],
         elements: Iterable[PuzzleElement],
         solution: Mapping[PuzzleElement, int],
     ) -> None:
@@ -51,8 +53,8 @@ class Puzzle:
         """
 
         self.solution = solution
-        self.element_classes: Sequence[type[PuzzleElement]] = list(element_types)
-        self.elements_by_class: Mapping[type[PuzzleElement], list[PuzzleElement]] = {
+        self.element_classes: Sequence[ElementType] = list(element_types)
+        self.elements_by_class: Mapping[ElementType, list[PuzzleElement]] = {
             el_type: [el for el in elements if isinstance(el, el_type)] for el_type in self.element_classes
         }
         self.elements: Sequence[PuzzleElement] = list(elements)

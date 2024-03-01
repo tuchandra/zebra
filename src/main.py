@@ -14,7 +14,7 @@ from rich.logging import RichHandler
 from src.elements import PuzzleElement
 from src.generate import generate_all_clues, reduce_clues
 from src.printers import print_puzzle
-from src.puzzle import Puzzle
+from src.puzzle import ElementType, Puzzle
 from src.traptor_elements import (
     Bottlecap,
     MythicalTraptorPrimary,
@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
     puzzle_size = select("How large is the puzzle?", choices=[Choice(str(i), i) for i in (5, 4, 3)])
 
-    element_types: list[type[PuzzleElement]]
+    element_types: list[ElementType]
     traptor_type = select(
         "Choose a Traptor type",
         [Choice("🌴 Tropical", TropicalTraptorPrimary), Choice("🏰 Mythical", MythicalTraptorPrimary)],
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     logger.info(f"Puzzle element types: {element_types}")
 
     # Choose elements for each type
-    puzzle_elements: dict[type[PuzzleElement], list[PuzzleElement]] = {}
+    puzzle_elements: dict[ElementType, list[PuzzleElement]] = {}
     for el_type in element_types:
         puzzle_elements[el_type] = random.sample(list(el_type.__members__.values()), puzzle_size)
 
