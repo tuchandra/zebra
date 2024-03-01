@@ -35,11 +35,20 @@ class Puzzle:
     depends on the puzzle having a solution in the first place.
     """
 
+    solution: Mapping[PuzzleElement, int]
+
+    elements: Sequence[PuzzleElement]
+    element_classes: Sequence[ElementType]
+    elements_by_class: Mapping[ElementType, list[PuzzleElement]]
+
+    size: int
+    houses: tuple[int, ...]
+    clues: set[Clue]
+
     def __init__(
         self,
         *,
         element_types: Iterable[ElementType],
-        elements: Iterable[PuzzleElement],
         solution: Mapping[PuzzleElement, int],
     ) -> None:
         """
@@ -53,11 +62,11 @@ class Puzzle:
         """
 
         self.solution = solution
-        self.element_classes: Sequence[ElementType] = list(element_types)
-        self.elements_by_class: Mapping[ElementType, list[PuzzleElement]] = {
-            el_type: [el for el in elements if isinstance(el, el_type)] for el_type in self.element_classes
+        self.elements = list(solution.keys())
+        self.element_classes = list(element_types)
+        self.elements_by_class = {
+            el_type: [el for el in self.elements if isinstance(el, el_type)] for el_type in self.element_classes
         }
-        self.elements: Sequence[PuzzleElement] = list(elements)
 
         self.size = len(self.elements) // len(self.element_classes)
         self.houses = tuple(range(1, self.size + 1))

@@ -111,12 +111,7 @@ if __name__ == "__main__":
     }
 
     # Construct the puzzle
-    puzzle = Puzzle(
-        element_types=element_types,
-        elements=[e for els in puzzle_elements.values() for e in els],
-        solution=solution,
-    )
-
+    puzzle = Puzzle(element_types=element_types, solution=solution)
     clues = generate_all_clues(puzzle, solution)
 
     reduced, _extras = reduce_clues(puzzle, clues)
