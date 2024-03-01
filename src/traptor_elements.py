@@ -11,7 +11,7 @@ from src.elements import PuzzleElement
 class Tribe(PuzzleElement):
     @classmethod
     def description(cls) -> str:
-        return "Each has somehow joined an Altazan tribe."
+        return "Each Traptor has somehow joined an Altazan tribe"
 
     quake = "the Quake tribe member"
     cursed = "the Cursed tribe member"
@@ -23,19 +23,19 @@ class Tribe(PuzzleElement):
 class Bottlecap(PuzzleElement):
     @classmethod
     def description(cls) -> str:
-        return "Each nest has a different bottlecap in it."
+        return "Each nest has a different color Bottlecap in it"
 
-    red = "Red bottlecaps"
-    yellow = "Yellow bottlecaps"
-    green = "Green bottlecaps"
-    blue = "Blue bottlecaps"
-    black = "Black bottlecaps"
+    red = "the red bottlecap"
+    yellow = "the yellow bottlecap"
+    green = "the green bottlecap"
+    blue = "the blue bottlecap"
+    black = "the black bottlecap"
 
 
 class Smoothie(PuzzleElement):
     @classmethod
     def description(cls) -> str:
-        return "Each nest has a smoothie in it."
+        return "Each nest has a different flavor of Smoothie in it"
 
     blueberry = "the Blueberry smoothie"
     cherry = "the Cherry smoothie"
@@ -64,7 +64,7 @@ class Smoothie(PuzzleElement):
 class TropicalTraptorPrimary(PuzzleElement):
     @classmethod
     def description(cls) -> str:
-        return "They have different primary colors."
+        return "Each Tropical Traptor has a different primary color"
 
     majestic = "the Majestic Traptor"
     grand = "the Grand Traptor"
@@ -76,7 +76,7 @@ class TropicalTraptorPrimary(PuzzleElement):
 class TropicalTraptorSecondary(PuzzleElement):
     @classmethod
     def description(cls) -> str:
-        return "They have different secondary colors."
+        return "Each Tropical Traptor has a different secondary color"
 
     sky = "the Sky Traptor"
     forest = "the Forest Traptor"
@@ -88,7 +88,7 @@ class TropicalTraptorSecondary(PuzzleElement):
 class TropicalTraptorTertiary(PuzzleElement):
     @classmethod
     def description(cls) -> str:
-        return "They have different tertiary colors."
+        return "Each Tropical Traptor has a different tertiary color"
 
     soarer = "the Soarer Traptor"
     diver = "the Diver Traptor"
@@ -100,7 +100,7 @@ class TropicalTraptorTertiary(PuzzleElement):
 class MythicalTraptorPrimary(PuzzleElement):
     @classmethod
     def description(cls) -> str:
-        return "They have different primary colors."
+        return "Each Mythical Traptor has a different primary color"
 
     greater = "the Greater Traptor"
     lesser = "the Lesser Traptor"
@@ -112,7 +112,7 @@ class MythicalTraptorPrimary(PuzzleElement):
 class MythicalTraptorSecondary(PuzzleElement):
     @classmethod
     def description(cls) -> str:
-        return "They have different secondary colors."
+        return "Each Mythical Traptor has a different secondary color"
 
     lake = "the Lake Traptor"
     swamp = "the Swamp Traptor"
@@ -124,7 +124,7 @@ class MythicalTraptorSecondary(PuzzleElement):
 class MythicalTraptorTertiary(PuzzleElement):
     @classmethod
     def description(cls) -> str:
-        return "They have different tertiary colors."
+        return "Each Mythical Traptor has a different tertiary color"
 
     dweller = "the Dweller Traptor"
     crawler = "the Crawler Traptor"

@@ -52,6 +52,9 @@ class Puzzle:
 
         self.solution = solution
         self.element_classes: Sequence[type[PuzzleElement]] = list(element_types)
+        self.elements_by_class: Mapping[type[PuzzleElement], list[PuzzleElement]] = {
+            el_type: [el for el in elements if isinstance(el, el_type)] for el_type in self.element_classes
+        }
         self.elements: Sequence[PuzzleElement] = list(elements)
 
         self.size = len(self.elements) // len(self.element_classes)
@@ -65,9 +68,8 @@ class Puzzle:
 
         # each house gets exactly one value from each set of literals
         for house in self.houses:
-            for element_type in self.element_classes:
-                literals_of_that_type = [lit for lit in self.elements if isinstance(lit, element_type)]
-                constraints.extend(sat_utils.one_of([comb(value, house) for value in literals_of_that_type]))
+            for _element_type, elements in self.elements_by_class.items():
+                constraints.extend(sat_utils.one_of([comb(value, house) for value in elements]))
 
         # each value gets assigned to exactly one house
         for literal in self.elements:
@@ -107,10 +109,44 @@ class Puzzle:
         cnf.extend(self.constraints)
         return cnf
 
-    def __repr__(self) -> str:
-        s = "<u>Clues</u> <br>\n"
-        for i, clue in enumerate(self.clues):
-            clue_str = clue.__repr__().replace("house", "nest") + " <br>"
-            s += f"{i + 1}. {clue_str}\n"
+    def format_elements(self) -> str:
+        """
+        Format the puzzle components for printing.
 
+        The puzzle input on CC requires a pure HTML string, <br> tags and all. The newlines that
+        we include are for readability and so we can print the whole thing to the console.
+        """
+
+        lines = [
+            "<u>Puzzle Components</u>",
+            f"There are {self.size} nests, (numbered 1 on the left, {self.size} on the right), from the perspective of someone standing across from them.",
+            "Our job is to help Traptop figure out who visited each nest.",
+        ]
+
+        for el_type in self.element_classes:  # should be sorted
+            class_description = el_type.description()
+            elements = ", ".join(el.name.title() for el in self.elements_by_class[el_type])
+            line = f"- {class_description} ({elements})"
+
+            lines.append(line)
+
+        s = " <br>\n".join(lines) + " <br><br>\n"
+        return s
+
+    def format_clues(self) -> str:
+        """
+        Format the clues for printing.
+
+        The puzzle input on CC requires a pure HTML string, <br> tags and all. The newlines that
+        we include are for readability and so we can print the whole thing to the console. The
+        clues are just a title and a numbered list, but we don't bother with a <ol> tag.
+        """
+
+        lines = ["<u>Clues</u>"]
+
+        for i, clue in enumerate(self.clues, 1):
+            clue_description = clue.__repr__().replace("house", "nest")
+            lines.append(f"{i}. {clue_description}")
+
+        s = " <br>\n".join(lines) + " <br><br>\n"
         return s

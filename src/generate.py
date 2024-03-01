@@ -2,9 +2,11 @@ import logging
 import random
 from collections.abc import Iterable, Mapping
 from itertools import product
+from pathlib import Path
 
 from rich import print
 from rich.console import Console
+from rich.rule import Rule
 from rich.table import Table
 
 from src.clues import (
@@ -305,19 +307,19 @@ def reduce_clues(puzzle: Puzzle, clues: Clues) -> tuple[Clues, Clues]:
     return minimal_clues, removed_clues
 
 
-def _print_puzzle_grid(puzzle: Puzzle, extras: Iterable[Clue]):
+def _print_puzzle_grid(puzzle: Puzzle):
     """
     Print a tabular representation of the puzzle solution.
 
-    ┏━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━┓
-    ┃ Nest ┃ TropicalTraptorPrimary ┃ TropicalTraptorSecondary ┃ TropicalTraptorTertiary ┃
-    ┡━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━┩
-    │    1 │  the Majestic Traptor  │     the Sun Traptor      │  the Nurturer Traptor   │
-    │    2 │   the Heroic Traptor   │     the Sky Traptor      │   the Soarer Traptor    │
-    │    3 │ the Marvellous Traptor │    the Night Traptor     │    the Diver Traptor    │
-    │    4 │  the Stunning Traptor  │     the Sand Traptor     │   the Hunter Traptor    │
-    │    5 │   the Grand Traptor    │    the Forest Traptor    │  the Screecher Traptor  │
-    └──────┴────────────────────────┴──────────────────────────┴─────────────────────────┘
+        ┏━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━┓
+        ┃ Nest ┃ Primary  ┃ Secondary ┃ Tertiary ┃  Smoothie   ┃ Bottlecap ┃
+        ┡━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━┩
+        │    1 │  fierce  │  volcano  │ crawler  │ dragonfruit │   blue    │
+        │    2 │ greater  │   cave    │ stalker  │  midnight   │    red    │
+        │    3 │ restless │ mountain  │ snapper  │    lemon    │   green   │
+        │    4 │ ancient  │   swamp   │ hoarder  │   glacier   │   black   │
+        │    5 │  lesser  │   lake    │ dweller  │  chocolate  │  yellow   │
+        └──────┴──────────┴───────────┴──────────┴─────────────┴───────────┘
 
     Using Rich, we define the columns up front (easy; that's just an attribute of Puzzle)
     and define the rows as we go.
@@ -326,6 +328,10 @@ def _print_puzzle_grid(puzzle: Puzzle, extras: Iterable[Clue]):
     - the length is the number of element classes in the puzzle
     - item `i` has the element of type `puzzle.element_classes[i]`
     - every element's location is that same nest
+
+    Shorten puzzle elements as needed so that the table is more compact.
+    - Headers: "TropicalTraptorPrimary" -> "Primary"
+    - Elements: "the heroic Traptor" -> "heroic"
 
     To do this, we can use a list comprehension with a generator expression inside it (Copilot).
     - The list comprehension is over `puzzle.element_classes`, which guarantees the order
@@ -336,27 +342,49 @@ def _print_puzzle_grid(puzzle: Puzzle, extras: Iterable[Clue]):
     puzzle is small enough that this is plenty good.
     """
 
-    console = Console()
     table = Table(title="Solution")
 
-    table.add_column("Nest", justify="right", style="cyan", no_wrap=True)
+    table.add_column("Nest", justify="right", style="cyan")
     for element_type in puzzle.element_classes:
-        table.add_column(element_type.__name__, justify="center", style="magenta", no_wrap=True)
+        column_name = element_type.__name__.removeprefix("MythicalTraptor").removeprefix("TropicalTraptor")
+        table.add_column(column_name, justify="center")
 
     for house in puzzle.houses:
         elements_at_house = [
-            next((el for el, loc in puzzle.solution.items() if isinstance(el, element_type) and loc == house), None)
+            next(
+                (
+                    el.name.title()
+                    for el, loc in puzzle.solution.items()
+                    if isinstance(el, element_type) and loc == house
+                )
+            )
             for element_type in puzzle.element_classes
         ]
         table.add_row(str(house), *elements_at_house)
 
-    console.print(table)
+    return table
 
 
 def print_puzzle(puzzle: Puzzle, extras: Iterable[Clue]):
-    _print_puzzle_grid(puzzle, extras)
-    print()
-    print(puzzle)
+    console = Console()
+    templates_path = Path(__file__).parent / "templates"
+
+    puzzle_parts = [
+        Rule(),
+        """<div style="max-width:800px; margin-left:auto; margin-right:auto width:60% text-align:left">""",
+        (templates_path / "preamble.html").read_text(),
+        puzzle.format_elements(),
+        puzzle.format_clues(),
+        (templates_path / "answer_format.html").read_text(),
+        "</div>",
+        Rule(),
+        "<pre>",
+        _print_puzzle_grid(puzzle),
+        "</pre>",
+    ]
+
+    for section in puzzle_parts:
+        console.print(section)
 
 
 if __name__ == "__main__":
