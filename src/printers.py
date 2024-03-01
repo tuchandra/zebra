@@ -19,6 +19,28 @@ from rich.table import Table
 from src.puzzle import Puzzle
 
 
+def print_puzzle(puzzle: Puzzle):
+    templates_path = Path(__file__).parent / "templates"
+
+    puzzle_parts = [
+        Rule(),
+        """<div style="max-width:800px; margin-left:auto; margin-right:auto width:60% text-align:left">""",
+        (templates_path / "preamble.html").read_text(),
+        _format_elements(puzzle),
+        _format_clues(puzzle),
+        (templates_path / "answer_format.html").read_text(),
+        "</div>",
+        Rule(),
+        "<pre>",
+        _format_solution(puzzle),
+        "</pre>",
+    ]
+
+    console = Console()
+    for section in puzzle_parts:
+        console.print(section)
+
+
 def _format_elements(self: Puzzle) -> str:
     """Format the puzzle components (descriptions & enumeration of elements)."""
 
@@ -105,25 +127,3 @@ def _format_solution(puzzle: Puzzle) -> Table:
         table.add_row(str(house), *elements_at_house)
 
     return table
-
-
-def print_puzzle(puzzle: Puzzle):
-    templates_path = Path(__file__).parent / "templates"
-
-    puzzle_parts = [
-        Rule(),
-        """<div style="max-width:800px; margin-left:auto; margin-right:auto width:60% text-align:left">""",
-        (templates_path / "preamble.html").read_text(),
-        _format_elements(puzzle),
-        _format_clues(puzzle),
-        (templates_path / "answer_format.html").read_text(),
-        "</div>",
-        Rule(),
-        "<pre>",
-        _format_solution(puzzle),
-        "</pre>",
-    ]
-
-    console = Console()
-    for section in puzzle_parts:
-        console.print(section)
