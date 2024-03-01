@@ -119,8 +119,8 @@ if __name__ == "__main__":
 
     clues = generate_all_clues(puzzle, solution)
 
-    reduced, extras = reduce_clues(puzzle, clues)
+    reduced, _extras = reduce_clues(puzzle, clues)
     for clue in reduced:
         puzzle.add_clue(clue)
 
-    print_puzzle(puzzle, extras)
+    print_puzzle(puzzle)

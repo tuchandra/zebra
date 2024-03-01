@@ -1,15 +1,3 @@
-from collections.abc import Iterable
-from pathlib import Path
-
-from rich.console import Console
-from rich.rule import Rule
-from rich.table import Table
-
-from src.clues import (
-    Clue,
-)
-from src.puzzle import Puzzle
-
 """
 printers.py
 
@@ -22,14 +10,17 @@ parts of the puzzle and print it using the rich Console. This was easier than fi
 templating library like Jinja to do exactly what I need.
 """
 
+from pathlib import Path
 
-def format_elements(self: Puzzle) -> str:
-    """
-    Format the puzzle components for printing.
+from rich.console import Console
+from rich.rule import Rule
+from rich.table import Table
 
-    The puzzle input on CC requires a pure HTML string, <br> tags and all. The newlines that
-    we include are for readability and so we can print the whole thing to the console.
-    """
+from src.puzzle import Puzzle
+
+
+def _format_elements(self: Puzzle) -> str:
+    """Format the puzzle components (descriptions & enumeration of elements)."""
 
     lines = [
         "<u>Puzzle Components</u>",
@@ -48,14 +39,8 @@ def format_elements(self: Puzzle) -> str:
     return s
 
 
-def format_clues(self: Puzzle) -> str:
-    """
-    Format the clues for printing.
-
-    The puzzle input on CC requires a pure HTML string, <br> tags and all. The newlines that
-    we include are for readability and so we can print the whole thing to the console. The
-    clues are just a title and a numbered list, but we don't bother with a <ol> tag.
-    """
+def _format_clues(self: Puzzle) -> str:
+    """Format the clues (essentially making a list without <ol>)"""
 
     lines = ["<u>Clues</u>"]
 
@@ -67,7 +52,7 @@ def format_clues(self: Puzzle) -> str:
     return s
 
 
-def format_solution(puzzle: Puzzle):
+def _format_solution(puzzle: Puzzle) -> Table:
     """
     Print a tabular representation of the puzzle solution.
 
@@ -89,10 +74,6 @@ def format_solution(puzzle: Puzzle):
     - item `i` has the element of type `puzzle.element_classes[i]`
     - every element's location is that same nest
 
-    Shorten puzzle elements as needed so that the table is more compact.
-    - Headers: "TropicalTraptorPrimary" -> "Primary"
-    - Elements: "the heroic Traptor" -> "heroic"
-
     To do this, we can use a list comprehension with a generator expression inside it (Copilot).
     - The list comprehension is over `puzzle.element_classes`, which guarantees the order
     - The generator expression pulls out the correct element from the solution, checking both
@@ -106,6 +87,7 @@ def format_solution(puzzle: Puzzle):
 
     table.add_column("Nest", justify="right", style="cyan")
     for element_type in puzzle.element_classes:
+        # Shorten headers for compactness
         column_name = element_type.__name__.removeprefix("MythicalTraptor").removeprefix("TropicalTraptor")
         table.add_column(column_name, justify="center")
 
@@ -125,23 +107,23 @@ def format_solution(puzzle: Puzzle):
     return table
 
 
-def print_puzzle(puzzle: Puzzle, extras: Iterable[Clue]):
-    console = Console()
+def print_puzzle(puzzle: Puzzle):
     templates_path = Path(__file__).parent / "templates"
 
     puzzle_parts = [
         Rule(),
         """<div style="max-width:800px; margin-left:auto; margin-right:auto width:60% text-align:left">""",
         (templates_path / "preamble.html").read_text(),
-        format_elements(puzzle),
-        format_clues(puzzle),
+        _format_elements(puzzle),
+        _format_clues(puzzle),
         (templates_path / "answer_format.html").read_text(),
         "</div>",
         Rule(),
         "<pre>",
-        format_solution(puzzle),
+        _format_solution(puzzle),
         "</pre>",
     ]
 
+    console = Console()
     for section in puzzle_parts:
         console.print(section)
